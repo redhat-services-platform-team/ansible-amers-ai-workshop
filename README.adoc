@@ -2,7 +2,7 @@
 
 Site content for the Ansible Services AI Workshop.
 
-Repository: https://github.com/redhat-services-platform-team/ansible-amers-ai-workshop[+ansible-amers-ai-workshop+]
+Repository: https://github.com/redhat-services-platform-team/ansible-amers-ai-workshop
 
 == Getting Started
 
@@ -32,6 +32,7 @@ Repository: https://github.com/redhat-services-platform-team/ansible-amers-ai-wo
 In order to test and develop on your local machine, you can use a specially built container with Podman or Docker as follows.
 
 . Clone this repo and `cd` into it
+. Commit your content to git before previewing — Antora only indexes committed files when using the local content source (`url: .` in `default-site.yml`)
 . When you make changes to the content, all you need is to kill the container and run it again.
 +
 [source,sh]
