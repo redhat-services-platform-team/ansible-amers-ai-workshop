@@ -1,0 +1,23 @@
+name: modules
+title: Ansible Services AI Workshop
+version: master
+nav:
+  - modules/ROOT/nav.adoc
+
+asciidoc:
+  attributes:
+    # Workshop identity
+    lab_name: "Ansible Services AI Workshop"
+    release-version: master
+    page-pagination: true
+    guid: ansible-amers-ai-workshop
+
+    # Repository reference (used in contribution links)
+    workshop_repo_url: "https://github.com/redhat-services-platform-team/ansible-amers-ai-workshop"
+
+    # Header navigation links (used by supplemental UI)
+    page-links:
+    - url: https://cursor.com/docs
+      text: Cursor Docs
+    - url: https://docs.ansible.com/
+      text: Ansible Documentation

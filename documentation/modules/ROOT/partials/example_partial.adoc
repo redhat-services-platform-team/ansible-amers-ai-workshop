@@ -1,0 +1,4 @@
+// Reusable partial content — include in pages with:
+// include::example_partial.adoc[]
+
+NOTE: This is an example partial. Replace with reusable content as the workshop develops.

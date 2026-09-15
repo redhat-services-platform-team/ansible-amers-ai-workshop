@@ -1,0 +1,49 @@
+= {lab_name}
+
+Welcome to the {lab_name}!
+
+== Overview
+
+The Ansible Services AI Workshop provides a hands-on learning experience focused on using AI-assisted development workflows with Cursor to modernize Ansible automation. Participants work through practical exercises covering development environment setup, legacy code migration, AWS lab provisioning, and cost management.
+
+Through a series of progressive labs, you'll gain practical experience with:
+
+* **Cursor Development Environment**: Setting up and configuring Cursor for Ansible automation work
+* **Legacy Code Migration**: Using AI-assisted tooling to analyze and migrate legacy automation
+* **AWS Lab Build**: Building and deploying lab infrastructure on AWS with Ansible
+* **Managing Costs**: Monitoring and optimizing cloud spend for automation workloads
+
+== Prerequisites
+
+Before starting this workshop, ensure you have:
+
+* Basic understanding of Linux command line operations
+* Familiarity with YAML syntax and Ansible playbooks
+* Access to the Red Hat Demo Platform Showroom environment
+* A Cursor account (setup covered in Lab 1)
+
+NOTE: This workshop does not require pre-provisioned OpenShift, AAP, or other platform services. Exercises are designed to run within the Showroom environment and your local Cursor workspace.
+
+== Lab Structure
+
+The workshop is organized into four sequential modules:
+
+. **xref:01-cursor-development-environment.adoc[Setting Up Cursor Development Environment]**: Configure Cursor and prepare your development workspace
+. **xref:02-legacy-code-migration.adoc[Legacy Code Migration]**: Migrate legacy automation using AI-assisted workflows
+. **xref:03-aws-lab-build.adoc[AWS Lab Build]**: Provision and configure AWS lab infrastructure
+. **xref:04-managing-costs.adoc[Managing Costs]**: Track and optimize costs for cloud automation resources
+
+== Learning Outcomes
+
+By the end of this workshop, you will be able to:
+
+* Configure Cursor as an AI-assisted development environment for Ansible
+* Apply AI tooling to analyze and migrate legacy automation code
+* Build and deploy lab infrastructure on AWS using Ansible
+* Implement cost monitoring and optimization practices for cloud resources
+
+== Getting Started
+
+Begin with xref:01-cursor-development-environment.adoc[Module 1: Setting Up Cursor Development Environment]. Each module includes detailed instructions, exercises, and verification steps.
+
+For questions or issues, refer to the xref:appendix.adoc[Appendix] or contact your instructor.

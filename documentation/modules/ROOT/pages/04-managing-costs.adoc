@@ -1,0 +1,27 @@
+= Lab: Managing Costs
+
+[abstract]
+Monitor, track, and optimize cloud costs associated with automation workloads and lab infrastructure.
+
+== Learning Objectives
+
+After completing this module, you will be able to:
+
+* Identify cost drivers in AWS lab environments
+* Apply tagging and monitoring practices for cost visibility
+* Implement strategies to optimize and control cloud spend
+
+== 1: Cost Management Overview
+
+TODO: Add overview of cost management principles for automation-driven cloud infrastructure.
+
+== 2: Lab Exercise
+
+TODO: Add hands-on exercise steps for monitoring and managing costs.
+
+Associated lab assets are located in `bootcamp-content/04-managing-costs/`.
+
+== 3: Additional Resources
+
+* link:https://docs.aws.amazon.com/cost-management/latest/userguide/what-is-costmanagement.html[AWS Cost Management Documentation]
+* link:https://docs.ansible.com/[Ansible Documentation]
