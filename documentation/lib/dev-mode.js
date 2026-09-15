@@ -1,29 +1,9 @@
 'use strict'
 
-const fs = require('fs')
-
-// #region agent log
-function debugLog (hypothesisId, message, data) {
-  try {
-    fs.appendFileSync('/antora/.cursor/debug-09c124.log', JSON.stringify({
-      sessionId: '09c124',
-      hypothesisId,
-      location: 'dev-mode.js',
-      message,
-      data,
-      timestamp: Date.now(),
-    }) + '\n')
-  } catch (_) {}
-}
-// #endregion
-
 module.exports.register = function ({ config }) {
   this.once('contentClassified', ({ playbook, contentCatalog }) => {
     var pageDetails = {}
     const components = contentCatalog.getComponents()
-    // #region agent log
-    debugLog('H1', 'contentClassified component count', { componentCount: components.length })
-    // #endregion
     console.log('site-wide attributes (as defined in playbook)')
     console.log(playbook.asciidoc.attributes)
     let fileContents = "== Site Wide Attributes\n\n"
@@ -42,9 +22,6 @@ module.exports.register = function ({ config }) {
         })
       })
     })
-    // #region agent log
-    debugLog('H3', 'pageDetails before addFile', { pageDetails })
-    // #endregion
     if (!pageDetails.name || !pageDetails.version) {
       console.warn('dev-mode: no Antora components classified — skipping attrs-page generation. Ensure workshop content is committed to git (Antora indexes committed files only).')
       return
