@@ -1,0 +1,39 @@
+= Lab: Cursor Workspace Setup
+
+[abstract]
+Build and configure an AI-assisted development workspace using Cursor.
+
+== Learning Objectives
+
+After completing this module, you will be able to:
+
+* Install and configure Cursor for Ansible development
+* Set up workspace conventions and project structure for the workshop
+* Configure AI models and settings relevant to automation development
+* Verify your development environment is ready for the remaining labs
+
+== 1: Overview
+
+TODO: Add overview of Cursor as an AI-assisted development environment and its role in this workshop.
+
+== 2: Install and Configure Cursor
+
+TODO: Add steps to install Cursor, sign in, and configure initial settings.
+
+== 3: Configure the Workshop Workspace
+
+TODO: Add steps to clone the workshop repository, open the project in Cursor, and configure recommended extensions.
+
+Associated lab assets are located in `bootcamp-content/01-cursor-workspace/`.
+
+== 4: Verify Your Setup
+
+TODO: Add verification steps to confirm the workspace is ready.
+
+== 5: Contributing to This Documentation
+
+If you see an error in this lab, fork and submit a pull request against link:{workshop_repo_url}[{workshop_repo_url},window=_blank].
+
+== 6: Next Steps
+
+Proceed to xref:02-shell-to-ansible.adoc[Module 2: Shell-to-Ansible Migration].

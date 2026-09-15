@@ -1,0 +1,37 @@
+= Lab: Managing AI Costs
+
+[abstract]
+Analyze and manage the cost factors associated with AI code assistance.
+
+== Learning Objectives
+
+After completing this module, you will be able to:
+
+* Identify cost factors related to AI code assistance tools and models
+* Compare cost implications of different AI models and usage patterns
+* Apply strategies to optimize AI-assisted development spend
+* Balance AI productivity gains against associated costs
+
+== 1: Overview
+
+TODO: Add overview of AI code assistance cost models (per-token pricing, subscription tiers, model selection trade-offs).
+
+== 2: Identify Cost Factors
+
+TODO: Add exercise steps to catalog cost drivers — model selection, prompt efficiency, token usage, and subscription plans.
+
+Associated lab assets are located in `bootcamp-content/04-managing-ai-costs/`.
+
+== 3: Analyze Usage Patterns
+
+TODO: Add steps to review AI usage from the previous labs and quantify cost impact.
+
+== 4: Optimize AI-Assisted Development Spend
+
+TODO: Add strategies for cost optimization — model selection, prompt engineering, caching, and workflow efficiency.
+
+== 5: Additional Resources
+
+* link:https://cursor.com/docs[Cursor Documentation]
+* link:https://docs.ansible.com/[Ansible Documentation]
+* link:https://aws.amazon.com/aws-cost-management/[AWS Cost Management]

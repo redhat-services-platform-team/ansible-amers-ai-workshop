@@ -1,7 +1,7 @@
 * Labs
-** xref:01-cursor-development-environment.adoc[1. Setting Up Cursor Development Environment]
-** xref:02-legacy-code-migration.adoc[2. Legacy Code Migration]
-** xref:03-aws-lab-build.adoc[3. AWS Lab Build]
-** xref:04-managing-costs.adoc[4. Managing Costs]
+** xref:01-cursor-workspace.adoc[1. Cursor Workspace Setup]
+** xref:02-shell-to-ansible.adoc[2. Shell-to-Ansible Migration]
+** xref:03-aws-lab-provisioning.adoc[3. AWS Lab Provisioning]
+** xref:04-managing-ai-costs.adoc[4. Managing AI Costs]
 * xref:appendix.adoc[Appendix]
 ** xref:appendix.adoc#refresh-showroom-content[Refresh Showroom Content]
