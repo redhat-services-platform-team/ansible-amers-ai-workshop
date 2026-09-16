@@ -20,7 +20,7 @@ TODO: Add overview of the AWS demo environment architecture and provisioning goa
 
 TODO: Add description of the AWS resources to be provisioned (EC2, VPC, security groups, etc.).
 
-Associated lab assets are located in `workshop-content/03-aws-lab-provisioning/`.
+Associated lab assets are located in `workshop-content/04-aws-lab-provisioning/`.
 
 == 3: Generate Provisioning Playbooks with AI Assist
 
@@ -34,6 +34,7 @@ TODO: Add steps to execute playbooks against the AWS demo environment and verify
 
 TODO: Add verification steps and common troubleshooting guidance.
 
-== 6: Next Steps
+== 6: Additional Resources
 
-Proceed to xref:04-managing-ai-costs.adoc[Module 4: Managing AI Costs].
+* link:https://docs.ansible.com/[Ansible Documentation]
+* link:https://aws.amazon.com/aws-cost-management/[AWS Cost Management]

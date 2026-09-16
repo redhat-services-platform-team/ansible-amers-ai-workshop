@@ -4,7 +4,7 @@ Welcome to the {lab_name}!
 
 == Overview
 
-The Ansible Services AI Workshop provides a hands-on learning experience focused on applying AI-assisted development workflows to Ansible automation. Participants build a Cursor workspace, migrate legacy shell scripts to Ansible, provision AWS lab infrastructure, and analyze the cost factors of AI code assistance.
+The Ansible Services AI Workshop provides a hands-on learning experience focused on applying AI-assisted development workflows to Ansible automation. Participants build a Cursor workspace, migrate legacy shell scripts to Ansible, analyze the cost factors of AI code assistance, and provision AWS lab infrastructure.
 
 == Practical Exercises
 
@@ -12,8 +12,8 @@ Through a series of progressive labs, you'll gain practical experience with:
 
 * **Cursor Workspace Setup**: Build and configure an AI-assisted development workspace using Cursor
 * **Shell-to-Ansible Migration**: Refactor legacy shell scripts into an Ansible project using multiple AI models to compare their performance and output
-* **AWS Lab Provisioning**: Provision lab infrastructure in an AWS demo environment utilizing an AI code-assist setup
 * **Managing AI Costs**: Analyze and manage the cost factors associated with AI code assistance
+* **AWS Lab Provisioning**: Provision lab infrastructure in an AWS demo environment utilizing an AI code-assist setup
 
 == Prerequisites
 
@@ -32,8 +32,8 @@ The workshop is organized into four sequential modules:
 
 . **xref:01-cursor-workspace.adoc[Cursor Workspace Setup]**: Build and configure an AI-assisted development workspace using Cursor
 . **xref:02-shell-to-ansible.adoc[Shell-to-Ansible Migration]**: Refactor legacy shell scripts into Ansible using multiple AI models
-. **xref:03-aws-lab-provisioning.adoc[AWS Lab Provisioning]**: Provision lab infrastructure in an AWS demo environment with AI code-assist
-. **xref:04-managing-ai-costs.adoc[Managing AI Costs]**: Analyze and manage cost factors associated with AI code assistance
+. **xref:03-managing-ai-costs.adoc[Managing AI Costs]**: Analyze and manage cost factors associated with AI code assistance
+. **xref:04-aws-lab-provisioning.adoc[AWS Lab Provisioning]**: Provision lab infrastructure in an AWS demo environment with AI code-assist
 
 == Learning Outcomes
 
@@ -41,8 +41,8 @@ By the end of this workshop, you will be able to:
 
 * Configure Cursor as an AI-assisted development environment for Ansible work
 * Compare AI model outputs when refactoring legacy shell scripts into Ansible
-* Provision AWS lab infrastructure using AI-assisted development workflows
 * Identify and manage cost factors related to AI code assistance
+* Provision AWS lab infrastructure using AI-assisted development workflows
 
 == Getting Started
 

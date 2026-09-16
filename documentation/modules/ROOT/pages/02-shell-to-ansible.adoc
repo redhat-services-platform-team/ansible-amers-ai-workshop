@@ -36,4 +36,4 @@ TODO: Add steps to compare outputs across models — evaluate correctness, idemp
 
 == 6: Next Steps
 
-Proceed to xref:03-aws-lab-provisioning.adoc[Module 3: AWS Lab Provisioning].
+Proceed to xref:03-managing-ai-costs.adoc[Module 3: Managing AI Costs].
