@@ -20,7 +20,7 @@ TODO: Add overview of AI code assistance cost models (per-token pricing, subscri
 
 TODO: Add exercise steps to catalog cost drivers — model selection, prompt efficiency, token usage, and subscription plans.
 
-Associated lab assets are located in `bootcamp-content/04-managing-ai-costs/`.
+Associated lab assets are located in `workshop-content/04-managing-ai-costs/`.
 
 == 3: Analyze Usage Patterns
 

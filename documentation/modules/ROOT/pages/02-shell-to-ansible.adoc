@@ -20,7 +20,7 @@ TODO: Add overview of the legacy shell scripts provided for this exercise and th
 
 TODO: Add steps to examine the provided shell scripts and identify refactoring targets.
 
-Associated lab assets are located in `bootcamp-content/02-shell-to-ansible/`.
+Associated lab assets are located in `workshop-content/02-shell-to-ansible/`.
 
 == 3: Migrate with AI Model A
 

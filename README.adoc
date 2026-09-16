@@ -10,7 +10,7 @@ Repository: https://github.com/redhat-services-platform-team/ansible-amers-ai-wo
 
 [source,sh]
 ----
-./bootcamp-content # Location where all code for the workshop is stored
+./workshop-content # Location where all code for the workshop is stored
 ├── <lab-module>.                    # Lab Module Directory
 │   └── <content>                    # Associated content for the lab
 ./documentation/modules/ROOT/

@@ -24,7 +24,7 @@ TODO: Add steps to install Cursor, sign in, and configure initial settings.
 
 TODO: Add steps to clone the workshop repository, open the project in Cursor, and configure recommended extensions.
 
-Associated lab assets are located in `bootcamp-content/01-cursor-workspace/`.
+Associated lab assets are located in `workshop-content/01-cursor-workspace/`.
 
 == 4: Verify Your Setup
 

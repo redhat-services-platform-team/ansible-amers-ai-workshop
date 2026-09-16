@@ -1,5 +1,5 @@
 asciidoctor
-bootcamp
+workshop
 Devfile
 Devspaces
 Antora
