@@ -1,5 +1,5 @@
 name: modules
-title: Ansible Services AI Workshop
+title: Accelerating Ansible Delivery with AI
 version: master
 nav:
   - modules/ROOT/nav.adoc
@@ -7,7 +7,7 @@ nav:
 asciidoc:
   attributes:
     # Workshop identity
-    lab_name: "Ansible Services AI Workshop"
+    lab_name: "Accelerating Ansible Delivery with AI"
     release-version: master
     page-pagination: true
     guid: ansible-amers-ai-workshop

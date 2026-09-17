@@ -4,7 +4,7 @@ Welcome to the {lab_name}!
 
 == Overview
 
-The Ansible Services AI Workshop provides a hands-on learning experience focused on applying AI-assisted development workflows to Ansible automation. Participants build a Cursor workspace, migrate legacy shell scripts to Ansible, analyze the cost factors of AI code assistance, and provision AWS lab infrastructure.
+{lab_name} provides a hands-on learning experience focused on applying AI-assisted development workflows to Ansible automation. Participants build a Cursor workspace, migrate legacy shell scripts to Ansible, analyze the cost factors of AI code assistance, and provision AWS lab infrastructure.
 
 == Practical Exercises
 

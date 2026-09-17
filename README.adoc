@@ -1,6 +1,6 @@
-= Ansible Services AI Workshop
+= Accelerating Ansible Delivery with AI
 
-Site content for the Ansible Services AI Workshop.
+Site content for Accelerating Ansible Delivery with AI.
 
 Repository: https://github.com/redhat-services-platform-team/ansible-amers-ai-workshop
 
