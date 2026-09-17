@@ -1,0 +1,28 @@
+= Scenario — Fix idempotency on a small Ansible play
+
+== Goal
+
+Using AI assistance only, fix `files/site.yml` so the play is idempotent and follows basic Ansible hygiene:
+
+* Replace imperative `command` / `shell` usage with appropriate modules where straightforward.
+* Ensure repeated runs do not report spurious `changed` tasks.
+* Use fully qualified collection names (FQCN) for modules you introduce.
+* Keep scope limited to this play and the variables in `files/group_vars/all.yml`—do not redesign the entire workshop repo.
+
+== Definition of done
+
+* `ansible-playbook --syntax-check files/site.yml` succeeds (against a check-mode dry run if you have a target; syntax-check alone is acceptable in the workshop).
+* A second logical pass would not re-change resources (explain in notes if you cannot execute against a host).
+* You can justify the change in one sentence without pasting the whole diff.
+
+== Constraints (cost lab)
+
+* Use the *same* starter prompt in `prompt.md` for every model run.
+* Attach only `files/site.yml` and `files/group_vars/all.yml` unless the model asks for one additional file—if you add files, note it on the scorecard.
+* Stop after you reach definition of done or after *15 user turns*, whichever comes first.
+
+== Files
+
+* `files/site.yml` — intentionally imperfect play
+* `files/group_vars/all.yml` — variables referenced by the play
+* `prompt.md` — copy-paste prompt for Chat, Agent, or CLI
