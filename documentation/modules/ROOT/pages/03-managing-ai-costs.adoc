@@ -28,6 +28,7 @@ Plan pricing changes; the *categories* of cost (model tier, tokens, agent mode, 
 ====
 
 Associated lab assets are located in `workshop-content/03-managing-ai-costs/`.
+Facilitators delivering a 30-minute session should use `workshop-content/03-managing-ai-costs/facilitator-talk-track.md`.
 
 == 2: Identify Cost Factors
 
