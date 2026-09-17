@@ -1,0 +1,22 @@
+---
+# Workshop lab starter — intentionally non-idempotent in places.
+- name: Ensure workshop app directory exists
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - group_vars/all.yml
+  tasks:
+    - name: Create application directory
+      ansible.builtin.command: mkdir -p {{ app_root }}
+
+    - name: Write application config
+      ansible.builtin.shell: |
+        echo "port={{ app_port }}" > {{ app_root }}/app.conf
+        echo "env={{ app_env }}" >> {{ app_root }}/app.conf
+      args:
+        executable: /bin/bash
+
+    - name: Report status
+      ansible.builtin.debug:
+        msg: "Configured {{ app_name }} under {{ app_root }}"
