@@ -1,11 +1,15 @@
 = Lab scorecard — Module 3 Managing AI Costs
 
-Record one row per model run on the *same* scenario task.
+Record one row per model run on the *same* shell-to-Ansible task (`workshop-content/02-shell-to-ansible/prompt.md` + `legacy/configure-workshop-app.sh`).
 Hold prompts and attachments constant across runs unless the facilitator directs otherwise.
 
-[cols="1,1,1,1,1,2",options="header"]
+**Billing period reset date:**
+
+**Usage pools observed:**
+
+[cols="2,2,1,1,1,2,3",options="header"]
 |===
-| Run | Model / Router mode | Surface (Chat / Agent / CLI) | Minutes | User turns | Quality (merge / edit / discard) | Notes (rework, context size)
+| Run | Model / Router mode | Surface (Chat / Agent / CLI) | Minutes | User turns | Quality (merge / edit / discard) | Notes (rework, context size, usage low/med/high)
 
 | Module 2 — Model A |
 | Module 2 — Model B |
@@ -13,11 +17,6 @@ Hold prompts and attachments constant across runs unless the facilitator directs
 | Run B (balanced) |
 | Run C (frontier / escalation) |
 |===
-
-Optional dashboard columns (fill if visible on link:https://cursor.com/dashboard/spending[Spending,window=_blank]):
-
-* Usage pool touched (Cursor Models vs Other Models)
-* Subjective usage delta (low / medium / high) for the run
 
 == Personal optimization rules
 

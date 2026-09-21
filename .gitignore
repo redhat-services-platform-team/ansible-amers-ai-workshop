@@ -40,3 +40,7 @@ yarn.lock
 .lock
 
 .ansible
+
+# Learner-generated playbooks (Module 2 / 3)
+workshop-content/02-shell-to-ansible/output/**
+!workshop-content/02-shell-to-ansible/output/.gitkeep

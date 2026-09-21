@@ -1,196 +1,120 @@
 = Lab: Managing AI Costs
 
 [abstract]
-Analyze and manage the cost factors associated with AI code assistance.
+Use the same shell-to-Ansible task as Module 2 to compare models, usage, and spend—and write three guardrails.
 
 == Learning Objectives
 
 After completing this module, you will be able to:
 
-* Identify cost factors related to AI code assistance tools and models
-* Compare cost implications of different AI models and usage patterns
-* Apply strategies to optimize AI-assisted development spend
-* Balance AI productivity gains against associated costs
+* Name what drives AI usage cost (pools, model, tokens, Chat vs Agent)
+* Run the **same** migration prompt with three models and record time, turns, and quality
+* Connect Module 2 results to dollars-and-cents habits (cheaper model first, small context, verify before re-prompt)
+* Write three personal rules to use AI more efficiently
 
-== 1: Overview
+== Before you start
 
-AI-assisted development is usually billed on *usage*, not on whether the suggestion was helpful.
-Cursor and similar tools combine subscription plans with metered model usage: input tokens, output tokens, cached context, and (on some team plans) platform fees for third-party models.
-The same automation task can cost pennies or dollars depending on which model you choose, how much context you attach, and whether you use chat, inline edit, or a long-running agent.
-
-This module builds on the model-comparison mindset from xref:02-shell-to-ansible.adoc[Module 2: Shell-to-Ansible Migration], but shifts the success metric from *quality of Ansible* to *cost versus value*.
-You will catalog cost drivers, inspect your own usage patterns, and apply practical habits that preserve productivity without burning through included usage on routine work.
+* Complete xref:02-shell-to-ansible.adoc[Module 2: Shell-to-Ansible Migration] or skim `workshop-content/02-shell-to-ansible/legacy/configure-workshop-app.sh` and `prompt.md` so the task is familiar.
+* If your facilitator uses slides, follow along with `workshop-content/03-managing-ai-costs/deck-slide-outline.md` (slide numbers below match that outline).
+* Facilitators: `workshop-content/03-managing-ai-costs/facilitator-talk-track.md` (talk track—not required reading for learners).
+* Scorecard: `workshop-content/03-managing-ai-costs/lab-scorecard.adoc`
+* Canonical prompt (do not edit for benchmarking): `workshop-content/02-shell-to-ansible/prompt.md`
 
 [TIP]
 ====
-Keep the link:https://cursor.com/docs/models-and-pricing[Cursor models and pricing,window=_blank] and link:https://cursor.com/dashboard/spending[Spending dashboard,window=_blank] open during the lab.
-Plan pricing changes; the *categories* of cost (model tier, tokens, agent mode, context size) stay stable even when list prices move.
+Keep link:https://cursor.com/dashboard/spending[Spending,window=_blank] open in a browser tab during this lab.
 ====
 
-Associated lab assets are located in `workshop-content/03-managing-ai-costs/`.
-Facilitators delivering a 30-minute session should use `workshop-content/03-managing-ai-costs/facilitator-talk-track.md`.
+== Step 1: Record your billing context
 
-== 2: Identify Cost Factors
+_Facilitator deck: slides 3–4 (what you pay for; usage pools)._
 
-Understanding what you are paying for is the first step toward controlling spend.
-Work through the catalog below, then map each factor to something you can observe in Cursor or your organization's billing reports.
+. Open link:https://cursor.com/dashboard/spending[Spending,window=_blank].
+. Write down: **billing period reset date** and the **names of the usage pools** you see (for example Cursor Models vs Other Models).
+. In Cursor, note your **current chat/agent model** and Router mode if shown (Cost, Balance, Intelligence, or pinned model).
+. **Record** pool names and reset date at the top of `lab-scorecard.adoc` or your notebook.
 
-=== Subscription and usage pools
+== Step 2: Pattern check (2 minutes)
 
-Most paid Cursor plans include more than one *usage pool* (for example, first-party Cursor models versus third-party frontier models).
-Each pool resets on your billing cycle; unused allowance typically does not roll over.
-Know which pool your daily model draws from and what happens when included usage is exhausted (upgrade, on-demand billing, or hard stop).
+_Facilitator deck: slide 9 (usage patterns)._
 
-=== Model selection and routing
+. For each pattern below, write **one example** from Module 2, this workshop, or your job (one line each):
 
-Models differ in capability, latency, and price per million tokens.
-Frontier models excel at ambiguous refactors and multi-file reasoning; smaller or first-party models are often enough for formatting, boilerplate, and narrow edits.
-Cursor Router modes (such as cost-focused versus intelligence-focused routing) can change which model handles a request and therefore which rate applies.
-On team plans, third-party model requests may include an additional platform token rate; first-party Composer and Grok models are often exempt—verify against current link:https://cursor.com/help/models-and-usage/token-rate[Cursor Token Rate,window=_blank] documentation.
+* *Surgical ask* — one or two files, narrow change
+* *Retry loop* — vague prompt or many fix-it-again turns
+* *Agent marathon* — long thread with many tool steps
 
-=== Tokens: input, output, and cache
+== Step 3: Prepare three migration runs (same task as Module 2)
 
-You pay for what goes *into* the model (your prompt, attached files, conversation history, tool results) and what comes *out* (generated text and agent steps).
-Large `@`-mentions, entire repositories in context, and long agent threads increase input tokens quickly.
-Output tokens dominate when the model writes lengthy explanations or huge diffs.
-Prompt caching (when available) reduces cost for repeated context— but only if your workflow reuses that context instead of re-uploading everything each turn.
+_Facilitator deck: slides 5–6, 10–11 (model choice, context size, scorecard)._
 
-=== Product surface: Tab, Chat, Agent, CLI
+You will migrate `configure-workshop-app.sh` to Ansible **three times**. Each run uses a **new** chat thread and the **same** `prompt.md`.
 
-*Tab completion* is usually included generously on paid plans but still reflects model choice in some configurations.
-*Chat* costs scale with thread length and attachments.
-*Agent* and *cloud agent* flows run multiple model calls, tool invocations, and retries—high leverage for hard problems, expensive for tasks you could do in one manual edit.
-The `cursor-agent` CLI follows the same usage rules as in-editor agents; batching many small prompts through the CLI without guardrails can drain quotas faster than intentional in-IDE sessions.
+. Create three output folders, for example:
 
-=== Human and workflow factors
++
+[source,bash]
+----
+workshop-content/02-shell-to-ansible/output/<your-name>/run-a/
+workshop-content/02-shell-to-ansible/output/<your-name>/run-b/
+workshop-content/02-shell-to-ansible/output/<your-name>/run-c/
+----
 
-Cost is not only technical.
-Parallel agents on the same task, accepting large unreviewed diffs that must be reverted, and "keep trying until it works" loops multiply spend without adding durable value.
-Conversely, skipping AI on trivial edits avoids spend but may slow you down— the goal is intentional choice, not zero usage.
+. Open `workshop-content/02-shell-to-ansible/prompt.md` and keep it ready to copy-paste verbatim each time.
+. Decide which model you will use for each run (facilitator may assign):
 
-.Procedure
-====
-. Open link:https://cursor.com/dashboard/spending[Spending,window=_blank] (or your enterprise usage report) and note both usage pools and the current billing period reset date.
-. In Cursor settings, identify your default chat/agent model and any Router mode (Cost, Balance, Intelligence, or explicit model pin).
-. List five cost factors from the sections above that apply to *your* workshop account; mark each as *mostly under your control*, *partly under your control*, or *policy or plan limit*.
-. Skim one recent high-usage session (Module 2 migration or this lab) and label what drove tokens: context size, model tier, agent steps, or rework.
-====
+* **Run A** — cost-efficient (for example Composer or Cost Router default)
+* **Run B** — balanced / mid-tier
+* **Run C** — frontier or team “escalation” model (or repeat B with Agent if your plan has no frontier)
 
-== 3: Analyze Usage Patterns
+== Step 4: Run A
 
-Cost optimization starts with patterns, not willpower.
-You will compare how different *usage patterns*—not just different models—show up in time, quality, and spend.
+. New Cursor Chat or Agent thread; select **Run A** model.
+. Attach **only** `workshop-content/02-shell-to-ansible/legacy/configure-workshop-app.sh`.
+. Paste the full `prompt.md`; tell the model to write the playbook under your `run-a/` folder.
+. Accept or edit the result until `ansible-playbook --syntax-check` passes on your new playbook.
+. **Before** opening Spending, fill scorecard row **Run A**: model, Chat or Agent, minutes, user turns, quality (merge / edit / discard), notes (context size, rework).
+. Glance at Spending; note subjective usage **low / medium / high** for this run (optional column on scorecard).
 
-=== Baseline from prior labs
+== Step 5: Run B
 
-If you completed xref:02-shell-to-ansible.adoc[Module 2], you already have two data points: two models applied to the same shell-to-Ansible migration.
-Reuse that experience:
+. **New thread.** Same attachment. **Same** `prompt.md` text. Save under `run-b/`.
+. Syntax-check the playbook.
+. Fill scorecard row **Run B** (same columns as Run A).
 
-* Which model needed more follow-up prompts?
-* Which produced larger diffs (proxy for output tokens)?
-* Did you attach whole directories or single files?
+== Step 6: Run C
 
-Record approximate wall-clock time and subjective rework (lines you deleted or rewrote manually).
-Exact token counts are on the dashboard; qualitative notes explain *why* usage spiked.
+. **New thread.** Same rules as Run B. Save under `run-c/`.
+. Fill scorecard row **Run C**.
 
-=== Usage pattern archetypes
+. Stop each run at definition of done in `prompt.md` or after **15 user turns**, whichever comes first.
 
-[cols="1,2,2",options="header"]
-|===
-| Pattern | Typical cost profile | When it makes sense
+== Step 7: Compare Module 2 and Runs A–C
 
-| *Surgical ask*
-| Low tokens; one or two files in context
-| Bug fix, rename, add handler, lint cleanup
+_Facilitator deck: slides 2, 12–13 (bridge from Module 2; cost vs delay vs rework)._
 
-| *Architect ask*
-| High input (many files) + high output (new structure)
-| Greenfield role design, cross-playbook refactor
+. If you completed Module 2, compare scorecard rows *Module 2 — Model A/B* to *Run A/B/C*.
+. Answer in writing (scorecard notes or notebook):
 
-| *Agent marathon*
-| Many round-trips; tools + long transcript
-| Unknown codebase, test failures across modules
+* Which run had the **fewest user turns** for acceptable Ansible?
+* Which run would you **ship** under a tight monthly usage cap?
+* Did a **more expensive model** avoid rework, or did it only burn tokens?
 
-| *Retry loop*
-| Multiplies any of the above
-| Vague prompt, wrong model for task, no verification gate
+== Step 8: Three personal rules
 
-|===
+_Facilitator deck: slide 12._
 
-=== Quantify impact without a spreadsheet
+. On `lab-scorecard.adoc`, complete **Personal optimization rules** (three sentences you will actually follow).
 
-For this workshop, use the lab scorecard in `workshop-content/03-managing-ai-costs/lab-scorecard.adoc` rather than building finance-grade models.
-Capture per attempt:
+Examples: cheap model first on small migrations; only attach the shell script; syntax-check before a second Agent message.
 
-* Model name and mode (Chat vs Agent vs `cursor-agent`)
-* Minutes elapsed
-* Number of user turns until you accepted a solution
-* One-line quality verdict (merge as-is / merge with edits / discard)
-* Dashboard delta if visible (optional)
+== Step 9 (optional): CLI agent
 
-After three attempts on the *same* scenario, compare which pattern gave acceptable Ansible for the lowest *combined* time and usage.
+_Facilitator deck: slide 7._
 
-.Procedure
-====
-. Complete the baseline table in `lab-scorecard.adoc` for Module 2 if you have those notes; otherwise leave Module 2 rows blank and continue.
-. Open `workshop-content/03-managing-ai-costs/scenario/README.adoc` and read the fixed-scope task (do not start solving yet).
-. Run *Pattern review*: for each archetype in the table above, write one example from your real work (workshop or day job) that fit that pattern in the last month.
-. Plan three lab runs (next section) that differ by *model* while holding the *task* constant—this isolates model cost/quality trade-offs.
-====
+. Repeat **Run A** with `cursor-agent` using the same `prompt.md` and script path; add a note on the scorecard if turns or usage differ from in-editor Agent.
 
-== 4: Optimize AI-Assisted Development Spend
-
-Optimization means getting acceptable outcomes at sustainable cost, not minimizing tokens at the expense of delivery.
-
-=== Right-size the model
-
-Match model capability to task risk and ambiguity.
-
-* Use faster or cost-pooled models for deterministic edits: syntax, module swaps, adding `become`, FQCN fixes.
-* Reserve frontier or long-thinking models for design decisions, security-sensitive changes, or failures after a cheaper attempt.
-* Pin the model when teaching or benchmarking; use Router Cost mode for daily work if your team standard allows it.
-
-=== Shrink context deliberately
-
-* Attach the smallest file set that answers the question; prefer selections plus one related file over `@` entire trees.
-* Start a fresh thread when the topic changes—long transcripts re-send history as input tokens.
-* Put stable standards in rules or skills (loaded once) instead of pasting the same policy paragraph every prompt.
-
-=== Prompt and verify in one pass
-
-* State goal, constraints, and definition of done (for example: "idempotent play, FQCN modules, no `command` unless justified").
-* Ask for a plan only when the task is large; otherwise ask for a minimal diff.
-* Run `ansible-playbook --syntax-check` or linters *before* the next agent turn so you do not pay for repeated fix cycles.
-
-=== Agent and CLI discipline
-
-* Use Agent when exploration beats manual search; use inline edit or Tab when you know the location of the change.
-* For `cursor-agent`, scope with `--print` or non-interactive jobs only when you have a checklist; avoid unattended loops on billing-sensitive accounts.
-* Set team norms: max agent time-box for routine stories, required human review before second agent pass.
-
-=== Balance productivity and cost
-
-Frame decisions explicitly:
-
-* *Cost of AI* — usage fees for the session or sprint.
-* *Cost of delay* — engineer time waiting on manual work.
-* *Cost of rework* — bad merges, incidents, review load.
-
-A higher-token session that avoids a day of manual migration can be correct; a cheap session that produces non-idempotent automation is negative value.
-Document team guardrails (default models, when to escalate, monthly review of dashboard) the same way you document coding standards.
-
-.Procedure
-====
-. Perform **Run A** of the lab scenario using a cost-efficient model (for example Composer or your plan's Cost Router default).
-Record scorecard metrics before checking usage.
-. Perform **Run B** with a mid-tier or balanced model on the *identical* prompt and attachments.
-. Perform **Run C** with a frontier or intelligence-focused model only if your plan allows; otherwise substitute your team's approved "escalation" model.
-. Compare runs: which met the scenario's definition of done with the fewest turns and least rework?
-. Write three personal rules you will adopt (for example: "no `@` repo root for single-file tasks", "syntax-check before second agent message", "frontier model only after failed cheap attempt").
-. Optional: repeat Run A using `cursor-agent` with the same prompt file in `workshop-content/03-managing-ai-costs/scenario/prompt.md` and note whether CLI agent steps changed usage versus in-editor Agent.
-====
-
-== 5: Next Steps
+== Next Steps
 
 Proceed to xref:04-aws-lab-provisioning.adoc[Module 4: AWS Lab Provisioning].
 
