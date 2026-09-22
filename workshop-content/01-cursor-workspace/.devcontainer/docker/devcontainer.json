@@ -1,0 +1,25 @@
+{
+  "name": "ansible-dev-tools-docker",
+  "image": "ghcr.io/ansible/community-ansible-dev-tools:latest",
+  "containerUser": "root",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "runArgs": [
+    "--privileged",
+    "--device=/dev/fuse",
+    "--hostname=ansible-dev-container"
+  ],
+  "updateRemoteUserUID": true,
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "redhat.ansible",
+        "redhat.vscode-yaml"
+      ],
+      "settings": {
+        "ansible.python.interpreterPath": "python3",
+        "ansible.executionEnvironment.enabled": false
+      }
+    }
+  },
+  "postCreateCommand": "ansible-playbook --version && ansible-lint --version && echo 'ADT Dev Container (Docker fallback) is ready.'"
+}

@@ -1,39 +1,540 @@
 = Lab: Cursor Workspace Setup
 
 [abstract]
-Build and configure an AI-assisted development workspace using Cursor.
+Request Cursor access, install Cursor, configure *Podman* as the container engine for Cursor Dev Containers, and open this lab inside the community Ansible Development Tools (ADT) container.
 
 == Learning Objectives
 
 After completing this module, you will be able to:
 
-* Install and configure Cursor for Ansible development
-* Set up workspace conventions and project structure for the workshop
-* Configure AI models and settings relevant to automation development
-* Verify your development environment is ready for the remaining labs
+* Request and obtain Cursor access for Red Hat associate use
+* Install Cursor and the Anysphere Dev Containers extension
+* Install, start, and verify *Podman* as your default container engine
+* Point Cursor Dev Containers at Podman (`dockerPath` and related settings)
+* Reopen the Lab 1 workspace inside the Ansible Development Tools container via Podman
+* Run a sample playbook from the Dev Container terminal in Cursor
+* Apply basic best practices for AI-assisted Ansible development
 
 == 1: Overview
 
-TODO: Add overview of Cursor as an AI-assisted development environment and its role in this workshop.
+link:https://cursor.com[Cursor,window=_blank] is an AI-enhanced code editor built on a VS Code–compatible foundation.
+It integrates chat, inline edit, and agent workflows so you can write, explain, and refactor automation content with natural language while still reviewing every change like a normal pull request.
 
-== 2: Install and Configure Cursor
+At Red Hat, Cursor is an approved AI development tool for associate use (subject to local laws and Works Council availability).
+Access is request-based, usage is consumption-based, and models available *inside* Cursor are covered under Red Hat's contract when Red Hat guidelines are followed.
 
-TODO: Add steps to install Cursor, sign in, and configure initial settings.
+This lab gets you from *no Cursor install* to a verified workspace running *inside* the community Ansible Development Tools container.
+The workshop standard is **Podman** as the container engine that Cursor Dev Containers uses to start that image.
 
-== 3: Configure the Workshop Workspace
+Associated lab assets (including `.devcontainer/` and `.vscode/settings.json`) are in `workshop-content/01-cursor-workspace/`.
 
-TODO: Add steps to clone the workshop repository, open the project in Cursor, and configure recommended extensions.
+[NOTE]
+====
+You need a workstation where you can install desktop software and run Podman.
+This lab is designed for your local machine; Red Hat Demo Platform Showroom hosts workshop documentation—it is not a substitute for installing Cursor.
+====
 
-Associated lab assets are located in `workshop-content/01-cursor-workspace/`.
+== 2: Request Cursor Access
 
-== 4: Verify Your Setup
+Red Hat associates request Cursor through the Products and Global Engineering (PGE) Cloud Operations enablement process.
 
-TODO: Add verification steps to confirm the workspace is ready.
+.Prerequisites
+====
+* Red Hat associate account (including eligible interns and contractors)
+* Corporate VPN when submitting the access request form (required for the internal form)
+* Ability to receive email at your Red Hat address (check junk/spam if nothing arrives within a few minutes)
+====
 
-== 5: Contributing to This Documentation
+.Procedure
+====
+. Review the internal Cursor overview on The Source: link:{cursor_source_url}[Cursor — AI Tools,window=_blank].
+. Confirm you are in a supported region.
++
+Cursor is available upon request to developers at Red Hat, subject to local laws and regulations.
+Works Council–supported countries currently approved for use include the Netherlands, Germany, Austria, Spain, and France.
+Cursor is *not* available in China or the regions of Crimea, Donetsk, and Luhansk in Ukraine.
+Accessing Cursor through a VPN solely to bypass regional restrictions violates the contractual terms of use.
+. Submit a request using the Cursor access request form (VPN required): link:{cursor_access_request_url}[Cursor Access Request,window=_blank].
+. Wait for the confirmation email (typically within about five minutes).
+Follow the link in the email to complete Cursor account access.
+. Optionally open the link:{cursor_internal_user_guide_url}[internal Cursor user guide,window=_blank] for Red Hat–specific guidelines and install notes.
+. If you do not receive email, check junk/spam first, then use the help options in <<getting-help>>.
+====
+
+[TIP]
+====
+Keep The Source page and the internal Cursor user guide bookmarked.
+They include installation notes, usage guidelines, and current contract/cost details that change over time.
+====
+
+== 3: Install Cursor on Your Machine
+
+.Procedure
+====
+. Open link:https://cursor.com/download[Cursor download,window=_blank] and select the installer for your OS (macOS, Windows, or Linux).
+. Run the installer and launch Cursor.
+. Sign in when prompted using the account that received Cursor access.
+. When asked about importing VS Code settings or extensions, choose what you prefer.
+Importing VS Code settings is optional but can speed up keyboard familiarity.
+====
+
+.Verification
+====
+* Cursor launches without license or authentication errors.
+* *Help → About* shows a current Cursor version.
+====
+
+[#install-podman]
+== 4: Install and Start Podman
+
+This workshop uses *Podman* (and Podman Desktop where helpful) as the default engine for Cursor Dev Containers.
+
+=== 4.1 Install Podman by platform
+
+.Procedure
+====
+*Fedora / RHEL / CentOS Stream*::
++
+[source,sh]
+----
+sudo dnf install -y podman podman-compose
+----
++
+Optional GUI: install link:https://podman-desktop.io/[Podman Desktop,window=_blank] from the project site or your org's software catalog.
+
+*macOS*::
++
+--
+. Install link:https://podman-desktop.io/[Podman Desktop,window=_blank] (recommended) *or* `brew install podman podman-compose`.
+. Open Podman Desktop at least once and complete the first-run wizard so a Podman *machine* is created.
+--
+
+*Windows*::
++
+--
+. Install link:https://podman-desktop.io/[Podman Desktop,window=_blank] (uses WSL2).
+. Complete first-run setup and confirm a Podman machine is created and running.
+--
+====
+
+=== 4.2 Start the Podman machine (macOS and Windows)
+
+On macOS and Windows, Podman runs Linux containers inside a VM (*Podman machine*).
+It must be running before Cursor can start a Dev Container.
+
+.Procedure
+====
+. Start the machine (CLI):
++
+[source,sh]
+----
+podman machine list
+podman machine start
+----
++
+If no machine exists yet:
++
+[source,sh]
+----
+podman machine init
+podman machine start
+----
+. Or use Podman Desktop: select your machine and click *Start* / ensure status is *Running*.
+. Confirm:
++
+[source,sh]
+----
+podman machine list
+----
++
+The default machine should show as *running*.
+====
+
+=== 4.3 Enable the Podman API socket (Linux)
+
+On Linux, enable the user socket so tools that expect a Docker-compatible API can talk to Podman.
+
+.Procedure
+====
+. Enable and start the socket:
++
+[source,sh]
+----
+systemctl --user enable --now podman.socket
+systemctl --user status podman.socket
+----
+. Note the socket path (usually under `$XDG_RUNTIME_DIR`):
++
+[source,sh]
+----
+ls -l "$XDG_RUNTIME_DIR/podman/podman.sock"
+----
+====
+
+=== 4.4 Verify Podman on the host
+
+.Procedure
+====
+. In a host terminal (not inside a container):
++
+[source,sh]
+----
+podman version
+podman info
+podman run --rm quay.io/podman/hello
+----
+. Confirm JSON listing works (Cursor Dev Containers relies on CLI/API output):
++
+[source,sh]
+----
+podman container ls --all --format json
+----
++
+An empty list `[]` is fine.
+Broken or non-JSON output will cause Dev Containers to fail later.
+. Pull the ADT image so the first Dev Container open is faster:
++
+[source,sh]
+----
+podman pull {ansible_dev_tools_image}
+----
+====
+
+[NOTE]
+====
+Image tags and options are documented at link:https://docs.ansible.com/projects/dev-tools/container/[Ansible Development Tools container docs,window=_blank].
+====
+
+[#configure-podman-for-cursor]
+== 5: Point Cursor Dev Containers at Podman
+
+Cursor's Dev Containers feature is provided by the *Anysphere* extension (`anysphere.remote-containers`).
+By default it looks for `docker`.
+You must change the executable path to `podman` and ensure Podman is reachable when Cursor starts.
+
+=== 5.1 Install the Dev Containers extension
+
+.Procedure
+====
+. In Cursor, open *Extensions* (`Ctrl+Shift+X` / `Cmd+Shift+X`).
+. Search for *Dev Containers* published by *Anysphere*.
+. Install *Dev Containers* (`anysphere.remote-containers`).
+. Reload Cursor if prompted.
+. Confirm the Command Palette shows *Dev Containers:* commands (for example *Dev Containers: Reopen in Container*).
+====
+
+=== 5.2 Set Docker Path to Podman (required)
+
+Do this in *User* settings so it applies before and after opening a Dev Container.
+The Lab 1 folder also ships `.vscode/settings.json` with the same values for workspace scope.
+
+.Procedure
+====
+. Open the Command Palette → *Preferences: Open User Settings (JSON)*.
+. Add (or merge) these settings:
++
+[source,json]
+----
+{
+  "dev.containers.dockerPath": "podman",
+  "dev.containers.dockerComposePath": "podman-compose"
+}
+----
+. Save the file.
+. Fully quit and restart Cursor so the extension picks up the new path.
+====
+
+.Verification
+====
+* In *Settings* UI, search for `docker path` and confirm it shows `podman`.
+* From a terminal on the host, `which podman` returns an executable Cursor can find on its `PATH`.
+====
+
+[TIP]
+====
+If Cursor was started from a GUI launcher and cannot find `podman`, launch Cursor once from a terminal where `podman` works (so it inherits your shell `PATH`), or put Podman on the system PATH used by GUI apps.
+====
+
+=== 5.3 Optional: expose Podman via DOCKER_HOST
+
+Some tooling expects a Docker-style host URL.
+Point `DOCKER_HOST` at the Podman socket, then restart Cursor from that same environment.
+
+*macOS*::
++
+[source,sh]
+----
+export DOCKER_HOST="unix://$(podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}')"
+echo "$DOCKER_HOST"
+# Start Cursor from this shell if the GUI app does not see Podman:
+# open -a Cursor
+----
+
+*Linux*::
++
+[source,sh]
+----
+export DOCKER_HOST="unix://${XDG_RUNTIME_DIR}/podman/podman.sock"
+echo "$DOCKER_HOST"
+----
+
+*Windows (PowerShell)*::
++
+[source,powershell]
+----
+podman machine inspect --format '{{.ConnectionInfo.PodmanPipe.Path}}'
+# Example DOCKER_HOST form: npipe:////./pipe/podman-machine-default
+----
+
+Persist `DOCKER_HOST` in your shell profile if you use it regularly.
+Podman Desktop can also show connection details under machine settings.
+
+=== 5.4 Optional: install Ansible extensions locally
+
+These are also installed *inside* the Dev Container via `devcontainer.json`:
+
+* *Ansible* (`redhat.ansible`)
+* *YAML* (`redhat.vscode-yaml`)
+
+== 6: Clone the Workshop and Open Lab 1
+
+.Procedure
+====
+. Install *Git* if needed (`git --version`).
+. Clone the workshop repository:
++
+[source,sh]
+----
+git clone {workshop_repo_url}.git
+cd ansible-amers-ai-workshop
+----
+. In Cursor: *File → Open Folder…* and select *only* the Lab 1 directory:
++
+----
+ansible-amers-ai-workshop/workshop-content/01-cursor-workspace
+----
++
+Opening this folder loads:
++
+--
+* `.devcontainer/devcontainer.json` — Podman-oriented ADT container definition
+* `.vscode/settings.json` — `dev.containers.dockerPath` = `podman`
+--
+====
+
+== 7: Reopen Lab 1 in the ADT Dev Container (via Podman)
+
+.Before you click Reopen
+====
+* Podman machine is *running* (macOS/Windows) or `podman.socket` is active (Linux)
+* `podman info` succeeds in a host terminal
+* Cursor User settings set `dev.containers.dockerPath` to `podman`
+* You opened `workshop-content/01-cursor-workspace` (not the repo root)
+====
+
+.Procedure
+====
+. Wait for Cursor to detect the Dev Container config, or open the Command Palette.
+. Run *Dev Containers: Reopen in Container*.
+. Watch the Dev Containers log if shown.
+Cursor should invoke *podman* (not docker) to pull/start `{ansible_dev_tools_image}`.
+. Wait for:
++
+--
+* Image pull (first time only, if not pre-pulled)
+* Container create/start with the Lab 1 `runArgs` (capabilities, `/dev/fuse`, `userns=host`, and related options required for the ADT image under Podman)
+* Extension install inside the container
+* `postCreateCommand` printing `ansible-playbook` / `ansible-lint` versions
+--
+. Confirm the status bar shows a Dev Container connection (for example *Dev Container: ansible-dev-tools*).
+. Open *Terminal → New Terminal*.
+This shell is *inside* the ADT container managed by Podman.
+====
+
+.Expected tools in the container terminal
+====
+[source,sh]
+----
+ansible-playbook --version
+ansible-lint --version
+----
+====
+
+=== Inspect what Podman created (host check)
+
+In a *host* terminal:
+
+[source,sh]
+----
+podman ps --format "{{.ID}} {{.Names}} {{.Image}}"
+----
+
+You should see a running container based on `community-ansible-dev-tools`.
+
+=== Rebuild after config or image changes
+
+* *Dev Containers: Rebuild Container* — recreate after editing `devcontainer.json` or pulling a newer ADT tag
+* *Dev Containers: Rebuild and Reopen in Container* — rebuild and reconnect
+* *Dev Containers: Reopen Folder Locally* — leave the container and return to the host workspace
+
+[source,sh]
+----
+podman pull {ansible_dev_tools_image}
+----
+
+Then rebuild the Dev Container so it is not stuck on an old layer.
+
+== 8: Run the Sample Playbook in the Dev Container
+
+.Procedure
+====
+. In the Dev Container terminal:
++
+[source,sh]
+----
+pwd
+ls
+ansible-playbook playbooks/hello.yml
+----
+. Optional lint:
++
+[source,sh]
+----
+ansible-lint playbooks/hello.yml
+----
+====
+
+.Expected result
+====
+The playbook completes successfully and prints a hello message with the Ansible version from the ADT container.
+====
+
+== 9: Basic Best Practices for AI-Assisted Ansible Work
+
+.Treat AI output as a draft
+====
+* Always read diffs before accepting changes.
+* Prefer small, reviewable edits over large unreviewed agent rewrites.
+* Run playbooks and linters *inside the Dev Container*.
+====
+
+.Protect secrets and proprietary data
+====
+* Do not paste passwords, tokens, customer data, or private keys into prompts.
+* Prefer Privacy Mode / organization policy settings when available.
+* Keep credentials in environment variables, Ansible Vault, or your platform secret store—not in chat history.
+====
+
+.Stay inside approved tooling boundaries
+====
+* At Red Hat, models available *inside* Cursor are covered under the existing contract for code generation when Red Hat guidelines are followed.
+* Using those model providers *outside* Cursor is generally *not* covered by the same agreement and may need separate approval.
+* Follow Red Hat AI use guidelines and any team-specific rules for customer engagements.
+====
+
+.Work with intentional context
+====
+* Point Cursor at specific files (`@filename`) instead of dumping entire repositories into every prompt.
+* State goals, constraints (idempotent Ansible, no hard-coded secrets), and verification steps in your prompt.
+* Prefer the Dev Container terminal so validation uses the shared ADT toolchain.
+====
+
+.Keep a reproducible runtime
+====
+* Keep Podman as the default engine for this workshop's Dev Containers.
+* Commit workshop content to git before sharing or rebuilding docs (Antora indexes committed files when using the local content source).
+====
+
+== 10: Verify Your Setup
+
+[cols="1,2"]
+|===
+| Check | Success criteria
+
+| Cursor access
+| Signed in without license errors
+
+| Podman installed
+| `podman version` and `podman info` succeed on the host
+
+| Podman machine / socket
+| Machine *running* (macOS/Windows) or `podman.socket` active (Linux)
+
+| Cursor → Podman
+| `dev.containers.dockerPath` is `podman`; Dev Containers commands available
+
+| Connected to ADT container
+| Status bar shows Dev Container; `podman ps` on host shows the ADT container
+
+| ADT tooling
+| `ansible-playbook --version` and `ansible-lint --version` succeed in the container terminal
+
+| Sample playbook
+| `ansible-playbook playbooks/hello.yml` succeeds
+
+| Best practices
+| You can state how you will review AI diffs and avoid pasting secrets
+|===
+
+[#troubleshoot-podman]
+== 11: Troubleshooting Podman + Cursor Dev Containers
+
+[cols="1,2"]
+|===
+| Symptom | What to try
+
+| Dev Containers still calls `docker` / cannot find Docker
+| Set User `dev.containers.dockerPath` to `podman`, restart Cursor completely, confirm `which podman` works in a terminal Cursor inherits
+
+| `podman machine` not running
+| `podman machine start` or start the machine in Podman Desktop
+
+| Permission / socket errors on Linux
+| `systemctl --user enable --now podman.socket`; set `DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock`
+
+| JSON / "Unexpected end of JSON input" when listing containers
+| Run `podman container ls --all --format json` on the host; upgrade Podman/Podman Desktop; ensure the machine is running
+
+| Container starts then Ansible/nested tooling fails with `mknod` / OCI permission errors
+| Confirm you are using the Lab 1 default `.devcontainer/devcontainer.json` (includes `CAP_MKNOD`, `SYS_ADMIN`, `/dev/fuse`, `userns=host`, and related `runArgs`)
+
+| GUI-launched Cursor cannot find `podman`
+| Launch Cursor from a shell where `podman` is on `PATH`, or fix PATH for GUI applications
+
+| Need a temporary Docker-only fallback
+| See <<docker-fallback>>
+|===
+
+Use *Dev Containers: Show Log* from the Command Palette while reproducing failures—the log shows whether Cursor invoked `podman` or `docker`.
+
+[#docker-fallback]
+=== Docker fallback (not the workshop default)
+
+If Podman cannot be made to work on your laptop during the session, a Docker-oriented config is available at `.devcontainer/docker/devcontainer.json`.
+That path is a *contingency only*; facilitators should still help you complete the Podman setup when possible.
+
+[#getting-help]
+== 12: Getting Help
+
+=== Cursor access and licensing
+
+* Cursor Access Request ticket (VPN required) — linked from The Source Cursor page
+* General Cursor request ticket (VPN required)
+* Email `pge-cloudops@redhat.com`
+* Slack: `#forum-pge-tooling-and-licensing`
+* Slack: `#ext-cursor-redhat`
+
+=== Podman, Dev Containers, and ADT
+
+* Podman Desktop docs: link:https://podman-desktop.io/docs[podman-desktop.io/docs,window=_blank]
+* Ansible Development Tools: link:https://docs.ansible.com/projects/dev-tools/[ADT documentation,window=_blank]
+* Ansible Forum: link:https://forum.ansible.com/[forum.ansible.com,window=_blank]
+
+== 13: Contributing to This Documentation
 
 If you see an error in this lab, fork and submit a pull request against link:{workshop_repo_url}[{workshop_repo_url},window=_blank].
 
-== 6: Next Steps
+== 14: Next Steps
 
 Proceed to xref:02-shell-to-ansible.adoc[Module 2: Shell-to-Ansible Migration].
+Keep using the ADT Dev Container via Podman so migration experiments share the same Ansible toolchain.

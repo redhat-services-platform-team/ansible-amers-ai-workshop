@@ -1,0 +1,31 @@
+{
+  "name": "ansible-dev-tools",
+  "image": "ghcr.io/ansible/community-ansible-dev-tools:latest",
+  "containerUser": "root",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "runArgs": [
+    "--cap-add=CAP_MKNOD",
+    "--cap-add=NET_ADMIN",
+    "--cap-add=SYS_ADMIN",
+    "--cap-add=SYS_RESOURCE",
+    "--device=/dev/fuse",
+    "--security-opt=seccomp=unconfined",
+    "--security-opt=label=disable",
+    "--security-opt=apparmor=unconfined",
+    "--userns=host",
+    "--hostname=ansible-dev-container"
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "redhat.ansible",
+        "redhat.vscode-yaml"
+      ],
+      "settings": {
+        "ansible.python.interpreterPath": "python3",
+        "ansible.executionEnvironment.enabled": false
+      }
+    }
+  },
+  "postCreateCommand": "ansible-playbook --version && ansible-lint --version && echo 'ADT Dev Container (Podman) is ready.'"
+}
