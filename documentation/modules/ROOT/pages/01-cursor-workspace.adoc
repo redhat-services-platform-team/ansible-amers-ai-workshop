@@ -153,7 +153,7 @@ ls -la .devcontainer/devcontainer.json .vscode/settings.json
 .Verification
 ====
 In *Settings*, search for `docker path` and confirm it shows `podman`.
-+
+
 image::01-cursor-workspace/cursor-docker-path-settings-ui.png[Settings UI showing Dev Containers Docker Path set to podman,width=720]
 ====
 
