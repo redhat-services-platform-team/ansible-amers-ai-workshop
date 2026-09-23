@@ -1,15 +1,47 @@
 = Appendix
 
-[#refresh-showroom-content]
-== Refresh Showroom Content
+[#view-workshop-docs-locally]
+== View Workshop Documentation Locally
 
-Showroom is the visualization tool for the documentation associated with the workshop. As the workshop session progresses, enhancements and updates may be incorporated into the documentation. To enable these updates to appear in Showroom, the Showroom container must be restarted within the OpenShift cluster. This can be accomplished by performing the following actions:
+Workshop documentation is built with Antora and previewed locally with Podman.
+You do not need OpenShift or a Showroom deployment to read or refresh the lab content.
 
-1. Login to the OpenShift Web Console
-2. Showroom is deployed in a namespace starting with `showroom-` followed by a unique identifier
-    a. Navigate to the **Workloads** -> **Pods** section on the left hand navigation pane.
-    b. Select the namespace starting with `showroom-` from the dropdown at the top of the page.
-3. Locate the pod with the name starting with `showroom-` and select the kebab menu (three vertical dots) on the right hand side of the pod entry.
-4. Select **Delete Pod** from the dropdown menu.
+=== Prerequisites
 
-A new pod will be automatically created and started. Once the new pod is in the `Running` state, the updated content will be available in Showroom and accessible from the exposed Route.
+* *Podman* installed and working on your workstation (same requirement as Lab 1)
+* A local clone of this workshop repository
+
+=== Launch the Antora viewer
+
+. Clone this repository (if you have not already) and change into the repository root.
+. Commit your content to git before previewing — Antora only indexes committed files when using the local content source (`url: .` in `default-site.yml`).
+. Start the Antora viewer container:
+
+[source,sh]
+----
+podman run --rm --name antora -v $PWD:/antora -p 8080:8080 -i -t ghcr.io/juliaaano/antora-viewer
+----
+
+On SELinux-enabled systems (for example Fedora or RHEL), append `:z` to the volume mount:
+
+[source,sh]
+----
+podman run --rm --name antora -v $PWD:/antora:z -p 8080:8080 -i -t ghcr.io/juliaaano/antora-viewer
+----
+
+. Open a browser to link:http://localhost:8080[http://localhost:8080,window=_blank].
+
+Live-reload is not supported. When you change documentation, stop the container and start it again so Antora rebuilds the site.
+
+[#refresh-local-docs]
+== Refresh Local Documentation
+
+As the workshop progresses, documentation may be updated in the repository.
+To pick up those changes in your local Antora preview:
+
+. Stop the running Antora container (for example press `Ctrl+C` in the terminal where it is running, or run `podman stop antora`).
+. Pull the latest changes from the repository if updates were published remotely (`git pull`).
+. Ensure any local documentation edits you want to preview are committed.
+. Start the Antora viewer again with the same `podman run` command from the previous section.
+
+Once the container is running, the updated content is available at link:http://localhost:8080[http://localhost:8080,window=_blank].

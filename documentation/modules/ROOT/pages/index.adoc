@@ -21,11 +21,10 @@ Before starting this workshop, ensure you have:
 
 * Basic understanding of Linux command line operations
 * Familiarity with YAML syntax and shell scripting
-* Access to the Red Hat Demo Platform Showroom environment
-* *Podman* installed and configured on your local machine (required for Lab 1 Dev Containers)
+* *Podman* installed and configured on your local machine (required for Lab 1 Dev Containers and for previewing this documentation locally)
 * A Cursor account (setup covered in Lab 1)
 
-NOTE: This workshop does not require pre-provisioned OpenShift, AAP, or other platform services. Exercises are designed to run within the Showroom environment and your Cursor workspace.
+NOTE: This workshop does not require pre-provisioned OpenShift, AAP, Showroom, or other platform services. Lab exercises run in your local Cursor workspace via Podman. Preview and refresh this documentation with the Antora viewer container — see the xref:appendix.adoc[Appendix].
 
 == Lab Structure
 
@@ -46,6 +45,8 @@ By the end of this workshop, you will be able to:
 * Provision AWS lab infrastructure using AI-assisted development workflows
 
 == Getting Started
+
+To view these labs in a browser, launch the Antora viewer with Podman as described in xref:appendix.adoc#view-workshop-docs-locally[View Workshop Documentation Locally].
 
 Begin with xref:01-cursor-workspace.adoc[Module 1: Cursor Workspace Setup]. Each module includes detailed instructions, exercises, and verification steps.
 

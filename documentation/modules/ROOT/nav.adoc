@@ -4,4 +4,5 @@
 ** xref:03-managing-ai-costs.adoc[3. Managing AI Costs]
 ** xref:04-aws-lab-provisioning.adoc[4. AWS Lab Provisioning]
 * xref:appendix.adoc[Appendix]
-** xref:appendix.adoc#refresh-showroom-content[Refresh Showroom Content]
+** xref:appendix.adoc#view-workshop-docs-locally[View Workshop Documentation Locally]
+** xref:appendix.adoc#refresh-local-docs[Refresh Local Documentation]
