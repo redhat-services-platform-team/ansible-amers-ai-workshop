@@ -1,7 +1,5 @@
 asciidoctor
 workshop
-Devfile
-Devspaces
 Antora
 Showroom
 asciidoc
