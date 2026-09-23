@@ -1,5 +1,0 @@
----
-app_name: workshop-metrics-agent
-app_root: /tmp/workshop-metrics-agent
-app_port: 8080
-app_env: lab

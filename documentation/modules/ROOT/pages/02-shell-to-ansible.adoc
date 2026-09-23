@@ -1,39 +1,70 @@
 = Lab: Shell-to-Ansible Migration
 
 [abstract]
-Refactor legacy shell scripts into an Ansible project using multiple AI models to compare their performance and output.
+Refactor a legacy shell script into Ansible using AI—and compare two models on the same task.
 
 == Learning Objectives
 
 After completing this module, you will be able to:
 
-* Analyze legacy shell scripts and identify automation patterns suitable for Ansible
-* Use multiple AI models in Cursor to generate Ansible content from shell scripts
-* Compare AI model outputs for accuracy, completeness, and best practices
-* Validate and refine migrated Ansible playbooks and roles
+* Read a legacy shell script and state what it changes on a system
+* Use AI assistance to produce a minimal Ansible playbook from that script
+* Run the same migration prompt with two different models and compare results
+* Record observations that Module 3 will use for cost comparison
 
-== 1: Overview
+== Before you start
 
-TODO: Add overview of the legacy shell scripts provided for this exercise and the migration approach.
+* Finish xref:01-cursor-workspace.adoc[Module 1: Cursor Workspace Setup] (or open this repo in Cursor).
+* Lab files live in `workshop-content/02-shell-to-ansible/`.
+* Scaffold details and open questions for doc owners: `workshop-content/02-shell-to-ansible/REVIEW-NOTES.md`.
 
-== 2: Review the Legacy Shell Scripts
+== Step 1: Open the legacy script
 
-TODO: Add steps to examine the provided shell scripts and identify refactoring targets.
+. In Cursor, open `workshop-content/02-shell-to-ansible/legacy/configure-workshop-app.sh`.
+. Run it once in a terminal if you want (optional): `bash workshop-content/02-shell-to-ansible/legacy/configure-workshop-app.sh`
+. In your notes, write **three bullets**: what directories/files it creates, what variables it uses, and one thing that would be hard to maintain as a script at scale.
 
-Associated lab assets are located in `workshop-content/02-shell-to-ansible/`.
+== Step 2: Create your output folder
 
-== 3: Migrate with AI Model A
+. Create a folder for your playbook, for example: `workshop-content/02-shell-to-ansible/output/<your-name>/`
+. You will save your generated `site.yml` (or equivalent) there—not in the repo root.
 
-TODO: Add exercise steps for refactoring shell scripts into Ansible using the first AI model.
+== Step 3: Migrate with Model A
 
-== 4: Migrate with AI Model B
+. Start a **new** Cursor Chat or Agent thread.
+. Select **Model A** (use the cost-efficient or “default” model your facilitator names for this run).
+. Attach **only** `workshop-content/02-shell-to-ansible/legacy/configure-workshop-app.sh` unless you must add one more file.
+. Open `workshop-content/02-shell-to-ansible/prompt.md`, copy the full text, paste into the chat, and send.
+. Apply the suggested changes; save the playbook under your output folder.
+. Run: `ansible-playbook --syntax-check workshop-content/02-shell-to-ansible/output/<your-name>/site.yml` (adjust path if the model used a different filename).
+. **Record:** model name, minutes, number of prompts until you accepted the result, and merge / edit / discard—in `workshop-content/03-managing-ai-costs/lab-scorecard.adoc` row *Module 2 — Model A*.
 
-TODO: Add exercise steps for refactoring the same scripts using a second AI model for comparison.
+== Step 4: Migrate with Model B
 
-== 5: Compare Results
+. Start a **new** thread (do not continue Model A’s conversation).
+. Select **Model B** (facilitator names the second model—often more capable or balanced).
+. Attach the **same** shell script only.
+. Paste the **same** `prompt.md` text unchanged.
+. Save to a **new** file or subfolder if you want to keep both (for example `site-model-b.yml`).
+. Run `ansible-playbook --syntax-check` on the new playbook.
+. **Record** the same metrics in scorecard row *Module 2 — Model B*.
 
-TODO: Add steps to compare outputs across models — evaluate correctness, idempotency, readability, and Ansible best practices.
+== Step 5: Compare the two playbooks
 
-== 6: Next Steps
+. Open both playbooks side by side.
+. In your notes or scorecard *Notes* column, answer:
+
+* Which model needed more follow-up messages?
+* Which produced a larger diff?
+* Which playbook you would rather run in production (one sentence).
+
+[TIP]
+====
+Module 3 reuses the **same script and same prompt** to compare **cost** (Runs A/B/C). Completing this module gives you baseline rows on the scorecard.
+====
+
+== Next Steps
 
 Proceed to xref:03-managing-ai-costs.adoc[Module 3: Managing AI Costs].
+
+If you see an error in this lab, fork and submit a pull request against link:{workshop_repo_url}[{workshop_repo_url},window=_blank].

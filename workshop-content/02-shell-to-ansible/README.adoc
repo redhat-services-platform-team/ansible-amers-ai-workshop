@@ -1,0 +1,28 @@
+= Module 2 lab assets — Shell to Ansible
+
+== What you have
+
+* `legacy/configure-workshop-app.sh` — small bash script that creates an app directory and writes a config file.
+* `prompt.md` — copy-paste prompt for Cursor Chat or Agent (reused unchanged in Module 3: Managing AI Costs).
+* `output/` — create your own subdirectory here for generated playbooks (not committed).
+
+== Suggested layout (per learner)
+
+[source,bash]
+----
+workshop-content/02-shell-to-ansible/output/<your-name>/site.yml
+----
+
+Module 3 cost runs use separate folders so you can compare models without overwriting:
+
+[source,bash]
+----
+workshop-content/02-shell-to-ansible/output/<your-name>/run-a/site.yml
+workshop-content/02-shell-to-ansible/output/<your-name>/run-b/site.yml
+workshop-content/02-shell-to-ansible/output/<your-name>/run-c/site.yml
+----
+
+== Variables the script uses
+
+The script reads `APP_ROOT`, `APP_PORT`, `APP_ENV`, and `APP_NAME` from the environment (defaults are in the script).
+Your playbook may use `vars:` or a small `group_vars` file in your output folder—keep it next to your playbook.
