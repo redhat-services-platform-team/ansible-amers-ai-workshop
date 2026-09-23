@@ -9,13 +9,11 @@ www/
 .cache/
 
 # Ignore IDE and editor files
-.vscode/
-!.vscode/
 .idea/
 
-# Keep Lab 1 Cursor workspace settings that default Dev Containers to Podman
-!workshop-content/01-cursor-workspace/.vscode/
-!workshop-content/01-cursor-workspace/.vscode/settings.json
+# Learner-copied Cursor/Dev Container config at repo root (each user manages their own)
+/.vscode/
+/.devcontainer/
 
 # Ignore logs and temporary files
 *.log

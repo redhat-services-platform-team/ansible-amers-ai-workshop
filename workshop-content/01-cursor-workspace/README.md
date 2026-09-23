@@ -1,28 +1,35 @@
 # Lab 1 — Cursor Workspace Setup
 
-Assets for *Cursor Workspace Setup*. This lab uses **Cursor Dev Containers** with **Podman** as the default container engine and the community Ansible Development Tools (ADT) image.
-
-## Prerequisites
-
-- **Podman** installed and working on your local machine (machine running on macOS/Windows; `podman.socket` on Linux)
-- Cursor access (covered in the lab guide)
+Sample Ansible content and **Dev Container / workspace config samples** for Lab 1.
 
 ## Contents
 
 | Path | Purpose |
 |------|---------|
-| `.devcontainer/devcontainer.json` | Primary Dev Container config (Podman-oriented `runArgs`) |
-| `.devcontainer/docker/devcontainer.json` | Fallback config if you must use Docker |
-| `.vscode/settings.json` | Points Cursor Dev Containers at `podman` |
+| `samples/.devcontainer/devcontainer.json` | Sample ADT Dev Container config (copy to repo root) |
+| `samples/.vscode/settings.json` | Sample settings that point Dev Containers at `podman` (copy to repo root) |
 | `ansible.cfg` / `inventory/` / `playbooks/` | Sample Ansible content for verification |
 
 ## How to use
 
 1. Confirm **Podman** is installed and ready (`podman info` succeeds).
 2. Install the **Dev Containers** extension in Cursor (`anysphere.remote-containers`).
-3. Confirm Cursor uses Podman (`dev.containers.dockerPath` = `podman`) — this folder sets that via `.vscode/settings.json`.
-4. **File → Open Folder…** → select this directory.
+3. **File → Open Folder…** → select the **workshop repository root**.
+4. From the repository root, copy the samples:
+
+```sh
+cp -R workshop-content/01-cursor-workspace/samples/.devcontainer .
+cp -R workshop-content/01-cursor-workspace/samples/.vscode .
+```
+
 5. Command Palette → **Dev Containers: Reopen in Container**.
-6. In the container terminal: `ansible-playbook playbooks/hello.yml`
+6. In the container terminal:
+
+```sh
+cd workshop-content/01-cursor-workspace
+ansible-playbook playbooks/hello.yml
+```
+
+Root `.devcontainer/` and `.vscode/` are gitignored—do not commit your copies.
 
 Full instructions: `documentation/modules/ROOT/pages/01-cursor-workspace.adoc`.
