@@ -70,7 +70,7 @@ Accessing Cursor through a VPN solely to bypass regional restrictions violates t
 . Submit a request using the Cursor access request form (VPN required): link:{cursor_access_request_url}[Cursor Access Request,window=_blank].
 . Wait for the confirmation email (typically within about five minutes).
 Follow the link in the email to complete Cursor account access.
-. If you do not receive email, check junk/spam first, then use the help options in <<getting-help>>.
+. If you do not receive email, check junk/spam first, then contact your facilitator or `pge-cloudops@redhat.com`.
 ====
 
 == 3: Install Cursor
@@ -249,17 +249,7 @@ The playbook completes successfully and prints a hello message with the Ansible 
 
 Use *Dev Containers: Show Log* from the Command Palette while reproducing failures.
 
-[#getting-help]
-== 11: Getting Help
-
-* Cursor Access Request ticket (VPN required) — linked from The Source Cursor page
-* Email `pge-cloudops@redhat.com`
-* Slack: `#forum-pge-tooling-and-licensing`
-* Slack: `#ext-cursor-redhat`
-* Podman Desktop docs: link:https://podman-desktop.io/docs[podman-desktop.io/docs,window=_blank]
-* Ansible Development Tools: link:https://docs.ansible.com/projects/dev-tools/[ADT documentation,window=_blank]
-
-== 12: Next Steps
+== 11: Next Steps
 
 Proceed to xref:02-shell-to-ansible.adoc[Module 2: Shell-to-Ansible Migration].
 Keep using this same Dev Container session at the repository root.
