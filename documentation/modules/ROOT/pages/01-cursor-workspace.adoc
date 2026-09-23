@@ -95,8 +95,15 @@ image::01-cursor-workspace/cursor-sign-in.png[Cursor welcome screen with Sign in
 
 .Procedure
 ====
+. Switch from the *Agent* layout to the *Editor* (IDE) layout.
++
+If Cursor opened in the Agent-focused view, you need the normal IDE layout (sidebar, Extensions, editor) for the rest of this lab.
+Press `Cmd+E` (macOS) or `Ctrl+E` (Windows/Linux) to toggle to *Editor*.
+You should see the activity bar on the left (Explorer, Search, Extensions, and so on).
 . In Cursor, open *Extensions* (`Ctrl+Shift+X` / `Cmd+Shift+X`).
 . Search for *Dev Containers* published by *Anysphere*.
++
+If the extension does not appear under that name, search the Extensions marketplace for `anysphere.remote-containers` and install that result.
 . Install *Dev Containers* (`anysphere.remote-containers`).
 +
 image::01-cursor-workspace/cursor-dev-containers-extension.png[Extensions view showing Dev Containers by Anysphere with Install button,width=720]
