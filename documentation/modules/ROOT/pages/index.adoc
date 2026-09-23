@@ -22,6 +22,7 @@ Before starting this workshop, ensure you have:
 * Basic understanding of Linux command line operations
 * Familiarity with YAML syntax and shell scripting
 * Access to the Red Hat Demo Platform Showroom environment
+* *Podman* installed and configured on your local machine (required for Lab 1 Dev Containers)
 * A Cursor account (setup covered in Lab 1)
 
 NOTE: This workshop does not require pre-provisioned OpenShift, AAP, or other platform services. Exercises are designed to run within the Showroom environment and your Cursor workspace.

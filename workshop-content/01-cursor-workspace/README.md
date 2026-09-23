@@ -2,6 +2,11 @@
 
 Assets for *Cursor Workspace Setup*. This lab uses **Cursor Dev Containers** with **Podman** as the default container engine and the community Ansible Development Tools (ADT) image.
 
+## Prerequisites
+
+- **Podman** installed and working on your local machine (machine running on macOS/Windows; `podman.socket` on Linux)
+- Cursor access (covered in the lab guide)
+
 ## Contents
 
 | Path | Purpose |
@@ -13,7 +18,7 @@ Assets for *Cursor Workspace Setup*. This lab uses **Cursor Dev Containers** wit
 
 ## How to use
 
-1. Install and start **Podman** / **Podman Desktop** (see the lab guide).
+1. Confirm **Podman** is installed and ready (`podman info` succeeds).
 2. Install the **Dev Containers** extension in Cursor (`anysphere.remote-containers`).
 3. Confirm Cursor uses Podman (`dev.containers.dockerPath` = `podman`) — this folder sets that via `.vscode/settings.json`.
 4. **File → Open Folder…** → select this directory.

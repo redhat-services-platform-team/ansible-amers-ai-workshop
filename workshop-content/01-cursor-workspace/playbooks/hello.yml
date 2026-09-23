@@ -13,6 +13,6 @@
     - name: Confirm we are executing inside a Linux container-friendly host
       ansible.builtin.assert:
         that:
-          - ansible_system == "Linux" or ansible_connection == "local"
+          - ansible_facts['system'] == "Linux" or ansible_connection == "local"
         success_msg: Runtime check passed for Lab 1.
         fail_msg: Unexpected runtime; ensure you launched ansible-playbook inside the ADT container.
