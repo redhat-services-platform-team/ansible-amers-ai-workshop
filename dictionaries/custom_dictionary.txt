@@ -5,4 +5,10 @@ Showroom
 asciidoc
 RHDP
 AWS
+EC2
+RHDP
+opentlc
+Ansible
+amazon.aws
+community.aws
 Cursor

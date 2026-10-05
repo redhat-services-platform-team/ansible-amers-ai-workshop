@@ -116,6 +116,6 @@ _Facilitator deck: slide 7._
 
 == Next Steps
 
-Proceed to xref:04-aws-lab-provisioning.adoc[Module 4: AWS Lab Provisioning].
+Proceed to xref:04-aws-lab-provisioning.adoc[Module 4: Delivering with AI].
 
 If you see an error in this lab, fork and submit a pull request against link:{workshop_repo_url}[{workshop_repo_url},window=_blank].

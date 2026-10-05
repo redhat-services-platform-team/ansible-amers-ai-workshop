@@ -1,0 +1,17 @@
+= Module 4 group checklist
+
+Complete this before time is called.
+
+* Team number: ______
+* Branch name: `group_` ______
+* RHDP service ready; region: ______
+* Application is fault tolerant (how you proved it):
++
+________________________________
+
+* All AWS infrastructure created/updated with Ansible (playbook paths):
++
+________________________________
+
+* All demo code committed and pushed to `group_<team_number>` (no secrets)
+* Five-minute presentation roles assigned

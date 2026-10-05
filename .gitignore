@@ -47,3 +47,8 @@ yarn.lock
 # Learner-generated playbooks (Module 2 / 3)
 workshop-content/02-shell-to-ansible/output/**
 !workshop-content/02-shell-to-ansible/output/.gitkeep
+
+# Lab 4 — never commit AWS secrets (teams commit playbooks on group_* branches)
+workshop-content/04-aws-lab-provisioning/**/credentials.yml
+workshop-content/04-aws-lab-provisioning/**/secrets.yml
+workshop-content/04-aws-lab-provisioning/group_vars/all.yml

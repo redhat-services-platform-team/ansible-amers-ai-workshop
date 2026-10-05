@@ -1,0 +1,27 @@
+= Module 4 lab assets — Delivering with AI
+
+Timed team challenge (groups of four, one hour). Learner steps live in `documentation/modules/ROOT/pages/04-aws-lab-provisioning.adoc`.
+
+Teams start from a *blank slate*—create your Ansible project under this directory on your `group_<team_number>` branch. No starter playbooks are provided.
+
+== Contents
+
+[cols="1,2"]
+|===
+| Path | Purpose
+
+| `judging-scorecard.adoc`
+| Attendee scoring sheet (print or copy)
+
+| `group-checklist.adoc`
+| Team checklist before time is called
+
+| `facilitator-talk-track.md`
+| Facilitator timing, branch setup, and RHDP notes
+|===
+
+== Git
+
+Work on branch `group_<team_number>` (example: `group_1`).
+
+Never commit AWS access keys, secret keys, or `credentials.yml`.

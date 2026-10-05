@@ -1,0 +1,27 @@
+= Module 4 judging scorecard
+
+Score each team from *1* (low) to *5* (high). Do not score your own team. The facilitator totals sheets.
+
+*Judge name (optional):* ____________________
+
+[cols="1,1,1,1,1,1,1"]
+|===
+| Team (branch) | Creativity | Met requirements | Time to create | Ansible best practices | Cost | Total (max 25)
+
+| group_1
+| group_2
+| group_3
+| group_4
+| group_5
+| group_6
+|===
+
+== Category notes
+
+* *Creativity* — interesting design, demo, or failure story; not flash for its own sake
+* *Met requirements* — fault tolerant; Ansible for app *and* AWS; code on `group_<n>` when time was called
+* *Time to create* — working demo inside the hour; unfinished work scores lower
+* *Ansible best practices* — idempotent playbooks, variables (not hardcoded secrets), clear roles/playbooks, no one-off click-ops
+* *Cost* — how the team planned to manage AI usage costs while creating and deploying the application (models, prompt strategy, spend awareness)
+
+Winning team: *100 Reward Zone points*, split among the four members.

@@ -4,7 +4,7 @@ Welcome to the {lab_name}!
 
 == Overview
 
-{lab_name} provides a hands-on learning experience focused on applying AI-assisted development workflows to Ansible automation. Participants build a Cursor workspace, migrate legacy shell scripts to Ansible, analyze the cost factors of AI code assistance, and provision AWS lab infrastructure.
+{lab_name} provides a hands-on learning experience focused on applying AI-assisted development workflows to Ansible automation. Participants build a Cursor workspace, migrate legacy shell scripts to Ansible, analyze the cost factors of AI code assistance, and compete in a timed team challenge to deploy a fault-tolerant web application on AWS.
 
 == Practical Exercises
 
@@ -13,7 +13,7 @@ Through a series of progressive labs, you'll gain practical experience with:
 * **Cursor Workspace Setup**: Build and configure an AI-assisted development workspace using Cursor
 * **Shell-to-Ansible Migration**: Refactor legacy shell scripts into an Ansible project using multiple AI models to compare their performance and output
 * **Managing AI Costs**: Analyze and manage the cost factors associated with AI code assistance
-* **AWS Lab Provisioning**: Provision lab infrastructure in an AWS demo environment utilizing an AI code-assist setup
+* **Delivering with AI**: In randomly assigned groups of four, design, develop, and deploy a fault-tolerant web application on AWS using Cursor AI and Ansible
 
 == Prerequisites
 
@@ -33,7 +33,7 @@ The workshop is organized into four sequential modules:
 . **xref:01-cursor-workspace.adoc[Cursor Workspace Setup]**: Build and configure an AI-assisted development workspace using Cursor
 . **xref:02-shell-to-ansible.adoc[Shell-to-Ansible Migration]**: Refactor legacy shell scripts into Ansible using multiple AI models
 . **xref:03-managing-ai-costs.adoc[Managing AI Costs]**: Analyze and manage cost factors associated with AI code assistance
-. **xref:04-aws-lab-provisioning.adoc[AWS Lab Provisioning]**: Provision lab infrastructure in an AWS demo environment with AI code-assist
+. **xref:04-aws-lab-provisioning.adoc[Delivering with AI]**: Team challenge — deliver a fault-tolerant web application on AWS with Cursor AI and Ansible
 
 == Learning Outcomes
 
@@ -42,7 +42,7 @@ By the end of this workshop, you will be able to:
 * Configure Cursor as an AI-assisted development environment for Ansible work
 * Compare AI model outputs when refactoring legacy shell scripts into Ansible
 * Identify and manage cost factors related to AI code assistance
-* Provision AWS lab infrastructure using AI-assisted development workflows
+* Design and present a fault-tolerant AWS web application that is deployed and updated with Ansible
 
 == Getting Started
 
