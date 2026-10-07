@@ -1,262 +1,291 @@
-= Lab: Cursor Workspace Setup
+= Lab: Codex and Cursor Workspace Setup
 
 [abstract]
-Request Cursor access, install Cursor, copy the sample Dev Container config to the repository root, and run this workshop inside the community Ansible Development Tools (ADT) container with *Podman*.
+Install Codex and Cursor on RHEL or macOS, sign in with your enterprise accounts, and run Ansible directly on your workstation.
 
 == Learning Objectives
 
-After completing this module, you will be able to:
-
-* Request and obtain Cursor access for Red Hat associate use
-* Install Cursor and the Anysphere Dev Containers extension
-* Copy sample `.devcontainer` and `.vscode` files to the repository root and understand what they do
-* Reopen the workshop in the ADT Dev Container via Podman
-* Run a sample playbook from the Dev Container terminal
+* Set up Git, Python, Ansible, and ansible-lint on the host operating system
+* Install Codex CLI or desktop and Cursor
+* Authenticate Codex through enterprise OAuth/SSO and obtain Cursor access
+* Open the workshop repository and verify the local Ansible runtime
+* Configure Codex permissions and review AI-generated changes
 
 == Prerequisites
 
-.Prerequisites
-====
-* *Podman* installed and working on your workstation (Podman Desktop is recommended on macOS and Windows)
-* On macOS or Windows: a Podman *machine* created and *running*
-* On Linux: the user Podman API socket enabled (`systemctl --user enable --now podman.socket`)
-* Ability to install desktop software (Cursor) and receive email at your Red Hat address
-====
+* A RHEL 9.4+ workstation in the RHEL 9 series, RHEL 10, or macOS workstation
+* A graphical desktop session for Cursor and desktop Codex; Codex CLI also works over SSH
+* Permission to install OS packages and outbound HTTPS access to the download and Python package services
+* On RHEL: registration and enabled package repositories
+* On macOS: Homebrew, or permission to install it using link:https://brew.sh/[Homebrew's installation instructions,window=_blank]
+* An enterprise Codex entitlement and membership in the workshop's assigned workspace
+* A Red Hat associate account eligible for Cursor access
 
-.Verify Podman
-====
-[source,sh]
+The Ansible tooling runs in a user-owned Python virtual environment on the workstation. Activate that environment in each terminal where you run the labs.
+
+== 1: Install Host Tools
+
+=== RHEL
+
+For RHEL 9.4+ in the RHEL 9 series:
+
+[source,bash]
 ----
-podman version
-podman info
-podman run --rm quay.io/podman/hello
+sudo dnf install -y git curl tar gzip less bubblewrap python3.12 python3.12-pip
+python3.12 --version
 ----
 
-* `podman info` must succeed.
-* On macOS/Windows, `podman machine list` should show the default machine as *running*.
-====
+RHEL 9.4 introduced the Python 3.12 package suite; see link:https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/installing_and_using_dynamic_programming_languages/assembly_installing-and-using-python_installing-and-using-dynamic-programming-languages[Red Hat's Python installation guide,window=_blank].
 
-[NOTE]
-====
-This lab does *not* walk through installing Podman.
-If these checks fail, install link:https://podman-desktop.io/[Podman Desktop,window=_blank] (or use your platform package manager) and return here.
-====
+For RHEL 10, install the default Python 3.12 runtime; see link:https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html/installing_and_using_dynamic_programming_languages/installing-and-using-python[the RHEL 10 Python guide,window=_blank]:
 
-== 1: Overview
+[source,bash]
+----
+sudo dnf install -y git curl tar gzip less bubblewrap python3 python3-pip
+python3 --version
+----
 
-link:https://cursor.com[Cursor,window=_blank] is an AI-enhanced code editor built on a VS Code–compatible foundation.
-At Red Hat, Cursor is an approved AI development tool for associate use (subject to local laws and Works Council availability).
+Use `python3` instead of `python3.12` in the environment-creation command below on RHEL 10.
 
-This lab gets you from *no Cursor install* to a verified workspace at the *repository root*, running *inside* the community Ansible Development Tools container via *Podman*.
+=== macOS
 
-You will copy these sample files from `workshop-content/01-cursor-workspace/samples/` to the repository root:
+Open Terminal. If Git is unavailable, run `xcode-select --install` and complete the Command Line Tools installer. With Homebrew installed:
 
-* `.devcontainer/devcontainer.json` — ADT container definition for Podman
-* `.vscode/settings.json` — points Dev Containers at `podman`
+[source,bash]
+----
+brew install python@3.12
+python3.12 --version
+git --version
+----
 
-Those root copies are gitignored so each participant keeps their own local settings.
+== 2: Clone the Workshop and Install Ansible
 
-== 2: Request Cursor Access
+Clone once; if you already have the checkout, change to its repository root instead:
 
-.Procedure
-====
-. Review the internal Cursor overview on The Source: link:{cursor_source_url}[Cursor — AI Tools,window=_blank].
-. Confirm you are in a supported region.
-+
-Cursor is available upon request to developers at Red Hat, subject to local laws and regulations.
-Works Council–supported countries currently approved for use include the Netherlands, Germany, Austria, Spain, and France.
-Cursor is *not* available in China or the regions of Crimea, Donetsk, and Luhansk in Ukraine.
-Accessing Cursor through a VPN solely to bypass regional restrictions violates the contractual terms of use.
-. Submit a request using the Cursor access request form (VPN required): link:{cursor_access_request_url}[Cursor Access Request,window=_blank].
-. Wait for the confirmation email (typically within about five minutes).
-Follow the link in the email to complete Cursor account access.
-. If you do not receive email, check junk/spam first, then contact your facilitator or `pge-cloudops@redhat.com`.
-====
-
-== 3: Install Cursor
-
-.Procedure
-====
-. Open link:https://cursor.com/download[Cursor download,window=_blank] and select the installer for your OS (macOS, Windows, or Linux).
-+
-image::01-cursor-workspace/cursor-download-page.png[Cursor download page with macOS, Windows, and Linux installers,width=720]
-. Run the installer and launch Cursor.
-. Sign in when prompted using the account that received Cursor access.
-+
-image::01-cursor-workspace/cursor-sign-in.png[Cursor welcome screen with Sign in button,width=720]
-====
-
-.Verification
-====
-* Cursor launches without license or authentication errors.
-====
-
-== 4: Install the Dev Containers Extension
-
-.Procedure
-====
-. Switch from the *Agent* layout to the *Editor* (IDE) layout.
-+
-If Cursor opened in the Agent-focused view, you need the normal IDE layout (sidebar, Extensions, editor) for the rest of this lab.
-Press `Cmd+E` (macOS) or `Ctrl+E` (Windows/Linux) to toggle to *Editor*.
-You should see the activity bar on the left (Explorer, Search, Extensions, and so on).
-. In Cursor, open *Extensions* (`Ctrl+Shift+X` / `Cmd+Shift+X`).
-. Search for *Dev Containers* published by *Anysphere*.
-+
-If the extension does not appear under that name, search the Extensions marketplace for `anysphere.remote-containers` and install that result.
-. Install *Dev Containers* (`anysphere.remote-containers`).
-+
-image::01-cursor-workspace/cursor-dev-containers-extension.png[Extensions view showing Dev Containers by Anysphere with Install button,width=720]
-. Reload Cursor if prompted.
-====
-
-== 5: Clone the Workshop and Open the Repository Root
-
-.Procedure
-====
-. Clone the workshop repository:
-+
-[source,sh]
+[source,bash]
 ----
 git clone {workshop_repo_url}.git
 cd ansible-amers-ai-workshop
 ----
-. In Cursor: *File → Open Folder…* and select the *repository root*:
-+
+
+Create the Python environment once, activate it, and install the workshop's pinned tool versions:
+
+[source,bash]
 ----
-ansible-amers-ai-workshop
-----
-====
-
-== 6: Copy Sample Dev Container Config to the Repository Root
-
-Cursor looks for `.devcontainer/` and `.vscode/` at the folder you opened (the repository root).
-Sample files are provided under Lab 1; you copy them into place so you see how the setup works.
-
-.What each file does
-====
-* `.devcontainer/devcontainer.json` — tells Dev Containers which image to run (ADT), container options for Podman, and which extensions to install inside the container
-* `.vscode/settings.json` — sets `dev.containers.dockerPath` to `podman` so Cursor uses Podman instead of Docker
-====
-
-.Procedure
-====
-. From the repository root, copy the samples:
-+
-[source,sh]
-----
-cp -R workshop-content/01-cursor-workspace/samples/.devcontainer .
-cp -R workshop-content/01-cursor-workspace/samples/.vscode .
-----
-. Confirm the files exist at the root:
-+
-[source,sh]
-----
-ls -la .devcontainer/devcontainer.json .vscode/settings.json
-----
-. Open `.devcontainer/devcontainer.json` and `.vscode/settings.json` in Cursor and skim them so you know what you copied.
-====
-
-.Verification
-====
-In *Settings*, search for `docker path` and confirm it shows `podman`.
-
-image::01-cursor-workspace/cursor-docker-path-settings-ui.png[Settings UI showing Dev Containers Docker Path set to podman,width=720]
-====
-
-[NOTE]
-====
-Root `.devcontainer/` and `.vscode/` are listed in `.gitignore`.
-Do not commit your copies—each person manages their own local config.
-====
-
-== 7: Reopen in the ADT Dev Container
-
-.Procedure
-====
-. Open the Command Palette and run *Dev Containers: Reopen in Container*.
-+
-image::01-cursor-workspace/cursor-reopen-in-container.png[Command Palette with Dev Containers Reopen in Container selected,width=720]
-. Wait for Podman to pull/start `{ansible_dev_tools_image}` and for the status bar to show a Dev Container connection.
-. Open *Terminal → New Terminal*.
-This shell is *inside* the ADT container.
-====
-
-.Verification
-====
-[source,sh]
-----
+python3.12 -m venv "$HOME/.venvs/ansible-workshop"
+source "$HOME/.venvs/ansible-workshop/bin/activate"
+python -m pip install --upgrade pip
+python -m pip install -r workshop-content/01-codex-workspace/requirements.txt
 ansible-playbook --version
 ansible-lint --version
 ----
-====
 
-== 8: Run the Sample Playbook
+The requirements use Ansible 13.4.0 and ansible-lint 26.9.0 with Python 3.12. This installs community workshop tools into your user environment. It does not replace the OS Python or configure an AAP deployment.
 
-.Procedure
-====
-. In the Dev Container terminal:
-+
-[source,sh]
+For every new Terminal, Cursor terminal, or Codex desktop terminal session, activate the same environment:
+
+[source,bash]
 ----
-cd workshop-content/01-cursor-workspace
+source "$HOME/.venvs/ansible-workshop/bin/activate"
+----
+
+== 3: Install and Sign In to Codex
+
+=== Codex CLI — RHEL and macOS
+
+Run the standalone installer as your regular user:
+
+[source,bash]
+----
+curl -fsSL https://chatgpt.com/codex/install.sh -o /tmp/codex-install.sh
+less /tmp/codex-install.sh
+sh /tmp/codex-install.sh
+export PATH="$HOME/.local/bin:$PATH"
+codex --version
+codex --help
+----
+
+The installer configures your shell path. Open a new terminal afterward, or use the `PATH` command above in the current one. Run the installer again to update. See link:https://learn.chatgpt.com/docs/codex/cli[official CLI installation,window=_blank].
+
+==== macOS Homebrew Alternative
+
+If you prefer Homebrew, choose it instead of the standalone CLI installer:
+
+[source,bash]
+----
+brew install --cask codex
+codex --version
+----
+
+Update this installation with `brew upgrade --cask codex`.
+
+=== Desktop Codex — macOS
+
+. Download the ChatGPT desktop app from link:https://chatgpt.com/download/[the official download page,window=_blank].
+. Install and launch it, complete enterprise OAuth/SSO sign-in, and select the assigned enterprise workspace.
+. Choose *Codex* and open the workshop repository folder.
+
+See link:https://learn.chatgpt.com/docs/app[the desktop app guide,window=_blank].
+
+=== Desktop RPM — Unsupported Preview on RHEL
+
+The Linux desktop app is a preview. *RHEL is not a supported desktop distribution.* These steps adapt the official Fedora RPM installation for RHEL; installation and runtime compatibility on RHEL have not been verified.
+
+Check `uname -m`, then download the matching package into `~/Downloads`:
+
+[cols="1,3"]
+|===
+| Architecture | Package
+| `x86_64` | link:https://persistent.oaistatic.com/codex-app-prod/linux/rpm/latest/chatgpt.x86_64.rpm[Download x64 RPM]
+| `aarch64` | link:https://persistent.oaistatic.com/codex-app-prod/linux/rpm/latest/chatgpt.aarch64.rpm[Download ARM64 RPM]
+|===
+
+For x64:
+
+[source,bash]
+----
+cd "$HOME/Downloads"
+sudo dnf install ./chatgpt.x86_64.rpm
+----
+
+For ARM64, use `sudo dnf install ./chatgpt.aarch64.rpm`. Let DNF resolve dependencies from enabled repositories; if that fails, use Codex CLI for the lab.
+
+Open *ChatGPT* from the applications menu, or run `chatgpt` in your graphical desktop session. Complete enterprise OAuth/SSO sign-in, select the enterprise workspace, choose *Codex*, and open the workshop folder. If the package installation successfully configured the OpenAI repository, update with `sudo dnf upgrade --refresh chatgpt`.
+
+See link:https://learn.chatgpt.com/docs/linux/linux-app[official Linux desktop support and RPM instructions,window=_blank]. RHEL remains an unsupported preview target even if installation succeeds.
+
+=== Enterprise CLI Sign-In
+
+From a terminal:
+
+[source,bash]
+----
+codex login
+codex login status
+----
+
+Choose *Sign in with ChatGPT*, use your work identity, complete enterprise OAuth/SSO, and select the assigned enterprise workspace. Confirm workspace selection during sign-in; `codex login status` reports the authentication method.
+
+For a RHEL SSH session, use `codex login --device-auth`, open the printed link on your laptop, and complete the same enterprise sign-in. Device login must be enabled by the workspace administrator. If it is disabled, use the SSH callback forwarding flow in link:https://learn.chatgpt.com/docs/auth[the authentication guide,window=_blank]. Keep cached authentication credentials out of Git.
+
+== 4: Request Cursor Access and Install Cursor
+
+=== Request Access
+
+. Review link:{cursor_source_url}[Cursor — AI Tools on The Source,window=_blank] for current eligibility and regional availability.
+. Submit link:{cursor_access_request_url}[the Cursor access request,window=_blank] using your Red Hat identity (VPN required).
+. Complete the account setup in the confirmation email. If access is missing, check spam and contact the facilitator or `pge-cloudops@redhat.com`.
+
+Use the current internal guidance for availability rather than relying on a fixed country list in this workshop.
+
+=== RHEL Installation
+
+Download the *Linux RPM* for your architecture from link:https://cursor.com/download[Cursor downloads,window=_blank]. Save it in `~/Downloads`, then install the exact filename you downloaded:
+
+[source,bash]
+----
+cd "$HOME/Downloads"
+sudo dnf install './<downloaded-cursor-package>.rpm'
+----
+
+Replace `<downloaded-cursor-package>` with the actual filename. Launch *Cursor* from the applications menu and sign in with the account that received access. For repository-based installation and updates, see link:https://cursor.com/docs/get-started/quickstart[Cursor's RHEL/Fedora setup,window=_blank].
+
+=== macOS Installation
+
+. Download the macOS installer for Apple Silicon or Intel from link:https://cursor.com/download[Cursor downloads,window=_blank].
+. Open the `.dmg`, move Cursor into *Applications*, and launch it.
+. Sign in with the account that received Cursor access.
+
+=== Open the Workspace
+
+In Cursor, choose *File → Open Folder…* and select the repository root, `ansible-amers-ai-workshop`. Open *Terminal → New Terminal* and activate the host Python environment:
+
+[source,bash]
+----
+source "$HOME/.venvs/ansible-workshop/bin/activate"
+command -v python
+command -v ansible-playbook
+----
+
+The paths should point into `~/.venvs/ansible-workshop/bin`. An optional *Ansible* extension published by Red Hat adds YAML editing and language support; terminal validation works with the installed Ansible tools.
+
+== 5: Configure Codex Permissions
+
+Codex configuration is independent of Cursor settings. Inspect `workshop-content/01-codex-workspace/samples/config.toml` and merge its settings into `~/.codex/config.toml`, preserving existing keys and tables:
+
+[source,toml]
+----
+approval_policy = "on-request"
+approvals_reviewer = "user"
+sandbox_mode = "workspace-write"
+web_search = "disabled"
+
+[sandbox_workspace_write]
+network_access = false
+----
+
+Restart Codex and inspect `/permissions` in the CLI or the desktop permissions control. Routine workspace edits and commands can run automatically; requests to go outside those boundaries may need human approval. Administrator requirements constrain your local settings. See link:https://learn.chatgpt.com/docs/config-file/config-basic[configuration basics,window=_blank].
+
+Common CLI examples, from the repository root with the Python environment active:
+
+[source,bash]
+----
+codex -s read-only -a on-request
+codex -s workspace-write -a on-request
+codex -C workshop-content/02-shell-to-ansible
+codex resume --last
+----
+
+To make host Ansible tools available to a Codex-generated shell command, ask it to activate `~/.venvs/ansible-workshop/bin/activate` first. This also works when the desktop app did not inherit your terminal's environment.
+
+The lab folder's `README.md` contains configuration backups, named profiles, command rules, administrator policy examples, and more flags. The sample `AGENTS.md.example` includes the Python environment path and Ansible working agreements; review and merge it into a repository-root `AGENTS.md` if desired.
+
+== 6: Verify the Host Runtime
+
+In your OS terminal, Cursor terminal, or Codex desktop terminal, return to the repository root. Activate the environment and run:
+
+[source,bash]
+----
+source "$HOME/.venvs/ansible-workshop/bin/activate"
+cd workshop-content/01-codex-workspace
+ansible-playbook --syntax-check playbooks/hello.yml
+ansible-lint playbooks/hello.yml
 ansible-playbook playbooks/hello.yml
 ----
-====
 
-.Expected result
-====
-The playbook completes successfully and prints a hello message with the Ansible version from the ADT container.
-====
+The sample targets only `localhost`, prints the host OS, Ansible version, and Python executable, and verifies Linux or macOS. It does not contact managed nodes or change host configuration.
 
-== 9: Verify Your Setup
+Use this first prompt in either Codex or Cursor with the repository open:
 
-[cols="1,2"]
+[source,text]
+----
+Read README.adoc and workshop-content/02-shell-to-ansible/README.adoc.
+Explain the workshop structure and prerequisites for converting the legacy
+shell script to Ansible. Commands run on my RHEL or macOS workstation.
+Before running Ansible commands, activate ~/.venvs/ansible-workshop/bin/activate.
+Keep this task to inspection and explanation, and do not connect to managed hosts.
+----
+
+== 7: Setup Checklist and Troubleshooting
+
+[cols="1,3"]
 |===
 | Check | Success criteria
-
-| Podman ready
-| `podman info` succeeds; machine *running* (macOS/Windows) or `podman.socket` active (Linux)
-
-| Cursor access
-| Signed in without license errors
-
-| Config copied to root
-| `.devcontainer/devcontainer.json` and `.vscode/settings.json` exist at the repository root
-
-| Connected to ADT container
-| Status bar shows Dev Container; `ansible-playbook --version` works in the terminal
-
-| Sample playbook
-| `ansible-playbook playbooks/hello.yml` succeeds from `workshop-content/01-cursor-workspace`
+| Enterprise Codex access | Sign-in succeeds in the assigned workspace; CLI or desktop opens the checkout
+| Cursor access | Cursor launches and signs in without license errors
+| Host Python environment | `command -v python` points into the workshop environment after activation
+| Ansible tools | `ansible-playbook --version` and `ansible-lint --version` succeed
+| Local verification | Syntax check, lint, and the sample playbook pass on `localhost`
 |===
 
-[#troubleshoot-podman]
-== 10: Troubleshooting
+* *Python packages are missing:* Activate the workshop environment in that terminal and reinstall from `requirements.txt`.
+* *RHEL Python 3.12 is unavailable:* Confirm the RHEL version and enabled repositories; use the appropriate RHEL 9 or 10 package instructions above.
+* *Desktop Codex cannot find Ansible:* Have its shell command activate the environment before running Ansible, or use its absolute executable path.
+* *Codex shell networking is blocked:* Inspect the active policy. A one-session override is `-c 'sandbox_workspace_write.network_access=true'` when the task needs it and managed policy permits it.
+* *Linux sandbox fails:* Check `bwrap --version` and the namespace restrictions with the facilitator; keep SELinux enabled.
+* *RHEL desktop RPM fails to install or launch:* This is an unsupported preview path; use Codex CLI and retain the error for troubleshooting.
+* *Cursor sign-in fails:* Confirm the access request completed and that you used the approved account.
 
-[cols="1,2"]
-|===
-| Symptom | What to try
+== 8: Next Steps
 
-| Dev Containers still calls `docker`
-| Confirm you copied `.vscode/settings.json` to the *repository root*, reopen the folder, confirm `which podman` works
-
-| No Dev Container prompt / config not found
-| Confirm `.devcontainer/devcontainer.json` is at the repository root (not only under `samples/`)
-
-| `podman machine` not running
-| `podman machine start` or start the machine in Podman Desktop
-
-| Permission / socket errors on Linux
-| `systemctl --user enable --now podman.socket`
-
-| GUI-launched Cursor cannot find `podman`
-| Launch Cursor from a shell where `podman` is on `PATH`
-|===
-
-Use *Dev Containers: Show Log* from the Command Palette while reproducing failures.
-
-== 11: Next Steps
-
-Proceed to xref:02-shell-to-ansible.adoc[Module 2: Shell-to-Ansible Migration].
-Keep using this same Dev Container session at the repository root.
+Proceed to xref:02-shell-to-ansible.adoc[Module 2: Shell-to-Ansible Migration]. Keep the workshop Python environment active in the terminal used for validation and review `git diff` after AI edits.
