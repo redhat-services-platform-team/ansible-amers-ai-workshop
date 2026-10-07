@@ -21,11 +21,12 @@ Before starting this workshop, ensure you have:
 
 * Basic understanding of Linux command line operations
 * Familiarity with YAML syntax and shell scripting
-* A RHEL or macOS workstation with permission to install host tools (setup covered in Lab 1)
+* A RHEL or macOS workstation with a *working Ansible installation already available*
+* Permission to install your selected AI tool (setup covered in Lab 1)
 * Access to your selected tool: enterprise Codex or an approved Cursor account
 * Optional: Podman for previewing this documentation locally
 
-NOTE: This workshop does not require pre-provisioned OpenShift, AAP, Showroom, or other platform services. Lab exercises run directly on your workstation with a shared Python environment. Preview and refresh this documentation with the Antora viewer container — see the xref:appendix.adoc[Appendix].
+NOTE: This workshop does not require pre-provisioned OpenShift, AAP, Showroom, or other platform services. Lab exercises run directly on your workstation using your existing Ansible installation. Preview and refresh this documentation with the Antora viewer container — see the xref:appendix.adoc[Appendix].
 
 == Lab Structure
 

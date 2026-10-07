@@ -8,7 +8,7 @@ Repository: https://github.com/redhat-services-platform-team/ansible-amers-ai-wo
 
 === Workspace Setup
 
-For native RHEL and macOS setup of your choice of Codex or Cursor (CLI or desktop), plus Ansible, plus enterprise authentication, CLI flags, and policy examples, see link:workshop-content/01-codex-workspace/README.md[Workspace Setup].
+For native RHEL and macOS setup of your choice of Codex or Cursor (CLI or desktop), using an existing Ansible installation, with enterprise authentication, CLI flags, and policy examples, see link:workshop-content/01-codex-workspace/README.md[Workspace Setup].
 
 === Understanding the Basic Template Directory Structure
 

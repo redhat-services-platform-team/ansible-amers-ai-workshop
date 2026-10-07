@@ -1,3 +1,0 @@
-# Shared host tooling for the Codex and Cursor setup lab (Python 3.12).
-ansible==13.4.0
-ansible-lint==26.9.0

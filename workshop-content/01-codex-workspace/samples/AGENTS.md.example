@@ -5,8 +5,9 @@
 - Target RHEL managed nodes; account for macOS differences on the control host.
 - Use fully qualified Ansible module names and prefer idempotent modules to shell.
 - Use example inventory values; keep credentials out of playbooks and Git.
-- Before running Ansible commands, activate ~/.venvs/ansible-workshop/bin/activate
-  in the command shell, or use executables from that environment by absolute path.
+- Use the user's existing working Ansible installation. If it needs environment
+  activation, use the user-provided command or absolute executable path. If that
+  information is missing and Ansible is unavailable, ask for the environment details.
 - Validate changed playbooks with ansible-playbook --syntax-check when available.
 - Run commands against managed hosts only when the user has authorized the target
   inventory and task. Check mode can still contact hosts and is not full isolation.

@@ -3,7 +3,7 @@
 Choose **Codex or Cursor** on **RHEL** or **macOS (OS X)** and run Ansible
 directly on the workstation. You only need **one tool and one interface: CLI or
 desktop**. Codex uses enterprise OAuth/SSO; Cursor uses the approved associate
-account. Every path uses the same checkout and host Python environment.
+account. Every path uses the same checkout and your existing Ansible installation.
 
 Full workshop page: [Workspace Setup](../../documentation/modules/ROOT/pages/01-cursor-workspace.adoc).
 
@@ -13,7 +13,7 @@ upgrading; available models and features depend on your account and workspace.
 
 ## Choose one setup path
 
-Install the shared host tools, then follow only one path below. Installing both
+Verify the Ansible prerequisite, then follow only one path below. Installing both
 tools or both interfaces is optional. Desktop users can skip CLI installation;
 Cursor users can skip Codex sign-in, configuration, and flag examples.
 
@@ -40,59 +40,27 @@ composer before running work. See the
 [desktop app guide](https://learn.chatgpt.com/docs/app) and
 [sandboxing guide](https://learn.chatgpt.com/docs/sandboxing).
 
-## Install the shared host Ansible tools
+## Prerequisites — working Ansible installation
 
-Use RHEL 9.4+ in the RHEL 9 series, RHEL 10, or macOS. OS package installation
-runs in your own terminal. On RHEL 9.4+, install Python 3.12:
+- A RHEL or macOS workstation with **Ansible already installed and working**.
+- `ansible-playbook` accessible in the terminal used for the labs.
+- Git, installer download utilities, and access to the account for your selected tool.
+- A graphical desktop session only if you choose a desktop interface.
 
-```bash
-sudo dnf install -y git curl tar gzip less bubblewrap python3.12 python3.12-pip
-python3.12 --version
-```
-
-On RHEL 10:
+This lab assumes a working Ansible installation and does not install or replace
+it. Activate your existing Ansible environment if needed, then verify:
 
 ```bash
-sudo dnf install -y git curl tar gzip less bubblewrap python3 python3-pip
-python3 --version
-```
-
-Use `python3` instead of `python3.12` when creating the environment below. See the
-[RHEL 9 Python guide](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/installing_and_using_dynamic_programming_languages/assembly_installing-and-using-python_installing-and-using-dynamic-programming-languages)
-and [RHEL 10 Python guide](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html/installing_and_using_dynamic_programming_languages/installing-and-using-python).
-
-On macOS, install Apple's Command Line Tools with `xcode-select --install` if
-Git is missing. With [Homebrew](https://brew.sh/) installed:
-
-```bash
-brew install python@3.12
-python3.12 --version
-```
-
-Clone the workshop once, or change to your existing checkout. From the repository
-root, create and activate a user-owned environment:
-
-```bash
-python3.12 -m venv "$HOME/.venvs/ansible-workshop"
-source "$HOME/.venvs/ansible-workshop/bin/activate"
-python -m pip install --upgrade pip
-python -m pip install -r workshop-content/01-codex-workspace/requirements.txt
+command -v ansible-playbook
 ansible-playbook --version
-ansible-lint --version
+git --version
 ```
 
-[requirements.txt](requirements.txt) pins Ansible 13.4.0 and ansible-lint 26.9.0
-for Python 3.12. These community workshop tools install into the user environment,
-leaving system Python intact. Activate this environment in each new OS, Cursor,
-or Codex desktop terminal before running the labs:
-
-```bash
-source "$HOME/.venvs/ansible-workshop/bin/activate"
-```
-
-For Codex-generated shell commands, include that activation step in your prompt
-or use the environment's absolute executable paths. Desktop launches may not
-inherit an already-activated terminal environment.
+Note the executable path and Python runtime. Use the same installation in your
+OS terminal and your selected AI tool. If your normal workflow requires an
+activation command, provide that actual command to the tool; desktop launches
+may not inherit your shell environment. An absolute executable path is another
+option. `ansible-lint` is optional for the additional lint check.
 
 ## Install Codex on RHEL (Codex users only)
 
@@ -245,7 +213,7 @@ agent login
 agent status
 ```
 
-From the workshop repository root, activate the host Python environment and run
+From the workshop repository root, use your existing Ansible environment and run
 `agent` to start a session. Update with `agent update`. See
 [CLI installation](https://cursor.com/docs/cli/installation) and
 [CLI authentication](https://cursor.com/docs/cli/reference/authentication).
@@ -275,17 +243,15 @@ Applications, and launch it. Sign in with the approved account.
 ### Open the local checkout (desktop users only)
 
 Choose **File → Open Folder…** and select `ansible-amers-ai-workshop`. Open
-**Terminal → New Terminal**, activate the shared environment, and verify its path:
+**Terminal → New Terminal**, activate your existing Ansible environment if needed, and verify it:
 
 ```bash
-source "$HOME/.venvs/ansible-workshop/bin/activate"
-command -v python
 command -v ansible-playbook
 ```
 
-Both paths should point into `~/.venvs/ansible-workshop/bin`. An optional Ansible
-extension published by Red Hat provides editing support; Ansible commands use
-the host tools installed above. Codex policy settings below are independent of
+Use the same Ansible installation verified in the prerequisites. An optional
+Ansible extension published by Red Hat provides editing support; commands use
+your existing installation. Codex policy settings below are independent of
 Cursor settings.
 
 ## Sign in to Codex CLI and open the workspace (Codex CLI users only)
@@ -327,11 +293,10 @@ git status --short
 ```
 
 From your checkout, create a learner branch and launch Codex with the host
-Python environment active:
+Ansible environment available:
 
 ```bash
 git switch -c workshop/codex-lab
-source "$HOME/.venvs/ansible-workshop/bin/activate"
 codex --sandbox read-only --ask-for-approval on-request
 ```
 
@@ -341,11 +306,11 @@ Start with this prompt in Codex or Cursor:
 Read README.adoc and workshop-content/02-shell-to-ansible/README.adoc.
 Explain the workshop structure and the prerequisites for converting the legacy
 shell script to Ansible. Include differences between a RHEL control host and a
-macOS control host. Before running Ansible commands, activate
-~/.venvs/ansible-workshop/bin/activate. Keep this task to inspection and explanation.
+macOS control host. Use my existing working Ansible installation.
+Keep this task to inspection and explanation.
 ```
 
-Install the shared host tools above before validation. Follow later-lab
+Verify the existing Ansible prerequisite before validation. Follow later-lab
 prerequisites before connecting to managed hosts.
 
 ## Verify the local runtime
@@ -354,12 +319,13 @@ From the repository root, in your OS terminal, Cursor terminal, or Codex desktop
 terminal:
 
 ```bash
-source "$HOME/.venvs/ansible-workshop/bin/activate"
 cd workshop-content/01-codex-workspace
 ansible-playbook --syntax-check playbooks/hello.yml
-ansible-lint playbooks/hello.yml
 ansible-playbook playbooks/hello.yml
 ```
+
+If `ansible-lint` is already installed, optionally run
+`ansible-lint playbooks/hello.yml`.
 
 The playbook targets only localhost. It prints the OS, Ansible version, and Python
 executable and checks for Linux or macOS without changing host configuration.
@@ -544,7 +510,7 @@ Read workshop-content/02-shell-to-ansible/legacy/configure-workshop-app.sh.
 Explain its assumptions, then propose an idempotent Ansible conversion.
 Wait for my choice of output filename before creating the playbook. Target RHEL
 managed nodes and account for macOS as a possible control host. After creating
-the playbook, activate ~/.venvs/ansible-workshop/bin/activate and run syntax validation. Report the diff
+the playbook, use my existing Ansible installation and run syntax validation. Report the diff
 and validation results. Do not connect to managed hosts for this task.
 ```
 
@@ -565,15 +531,14 @@ appropriate before committing it or running a playbook against a lab inventory.
 - **A shell download or Ansible connection is blocked:** Check command network
   access, sandbox permissions, and host connectivity. Hosted web search does not
   enable shell networking.
-- **Ansible is missing:** Activate the shared host environment in the command
-  shell and install from this module's requirements.txt. Codex and Cursor use
-  tools installed where their commands execute.
+- **Ansible is missing:** Restore your existing installation or activate its
+  environment in the command shell. A working Ansible installation is a
+  prerequisite for this lab; ask the facilitator if it is unavailable.
 
 ## Included assets
 
 | File | Purpose |
 | --- | --- |
-| [requirements.txt](requirements.txt) | Pinned host Ansible tooling |
 | [playbooks/hello.yml](playbooks/hello.yml) | Local runtime verification for RHEL and macOS |
 | [config.toml](samples/config.toml) | User defaults for workspace edits with human approvals |
 | [review.config.toml](samples/review.config.toml) | Named read-only review profile |

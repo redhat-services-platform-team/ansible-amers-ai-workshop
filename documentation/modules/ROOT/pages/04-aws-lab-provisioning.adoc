@@ -151,7 +151,7 @@ Treat keys like passwords. Do not paste them into git, Slack channels shared wit
 
 == 3: Configure AWS access for Ansible
 
-On your workstation, activate `~/.venvs/ansible-workshop/bin/activate` in the terminal that will run Ansible, then configure AWS access:
+On your workstation, make your existing Ansible installation available in the terminal that will run it, then configure AWS access:
 
 [source,sh]
 ----
