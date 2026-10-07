@@ -8,7 +8,7 @@ You do not need OpenShift or a Showroom deployment to read or refresh the lab co
 
 === Prerequisites
 
-* *Podman* installed and working on your workstation (only needed for this optional documentation preview)
+* *Podman* installed and working on your workstation (only needed for this documentation preview)
 * A local clone of this workshop repository
 
 === Launch the Antora viewer
