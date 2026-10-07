@@ -1,0 +1,5 @@
+# Copy to ~/.codex/review.config.toml, then select with codex --profile review.
+approval_policy = "on-request"
+approvals_reviewer = "user"
+sandbox_mode = "read-only"
+web_search = "disabled"

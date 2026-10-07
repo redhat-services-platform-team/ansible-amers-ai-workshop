@@ -1,0 +1,11 @@
+# Ansible workshop working agreements
+
+- Inspect README.adoc and the relevant workshop module before editing.
+- Keep changes within the requested module and explain the resulting behavior.
+- Target RHEL managed nodes; account for macOS differences on the control host.
+- Use fully qualified Ansible module names and prefer idempotent modules to shell.
+- Use example inventory values; keep credentials out of playbooks and Git.
+- Validate changed playbooks with ansible-playbook --syntax-check when available.
+- Run commands against managed hosts only when the user has authorized the target
+  inventory and task. Check mode can still contact hosts and is not full isolation.
+- Report checks performed and any checks that could not run.
