@@ -61,3 +61,28 @@ utilities/lab-serve   # Serve the built site on http://localhost:8080
 utilities/lab-stop    # Stop the local HTTP server
 utilities/lab-clean   # Remove built site output
 ----
+
+=== Preview from GitHub
+
+Pull requests targeting `main` build the workshop automatically with the *Workshop preview and Pages* workflow.
+Open the workflow run from the pull request's checks, then download the `workshop-preview` artifact.
+Extract the ZIP and run the following command inside the extracted folder:
+
+[source,sh]
+----
+python3 -m http.server 8080
+----
+
+Open http://localhost:8080/ to browse the generated workshop.
+These builds do not require GitHub Pages to be enabled.
+
+For a hosted preview, a repository administrator must first select *Settings → Pages → Build and deployment → Source → GitHub Actions*.
+Private repositories require a GitHub plan that supports Pages; check the site's visibility settings before publishing workshop content.
+See https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages[GitHub's custom workflow documentation].
+
+Once enabled, pushes to `main` publish automatically.
+To publish an unmerged branch, open *Actions → Workshop preview and Pages → Run workflow*, select that branch, and check *publish*.
+The `github-pages` environment must allow deployments from the selected branch under *Settings → Environments → github-pages*.
+The deployment job links to the hosted site.
+Branch publishing replaces the shared site; it does not create a separate URL for each pull request.
+Leave *publish* unchecked to generate only a downloadable preview.

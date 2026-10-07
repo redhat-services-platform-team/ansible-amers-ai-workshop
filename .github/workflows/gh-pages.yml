@@ -1,48 +1,79 @@
-name: github pages
+name: Workshop preview and Pages
 
 on:
   workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish this branch to the shared GitHub Pages site
+        type: boolean
+        default: false
+  pull_request:
+    branches: [main]
   push:
     branches: [main]
-    paths-ignore:
-      - "README.adoc"
-      - ".gitignore"
 
+# Checkout needs this explicitly, especially for a private repository.
 permissions:
-  pages: write
-  id-token: write
-
-concurrency:
-  group: gh-pages
-  cancel-in-progress: false
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: configure pages
-        uses: actions/configure-pages@v5
-      - name: setup node
-        uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v6
         with:
-          node-version: 20.13.1
-      - name: install antora
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+      - name: Install Antora
         run: npm install --global @antora/cli@3.1 @antora/site-generator@3.1
-      - name: antora generate
+      - name: Build workshop
         run: antora generate default-site.yml --stacktrace
-      - name: upload pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload downloadable preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: workshop-preview
+          path: www
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload Pages artifact
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.publish)
+        uses: actions/upload-pages-artifact@v4
         with:
           path: www
+      - name: Preview instructions
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'EOF'
+          ## Workshop preview
+          Download **workshop-preview** from this run's Artifacts section, extract it,
+          then run `python3 -m http.server 8080` inside the extracted folder.
+          Open http://localhost:8080/ to browse the workshop.
+
+          Main branch pushes publish to GitHub Pages when hosting is enabled.
+          To publish another branch, manually run this workflow with **publish** checked.
+          This replaces the shared Pages site; it does not create a separate PR URL.
+          EOF
+
   deploy:
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.publish)
     needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: gh-pages
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
-    - name: deploy github pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
