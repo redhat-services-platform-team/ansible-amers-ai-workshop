@@ -1,8 +1,9 @@
-# Lab 1 — ChatGPT / Codex Workspace Setup
+# Lab 1 — Codex Workspace Setup
 
-Set up Codex on **RHEL** or **macOS (OS X)**, connect your account, and choose the
-permissions for an Ansible workshop repository. Use ChatGPT for explanations and
-prompt development, and Codex CLI for working with local files and commands.
+Set up Codex on **RHEL** or **macOS (OS X)**, sign in through the enterprise
+OAuth flow, and choose the permissions for an Ansible workshop repository. This
+workshop assumes an enterprise Codex entitlement and access to the assigned
+enterprise workspace. Use Codex to inspect local files, edit code, and run tools.
 
 Commands and configuration were checked against official OpenAI documentation
 on **2026-10-07** and local **Codex CLI 0.160.1** help. Check `codex --help` after
@@ -12,15 +13,21 @@ upgrading; available models and features depend on your account and workspace.
 
 | Interface | RHEL | macOS | Workshop use |
 | --- | --- | --- | --- |
-| ChatGPT in a browser | Open `https://chatgpt.com` | Open `https://chatgpt.com` | Discuss Ansible and review supplied code |
 | Codex CLI | Install below | Install below | Inspect and edit the local checkout; run installed tools |
-| ChatGPT desktop app | Use the CLI/browser route for this RHEL lab | Download from `https://chatgpt.com/download/`, install, and sign in | Choose Codex and open the workshop folder |
+| Codex in the ChatGPT desktop app | RHEL is not listed as supported in the Linux preview; use the CLI | Download from `https://chatgpt.com/download/`, install, and sign in through enterprise OAuth | Choose Codex and open the workshop folder |
 
-Browser ChatGPT does not automatically see your local checkout. Supply the
-relevant files or excerpts. The local Codex `config.toml` examples below apply to
-Codex local execution; they do not configure ordinary browser chats. For desktop
-Codex, inspect the permissions control beneath the composer before running work.
-See the [desktop app guide](https://learn.chatgpt.com/docs/app) and
+Desktop Codex is available on Linux through the ChatGPT desktop app preview.
+The documented supported desktop distributions are Ubuntu 24.04/26.04 LTS,
+Debian 13, Fedora 43/44, and current Arch Linux, on x64 and ARM64. RHEL is not
+listed; compatibility of the Fedora RPM with RHEL is not established by that
+support list. Use the CLI instructions below for this RHEL workshop. See the
+[Linux desktop installation and support guide](https://learn.chatgpt.com/docs/linux/linux-app).
+
+On macOS, download and install the ChatGPT desktop app, complete enterprise
+OAuth sign-in, select the assigned enterprise workspace, choose Codex, and open
+the workshop repository folder. Inspect the permissions control beneath the
+composer before running work. See the
+[desktop app guide](https://learn.chatgpt.com/docs/app) and
 [sandboxing guide](https://learn.chatgpt.com/docs/sandboxing).
 
 ## Install on RHEL
@@ -31,8 +38,9 @@ installer and does not require Node.js. It assumes a registered RHEL system with
 enabled repositories and outbound HTTPS access.
 
 ```bash
-sudo dnf install -y git curl tar gzip
+sudo dnf install -y git curl tar gzip less bubblewrap
 uname -m
+bwrap --version
 ```
 
 The installer supports Linux `x86_64` and `aarch64`. Download and inspect it, then
@@ -52,6 +60,8 @@ shell path; open a new terminal afterward. To update a standalone installation,
 download and run the installer again. Use the
 [official CLI installation guide](https://learn.chatgpt.com/docs/codex/cli).
 
+The `bubblewrap` package supplies `bwrap` for the Linux sandbox; see
+[sandbox prerequisites](https://learn.chatgpt.com/docs/sandboxing).
 Codex uses a Linux sandbox based on `bwrap` and `seccomp`. Restricted containers
 or host policies can prevent it from starting. If that occurs, capture the error
 and work with the lab administrator on the supported environment; keep SELinux
@@ -66,7 +76,11 @@ finish the installer dialog:
 xcode-select --install
 ```
 
-Choose **one** Codex installation method. If Homebrew is already installed:
+Choose **one** CLI installation method below.
+
+### Homebrew
+
+If Homebrew is already installed:
 
 ```bash
 brew install --cask codex
@@ -76,7 +90,9 @@ codex --help
 
 Update that installation with `brew upgrade --cask codex`.
 
-Alternatively, use the standalone installer without Homebrew:
+### Standalone installer
+
+Use the standalone installer without Homebrew:
 
 ```bash
 curl -fsSL https://chatgpt.com/codex/install.sh -o /tmp/codex-install.sh
@@ -92,40 +108,35 @@ changes. macOS Codex sandboxing uses Seatbelt. See
 [CLI installation](https://learn.chatgpt.com/docs/codex/cli) and
 [OS sandbox details](https://learn.chatgpt.com/docs/agent-approvals-security#os-level-sandbox).
 
-For an existing user-managed Node.js/npm environment on either OS, another
-installation option is `npm install -g @openai/codex`; the same command updates
-it. Avoid mixing installation methods. Use `command -v codex` to see which
-installation your shell runs.
-
 ## Sign in and open the workspace
 
-On a machine with a browser:
+Confirm that your enterprise account has Codex access and membership in the
+workshop workspace. On a machine with a browser, start the OAuth sign-in flow:
 
 ```bash
 codex login
 codex login status
 ```
 
-Choose **Sign in with ChatGPT** and use the account/workspace assigned for the
-workshop. For a RHEL SSH session without a local browser:
+Choose **Sign in with ChatGPT**, use your work identity, and complete the
+organization's enterprise OAuth/SSO flow when prompted. Select the enterprise
+workspace assigned for the workshop rather than a personal workspace.
+`codex login status` confirms the authentication method; verify workspace
+selection during sign-in. For a RHEL SSH session without a local browser:
 
 ```bash
 codex login --device-auth
 ```
 
-Open the printed link on your laptop and enter the one-time code. Device login
-must be enabled in your account security settings or by your workspace admin.
+Open the printed link on your laptop, complete the same enterprise OAuth/SSO
+sign-in, and enter the one-time code. Device login must be enabled by the
+enterprise workspace administrator. If it is disabled, use the SSH callback
+forwarding flow in the [authentication guide](https://learn.chatgpt.com/docs/auth#fallback-forward-the-localhost-callback-over-ssh).
 
-If the workshop uses an API key, obtain it through your approved secret process,
-make it available as `OPENAI_API_KEY`, and pass it through stdin:
-
-```bash
-printenv OPENAI_API_KEY | codex login --with-api-key
-```
-
-API key usage is billed to the OpenAI Platform account separately from ChatGPT
-plan usage. Treat `~/.codex/auth.json`, if present, as a credential; keep it out
-of the repository. See [authentication](https://learn.chatgpt.com/docs/auth).
+Codex subscription access follows the signed-in enterprise workspace's access
+and data-handling policies. Treat `~/.codex/auth.json`, if present, as a
+credential; keep it out of the repository. See
+[authentication](https://learn.chatgpt.com/docs/auth).
 
 From an existing checkout, or clone once if needed:
 
@@ -146,10 +157,8 @@ shell script to Ansible. Include differences between a RHEL control host and a
 macOS control host. Keep this task to inspection and explanation.
 ```
 
-In browser ChatGPT, attach those README files and use the same prompt. Add the
-legacy script when discussing its conversion. Codex installation does not
-install Ansible or provision the later labs; follow their prerequisites before
-asking Codex to run validation or connect to hosts.
+Codex installation does not install Ansible or provision the later labs; follow
+their prerequisites before asking Codex to run validation or connect to hosts.
 
 ## Update the policy configuration
 
@@ -336,7 +345,7 @@ appropriate before committing it or running a playbook against a lab inventory.
 ## Troubleshooting
 
 - **`codex: command not found`:** Open a new terminal. For the standalone
-  installer, check `~/.local/bin/codex` and the `PATH` above. For Homebrew/npm,
+  installer, check `~/.local/bin/codex` and the `PATH` above. For Homebrew,
   inspect that package manager's bin path with `command -v codex`.
 - **Login cannot complete over SSH:** Use `codex login --device-auth` with device
   login enabled, or the SSH callback forwarding flow in the authentication guide.

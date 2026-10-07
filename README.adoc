@@ -6,9 +6,9 @@ Repository: https://github.com/redhat-services-platform-team/ansible-amers-ai-wo
 
 == Getting Started
 
-=== ChatGPT / Codex Workspace Setup
+=== Codex Workspace Setup
 
-For RHEL and macOS installation, authentication, common CLI flags, and policy configuration examples, see link:workshop-content/01-codex-workspace/README.md[ChatGPT / Codex Workspace Setup].
+For RHEL and macOS installation, authentication, common CLI flags, and policy configuration examples, see link:workshop-content/01-codex-workspace/README.md[Codex Workspace Setup].
 
 === Understanding the Basic Template Directory Structure
 
