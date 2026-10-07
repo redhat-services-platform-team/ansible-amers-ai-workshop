@@ -14,13 +14,14 @@ upgrading; available models and features depend on your account and workspace.
 | Interface | RHEL | macOS | Workshop use |
 | --- | --- | --- | --- |
 | Codex CLI | Install below | Install below | Inspect and edit the local checkout; run installed tools |
-| Codex in the ChatGPT desktop app | RHEL is not listed as supported in the Linux preview; use the CLI | Download from `https://chatgpt.com/download/`, install, and sign in through enterprise OAuth | Choose Codex and open the workshop folder |
+| Codex in the ChatGPT desktop app | Optional RPM installation below; unsupported preview on RHEL | Download from `https://chatgpt.com/download/`, install, and sign in through enterprise OAuth | Choose Codex and open the workshop folder |
 
 Desktop Codex is available on Linux through the ChatGPT desktop app preview.
 The documented supported desktop distributions are Ubuntu 24.04/26.04 LTS,
 Debian 13, Fedora 43/44, and current Arch Linux, on x64 and ARM64. RHEL is not
 listed; compatibility of the Fedora RPM with RHEL is not established by that
-support list. Use the CLI instructions below for this RHEL workshop. See the
+support list. The optional RPM steps below let you try the desktop app on RHEL
+as an **unsupported preview**. See the
 [Linux desktop installation and support guide](https://learn.chatgpt.com/docs/linux/linux-app).
 
 On macOS, download and install the ChatGPT desktop app, complete enterprise
@@ -33,9 +34,12 @@ composer before running work. See the
 ## Install on RHEL
 
 Use a regular user account on a workshop host. These host setup commands run in
-your own terminal, before starting Codex. This route uses the standalone Linux
-installer and does not require Node.js. It assumes a registered RHEL system with
-enabled repositories and outbound HTTPS access.
+your own terminal, before starting Codex. The CLI route uses the standalone
+Linux installer and does not require Node.js. The optional desktop route uses
+the Linux preview RPM. Both assume a registered RHEL system with enabled
+repositories and outbound HTTPS access.
+
+### Codex CLI — standalone installer
 
 ```bash
 sudo dnf install -y git curl tar gzip less bubblewrap
@@ -66,6 +70,47 @@ Codex uses a Linux sandbox based on `bwrap` and `seccomp`. Restricted containers
 or host policies can prevent it from starting. If that occurs, capture the error
 and work with the lab administrator on the supported environment; keep SELinux
 enabled. See [OS sandbox details](https://learn.chatgpt.com/docs/agent-approvals-security#os-level-sandbox).
+
+### Desktop RPM — unsupported preview on RHEL
+
+The Linux desktop app is a preview, and **RHEL is not a supported desktop
+distribution**. These steps adapt the official Fedora RPM instructions for
+RHEL; installation and runtime compatibility have not been verified on RHEL.
+Use a RHEL machine with a graphical desktop session to try this option.
+
+Check the architecture with `uname -m`, then download the matching RPM:
+
+| Architecture | Official desktop RPM |
+| --- | --- |
+| `x86_64` (x64) | [Download chatgpt.x86_64.rpm](https://persistent.oaistatic.com/codex-app-prod/linux/rpm/latest/chatgpt.x86_64.rpm) |
+| `aarch64` (ARM64) | [Download chatgpt.aarch64.rpm](https://persistent.oaistatic.com/codex-app-prod/linux/rpm/latest/chatgpt.aarch64.rpm) |
+
+Save the file in `~/Downloads`. For x64, install it with:
+
+```bash
+cd "$HOME/Downloads"
+sudo dnf install ./chatgpt.x86_64.rpm
+```
+
+For ARM64, use `sudo dnf install ./chatgpt.aarch64.rpm` instead. Let DNF resolve
+package dependencies from the enabled repositories. If it cannot resolve them,
+use Codex CLI for the lab rather than forcing the RPM installation.
+
+Open **ChatGPT** from the applications menu, or run `chatgpt` in a terminal
+inside the graphical desktop session. Complete enterprise OAuth/SSO sign-in,
+select the assigned enterprise workspace, choose **Codex**, and open the
+workshop repository folder. Inspect the permissions control before starting.
+
+The official RPM installation configures an OpenAI package repository. If that
+repository was configured successfully, update with:
+
+```bash
+sudo dnf upgrade --refresh chatgpt
+```
+
+These download links and the install/update commands come from the
+[official Linux desktop guide](https://learn.chatgpt.com/docs/linux/linux-app#install-on-fedora).
+RHEL remains an unsupported preview target even if the package installs.
 
 ## Install on macOS (OS X)
 
