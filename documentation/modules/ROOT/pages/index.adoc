@@ -4,13 +4,13 @@ Welcome to the {lab_name}!
 
 == Overview
 
-{lab_name} provides a hands-on learning experience focused on applying AI-assisted development workflows to Ansible automation. Participants set up a Codex and Cursor workspace, migrate legacy shell scripts to Ansible, analyze the cost factors of AI code assistance, and compete in a timed team challenge to deploy a fault-tolerant web application on AWS.
+{lab_name} provides a hands-on learning experience focused on applying AI-assisted development workflows to Ansible automation. Participants set up a workspace with Codex or Cursor, migrate legacy shell scripts to Ansible, analyze the cost factors of AI code assistance, and compete in a timed team challenge to deploy a fault-tolerant web application on AWS.
 
 == Practical Exercises
 
 Through a series of progressive labs, you'll gain practical experience with:
 
-* **Codex and Cursor Workspace Setup**: Build and configure an AI-assisted development workspace using Codex and Cursor with host Ansible tools
+* **Workspace Setup**: Build and configure an AI-assisted development workspace using Codex or Cursor (CLI or desktop) with host Ansible tools
 * **Shell-to-Ansible Migration**: Refactor legacy shell scripts into an Ansible project using multiple AI models to compare their performance and output
 * **Managing AI Costs**: Analyze and manage the cost factors associated with AI code assistance
 * **Delivering with AI**: In randomly assigned groups of four, design, develop, and deploy a fault-tolerant web application on AWS using Cursor AI and Ansible
@@ -22,7 +22,7 @@ Before starting this workshop, ensure you have:
 * Basic understanding of Linux command line operations
 * Familiarity with YAML syntax and shell scripting
 * A RHEL or macOS workstation with permission to install host tools (setup covered in Lab 1)
-* Enterprise Codex access and an approved Cursor account
+* Access to your selected tool: enterprise Codex or an approved Cursor account
 * Optional: Podman for previewing this documentation locally
 
 NOTE: This workshop does not require pre-provisioned OpenShift, AAP, Showroom, or other platform services. Lab exercises run directly on your workstation with a shared Python environment. Preview and refresh this documentation with the Antora viewer container — see the xref:appendix.adoc[Appendix].
@@ -31,7 +31,7 @@ NOTE: This workshop does not require pre-provisioned OpenShift, AAP, Showroom, o
 
 The workshop is organized into four sequential modules:
 
-. **xref:01-cursor-workspace.adoc[Codex and Cursor Workspace Setup]**: Build and configure an AI-assisted development workspace using Codex and Cursor with host Ansible tools
+. **xref:01-cursor-workspace.adoc[Workspace Setup]**: Build and configure an AI-assisted development workspace using Codex or Cursor (CLI or desktop) with host Ansible tools
 . **xref:02-shell-to-ansible.adoc[Shell-to-Ansible Migration]**: Refactor legacy shell scripts into Ansible using multiple AI models
 . **xref:03-managing-ai-costs.adoc[Managing AI Costs]**: Analyze and manage cost factors associated with AI code assistance
 . **xref:04-aws-lab-provisioning.adoc[Delivering with AI]**: Team challenge — deliver a fault-tolerant web application on AWS with Cursor AI and Ansible
@@ -40,7 +40,7 @@ The workshop is organized into four sequential modules:
 
 By the end of this workshop, you will be able to:
 
-* Configure Codex and Cursor with local Ansible tools
+* Configure your choice of Codex or Cursor with local Ansible tools
 * Compare AI model outputs when refactoring legacy shell scripts into Ansible
 * Identify and manage cost factors related to AI code assistance
 * Design and present a fault-tolerant AWS web application that is deployed and updated with Ansible
@@ -49,6 +49,6 @@ By the end of this workshop, you will be able to:
 
 To view these labs in a browser, launch the Antora viewer with Podman as described in xref:appendix.adoc#view-workshop-docs-locally[View Workshop Documentation Locally].
 
-Begin with xref:01-cursor-workspace.adoc[Module 1: Codex and Cursor Workspace Setup]. Each module includes detailed instructions, exercises, and verification steps.
+Begin with xref:01-cursor-workspace.adoc[Module 1: Workspace Setup]. Each module includes detailed instructions, exercises, and verification steps.
 
 For questions or issues, refer to the xref:appendix.adoc[Appendix] or contact your instructor.

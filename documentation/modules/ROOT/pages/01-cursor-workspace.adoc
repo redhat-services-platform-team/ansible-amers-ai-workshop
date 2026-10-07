@@ -1,27 +1,42 @@
-= Lab: Codex and Cursor Workspace Setup
+= Workspace Setup
 
 [abstract]
-Install Codex and Cursor on RHEL or macOS, sign in with your enterprise accounts, and run Ansible directly on your workstation.
+Install your choice of Codex or Cursor on RHEL or macOS, sign in with the approved account, and run Ansible directly on your workstation. You only need one tool and one interface: CLI or desktop.
 
 == Learning Objectives
 
 * Set up Git, Python, Ansible, and ansible-lint on the host operating system
-* Install Codex CLI or desktop and Cursor
-* Authenticate Codex through enterprise OAuth/SSO and obtain Cursor access
+* Install one AI tool: Codex or Cursor, using either its CLI or desktop interface
+* Authenticate the selected tool with your approved enterprise account
 * Open the workshop repository and verify the local Ansible runtime
-* Configure Codex permissions and review AI-generated changes
+* Inspect the selected tool's permissions and review AI-generated changes
 
 == Prerequisites
 
 * A RHEL 9.4+ workstation in the RHEL 9 series, RHEL 10, or macOS workstation
-* A graphical desktop session for Cursor and desktop Codex; Codex CLI also works over SSH
+* A graphical desktop session only if you choose a desktop interface; either CLI works from a terminal
 * Permission to install OS packages and outbound HTTPS access to the download and Python package services
 * On RHEL: registration and enabled package repositories
 * On macOS: Homebrew, or permission to install it using link:https://brew.sh/[Homebrew's installation instructions,window=_blank]
-* An enterprise Codex entitlement and membership in the workshop's assigned workspace
-* A Red Hat associate account eligible for Cursor access
+* If choosing Codex: an enterprise Codex entitlement and membership in the assigned workspace
+* If choosing Cursor: a Red Hat associate account eligible for Cursor access
 
 The Ansible tooling runs in a user-owned Python virtual environment on the workstation. Activate that environment in each terminal where you run the labs.
+
+== Choose One Setup Path
+
+*Choose one tool and one interface.* Installing both tools, or both interfaces of a tool, is optional.
+
+[cols="1,1,3"]
+|===
+| Tool | Interface | Follow these sections
+| Codex | CLI | Shared host tools (1–2), Codex CLI installation and enterprise CLI sign-in (3), Codex permissions (5), verification (6–8)
+| Codex | Desktop | Shared host tools (1–2), Codex desktop installation and sign-in for your OS (3), Codex permissions (5), verification (6–8)
+| Cursor | CLI | Shared host tools (1–2), Cursor access and CLI installation (4), verification (6–8)
+| Cursor | Desktop | Shared host tools (1–2), Cursor access and desktop installation for your OS (4), verification (6–8)
+|===
+
+Skip the other tool's installation and sign-in sections. Desktop users can skip the CLI installers. The host Ansible environment is required for every path.
 
 == 1: Install Host Tools
 
@@ -89,7 +104,9 @@ For every new Terminal, Cursor terminal, or Codex desktop terminal session, acti
 source "$HOME/.venvs/ansible-workshop/bin/activate"
 ----
 
-== 3: Install and Sign In to Codex
+== 3: Codex Setup (Choose CLI or Desktop)
+
+Follow this section only if you chose Codex. Install one interface below; for CLI on macOS, choose one installer. Desktop sign-in is included in the desktop steps.
 
 === Codex CLI — RHEL and macOS
 
@@ -154,7 +171,7 @@ Open *ChatGPT* from the applications menu, or run `chatgpt` in your graphical de
 
 See link:https://learn.chatgpt.com/docs/linux/linux-app[official Linux desktop support and RPM instructions,window=_blank]. RHEL remains an unsupported preview target even if installation succeeds.
 
-=== Enterprise CLI Sign-In
+=== Enterprise CLI Sign-In (CLI Users Only)
 
 From a terminal:
 
@@ -168,7 +185,9 @@ Choose *Sign in with ChatGPT*, use your work identity, complete enterprise OAuth
 
 For a RHEL SSH session, use `codex login --device-auth`, open the printed link on your laptop, and complete the same enterprise sign-in. Device login must be enabled by the workspace administrator. If it is disabled, use the SSH callback forwarding flow in link:https://learn.chatgpt.com/docs/auth[the authentication guide,window=_blank]. Keep cached authentication credentials out of Git.
 
-== 4: Request Cursor Access and Install Cursor
+== 4: Cursor Setup (Choose CLI or Desktop)
+
+Follow this section only if you chose Cursor. Request access, then install either CLI or desktop.
 
 === Request Access
 
@@ -178,7 +197,26 @@ For a RHEL SSH session, use `codex login --device-auth`, open the printed link o
 
 Use the current internal guidance for availability rather than relying on a fixed country list in this workshop.
 
-=== RHEL Installation
+=== CLI Installation — RHEL and macOS
+
+Run the installer as your regular user:
+
+[source,bash]
+----
+curl -fsSL https://cursor.com/install -o /tmp/cursor-install.sh
+less /tmp/cursor-install.sh
+bash /tmp/cursor-install.sh
+export PATH="$HOME/.local/bin:$PATH"
+agent --version
+agent login
+agent status
+----
+
+Complete sign-in with the account approved for Cursor access. From the workshop repository root, activate the Python environment and start an interactive session with `agent`. The CLI can update with `agent update`. See link:https://cursor.com/docs/cli/installation[CLI installation,window=_blank] and link:https://cursor.com/docs/cli/reference/authentication[CLI sign-in,window=_blank].
+
+If you chose CLI, skip the desktop instructions below and continue to host runtime verification.
+
+=== Desktop Installation — RHEL
 
 Download the *Linux RPM* for your architecture from link:https://cursor.com/download[Cursor downloads,window=_blank]. Save it in `~/Downloads`, then install the exact filename you downloaded:
 
@@ -190,13 +228,13 @@ sudo dnf install './<downloaded-cursor-package>.rpm'
 
 Replace `<downloaded-cursor-package>` with the actual filename. Launch *Cursor* from the applications menu and sign in with the account that received access. For repository-based installation and updates, see link:https://cursor.com/docs/get-started/quickstart[Cursor's RHEL/Fedora setup,window=_blank].
 
-=== macOS Installation
+=== Desktop Installation — macOS
 
 . Download the macOS installer for Apple Silicon or Intel from link:https://cursor.com/download[Cursor downloads,window=_blank].
 . Open the `.dmg`, move Cursor into *Applications*, and launch it.
 . Sign in with the account that received Cursor access.
 
-=== Open the Workspace
+=== Open the Workspace (Desktop Users Only)
 
 In Cursor, choose *File → Open Folder…* and select the repository root, `ansible-amers-ai-workshop`. Open *Terminal → New Terminal* and activate the host Python environment:
 
@@ -209,7 +247,9 @@ command -v ansible-playbook
 
 The paths should point into `~/.venvs/ansible-workshop/bin`. An optional *Ansible* extension published by Red Hat adds YAML editing and language support; terminal validation works with the installed Ansible tools.
 
-== 5: Configure Codex Permissions
+== 5: Configure Codex Permissions (Codex Users Only)
+
+Cursor users can skip this section and inspect permissions in their selected Cursor interface.
 
 Codex configuration is independent of Cursor settings. Inspect `workshop-content/01-codex-workspace/samples/config.toml` and merge its settings into `~/.codex/config.toml`, preserving existing keys and tables:
 
@@ -242,7 +282,7 @@ The lab folder's `README.md` contains configuration backups, named profiles, com
 
 == 6: Verify the Host Runtime
 
-In your OS terminal, Cursor terminal, or Codex desktop terminal, return to the repository root. Activate the environment and run:
+In your OS terminal or the terminal of your selected desktop app, return to the repository root. Activate the environment and run:
 
 [source,bash]
 ----
@@ -271,8 +311,8 @@ Keep this task to inspection and explanation, and do not connect to managed host
 [cols="1,3"]
 |===
 | Check | Success criteria
-| Enterprise Codex access | Sign-in succeeds in the assigned workspace; CLI or desktop opens the checkout
-| Cursor access | Cursor launches and signs in without license errors
+| Selected AI tool | Your chosen Codex or Cursor interface signs in with the approved account and opens the checkout
+| Installation choice | One tool and one interface are sufficient; checks for the other paths are optional
 | Host Python environment | `command -v python` points into the workshop environment after activation
 | Ansible tools | `ansible-playbook --version` and `ansible-lint --version` succeed
 | Local verification | Syntax check, lint, and the sample playbook pass on `localhost`

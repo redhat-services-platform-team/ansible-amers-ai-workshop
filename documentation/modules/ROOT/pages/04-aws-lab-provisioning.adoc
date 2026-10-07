@@ -14,7 +14,7 @@ After completing this module, you will be able to:
 
 == Before you start
 
-* Finish xref:01-cursor-workspace.adoc[Module 1] so Codex, Cursor, and the host Ansible tools are working.
+* Finish xref:01-cursor-workspace.adoc[Module 1] so your selected Codex or Cursor interface and the host Ansible tools are working.
 * You need a Red Hat associate (or partner) login for link:https://catalog.demo.redhat.com/[catalog.demo.redhat.com,window=_blank].
 * Your facilitator assigns groups of *four* at random and gives your team a number (for example `1`, `2`, `3`).
 * Lab assets: `workshop-content/04-aws-lab-provisioning/` (start from a blank slate—no starter playbooks are provided)

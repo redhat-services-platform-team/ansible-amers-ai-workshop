@@ -1,21 +1,27 @@
-# Lab 1 — Codex and Cursor Workspace Setup
+# Lab 1 — Workspace Setup
 
-Set up Codex and Cursor on **RHEL** or **macOS (OS X)** and run Ansible directly
-on the workstation. Codex sign-in uses enterprise OAuth/SSO with access to the
-assigned enterprise workspace; Cursor uses the approved associate account.
-Both tools work with the same checkout and host Python environment.
+Choose **Codex or Cursor** on **RHEL** or **macOS (OS X)** and run Ansible
+directly on the workstation. You only need **one tool and one interface: CLI or
+desktop**. Codex uses enterprise OAuth/SSO; Cursor uses the approved associate
+account. Every path uses the same checkout and host Python environment.
 
-Full workshop page: [Codex and Cursor Workspace Setup](../../documentation/modules/ROOT/pages/01-cursor-workspace.adoc).
+Full workshop page: [Workspace Setup](../../documentation/modules/ROOT/pages/01-cursor-workspace.adoc).
 
 Commands and configuration were checked against official OpenAI documentation
 on **2026-10-07** and local **Codex CLI 0.160.1** help. Check `codex --help` after
 upgrading; available models and features depend on your account and workspace.
 
-## Choose your interface
+## Choose one setup path
+
+Install the shared host tools, then follow only one path below. Installing both
+tools or both interfaces is optional. Desktop users can skip CLI installation;
+Cursor users can skip Codex sign-in, configuration, and flag examples.
+
 
 | Interface | RHEL | macOS | Workshop use |
 | --- | --- | --- | --- |
-| Cursor | Install the Linux RPM below | Install the macOS `.dmg` below | Edit the checkout and use Agent with local tools |
+| Cursor CLI | Install the CLI below | Install the CLI below | Use Agent from the terminal |
+| Cursor desktop | Install the Linux RPM below | Install the macOS `.dmg` below | Edit the checkout and use Agent with local tools |
 | Codex CLI | Install below | Install below | Inspect and edit the local checkout; run installed tools |
 | Codex in the ChatGPT desktop app | Optional RPM installation below; unsupported preview on RHEL | Download from `https://chatgpt.com/download/`, install, and sign in through enterprise OAuth | Choose Codex and open the workshop folder |
 
@@ -88,7 +94,9 @@ For Codex-generated shell commands, include that activation step in your prompt
 or use the environment's absolute executable paths. Desktop launches may not
 inherit an already-activated terminal environment.
 
-## Install Codex on RHEL
+## Install Codex on RHEL (Codex users only)
+
+Choose CLI or desktop. Follow only the instructions for the interface you chose.
 
 Use a regular user account on a workshop host. These host setup commands run in
 your own terminal, before starting Codex. The CLI route uses the standalone
@@ -169,7 +177,10 @@ These download links and the install/update commands come from the
 [official Linux desktop guide](https://learn.chatgpt.com/docs/linux/linux-app#install-on-fedora).
 RHEL remains an unsupported preview target even if the package installs.
 
-## Install Codex on macOS (OS X)
+## Install Codex on macOS (OS X) (Codex users only)
+
+For desktop, use the app download and sign-in steps above. For CLI, choose one
+of the installers below.
 
 Open Terminal. If Git is unavailable, install Apple's Command Line Tools and
 finish the installer dialog:
@@ -210,7 +221,9 @@ changes. macOS Codex sandboxing uses Seatbelt. See
 [CLI installation](https://learn.chatgpt.com/docs/codex/cli) and
 [OS sandbox details](https://learn.chatgpt.com/docs/agent-approvals-security#os-level-sandbox).
 
-## Install Cursor on the host OS
+## Install Cursor (Cursor users only)
+
+Request access, then choose CLI or desktop. Skip the other interface.
 
 Red Hat associates should review the current
 [Cursor access guidance](https://source.redhat.com/projects_and_programs/ai/ai_tools/cursor)
@@ -218,7 +231,27 @@ and submit the [license request](https://devservices.dpp.openshift.com/support/c
 (VPN required). Complete the confirmation-email setup with the assigned account;
 use current internal guidance for eligibility and regional availability.
 
-### RHEL RPM
+### CLI — RHEL and macOS
+
+Run the installer as your regular user, then sign in with the approved account:
+
+```bash
+curl -fsSL https://cursor.com/install -o /tmp/cursor-install.sh
+less /tmp/cursor-install.sh
+bash /tmp/cursor-install.sh
+export PATH="$HOME/.local/bin:$PATH"
+agent --version
+agent login
+agent status
+```
+
+From the workshop repository root, activate the host Python environment and run
+`agent` to start a session. Update with `agent update`. See
+[CLI installation](https://cursor.com/docs/cli/installation) and
+[CLI authentication](https://cursor.com/docs/cli/reference/authentication).
+CLI users can skip the desktop steps below and proceed to local verification.
+
+### Desktop — RHEL RPM
 
 Download the Linux RPM matching `uname -m` from
 [Cursor downloads](https://cursor.com/download). Save it in `~/Downloads` and
@@ -233,13 +266,13 @@ Launch Cursor from the applications menu and sign in with the approved account.
 For repository-based installation and updates, see
 [Cursor's RHEL/Fedora quickstart](https://cursor.com/docs/get-started/quickstart).
 
-### macOS installer
+### Desktop — macOS installer
 
 Download the Apple Silicon or Intel `.dmg` from
 [Cursor downloads](https://cursor.com/download), open it, move Cursor into
 Applications, and launch it. Sign in with the approved account.
 
-### Open the local checkout
+### Open the local checkout (desktop users only)
 
 Choose **File → Open Folder…** and select `ansible-amers-ai-workshop`. Open
 **Terminal → New Terminal**, activate the shared environment, and verify its path:
@@ -255,7 +288,7 @@ extension published by Red Hat provides editing support; Ansible commands use
 the host tools installed above. Codex policy settings below are independent of
 Cursor settings.
 
-## Sign in to Codex and open the workspace
+## Sign in to Codex CLI and open the workspace (Codex CLI users only)
 
 Confirm that your enterprise account has Codex access and membership in the
 workshop workspace. On a machine with a browser, start the OAuth sign-in flow:
@@ -334,7 +367,9 @@ executable and checks for Linux or macOS without changing host configuration.
 runs Ansible. [ansible.cfg](ansible.cfg) selects the lab inventory when commands
 run from this directory.
 
-## Update the policy configuration
+## Update the policy configuration (Codex users only)
+
+Cursor users can skip these Codex-specific settings.
 
 Sandbox settings determine file/network access for generated commands. Approval
 settings determine when Codex asks before proceeding. `on-request` allows
@@ -461,7 +496,7 @@ preference domain. User flags cannot bypass active managed requirements; resolve
 policy conflicts with the administrator. See
 [managed configuration](https://learn.chatgpt.com/docs/enterprise/managed-configuration).
 
-## Common flags and commands
+## Common Codex flags and commands (Codex CLI users only)
 
 | Option / command | Purpose | Example |
 | --- | --- | --- |
