@@ -14,7 +14,6 @@ After completing this module, you will be able to:
 
 == Before you start
 
-* Finish xref:01-cursor-workspace.adoc[Module 1: Cursor Workspace Setup] (or open this repo in Cursor).
 * Lab files live in `workshop-content/02-shell-to-ansible/`.
 * Scaffold details and open questions for doc owners: `workshop-content/02-shell-to-ansible/REVIEW-NOTES.md`.
 

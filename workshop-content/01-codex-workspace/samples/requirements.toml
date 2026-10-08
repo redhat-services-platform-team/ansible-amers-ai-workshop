@@ -1,0 +1,4 @@
+# Administrator example for /etc/codex/requirements.toml on RHEL and macOS.
+# Merge with existing requirements through your normal device-management process.
+allowed_approval_policies = ["on-request"]
+allowed_sandbox_modes = ["read-only", "workspace-write"]

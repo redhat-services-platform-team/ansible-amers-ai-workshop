@@ -1,262 +1,403 @@
-= Lab: Cursor Workspace Setup
+= Workspace Setup
 
 [abstract]
-Request Cursor access, install Cursor, copy the sample Dev Container config to the repository root, and run this workshop inside the community Ansible Development Tools (ADT) container with *Podman*.
+Install your choice of Codex or Cursor on RHEL or macOS, sign in with the approved account, and run Ansible directly on your workstation. You only need one tool and one interface: CLI or desktop.
 
 == Learning Objectives
 
-After completing this module, you will be able to:
-
-* Request and obtain Cursor access for Red Hat associate use
-* Install Cursor and the Anysphere Dev Containers extension
-* Copy sample `.devcontainer` and `.vscode` files to the repository root and understand what they do
-* Reopen the workshop in the ADT Dev Container via Podman
-* Run a sample playbook from the Dev Container terminal
+* Verify your existing Ansible installation is accessible to the selected AI tool
+* Install one AI tool: Codex or Cursor, using either its CLI or desktop interface
+* Authenticate the selected tool with your approved enterprise account
+* Open the workshop repository and verify the local Ansible runtime
+* Inspect the selected tool's permissions and review AI-generated changes
 
 == Prerequisites
 
-.Prerequisites
-====
-* *Podman* installed and working on your workstation (Podman Desktop is recommended on macOS and Windows)
-* On macOS or Windows: a Podman *machine* created and *running*
-* On Linux: the user Podman API socket enabled (`systemctl --user enable --now podman.socket`)
-* Ability to install desktop software (Cursor) and receive email at your Red Hat address
-====
+* A RHEL or macOS workstation
+* A *working Ansible installation already available on your machine*, with `ansible-playbook` on your command path
+* Git and the download utilities required by your chosen installer
+* A graphical desktop session only if you choose a desktop interface; either CLI works from a terminal
+* Permission to install OS packages and outbound HTTPS access to the download services
+* On RHEL: registration and enabled package repositories
+* If choosing the macOS Homebrew installer: a working link:https://brew.sh/[Homebrew installation,window=_blank]
+* If choosing Codex: an enterprise Codex entitlement and membership in the assigned workspace
+* If choosing Cursor: a Red Hat associate account eligible for Cursor access
 
-.Verify Podman
-====
-[source,sh]
+This lab assumes Ansible is already installed and working; Ansible installation is outside its scope. Use your existing installation and its environment. If you normally activate a Python environment to run Ansible, activate that same environment in each terminal used for the labs. `ansible-lint` is optional for the additional lint check below.
+
+== Choose One Setup Path
+
+*Choose one tool and one interface.* Installing both tools, or both interfaces of a tool, is optional.
+
+[cols="1,1,3"]
+|===
+| Tool | Interface | Follow these sections
+| Codex | CLI | Verify existing Ansible and clone the workshop (1–2), Codex CLI installation and enterprise CLI sign-in (3) including Permissions, Recommended settings, and References, verification (5–7)
+| Codex | Desktop | Verify existing Ansible and clone the workshop (1–2), Codex desktop installation and sign-in for your OS (3) including Permissions, Recommended settings, and References, verification (5–7)
+| Cursor | CLI | Verify existing Ansible and clone the workshop (1–2), Cursor access and CLI installation (4) including Permissions, Recommended settings, and References, verification (5–7)
+| Cursor | Desktop | Verify existing Ansible and clone the workshop (1–2), Cursor access and desktop installation for your OS (4) including Permissions, Recommended settings, and References, verification (5–7)
+|===
+
+Skip the other tool's installation and sign-in sections. Desktop users can skip the CLI installers. A working host Ansible installation is required for every path.
+
+== 1: Verify Your Existing Ansible Installation
+
+In the terminal you normally use for Ansible, activate your existing environment if needed, then run:
+
+[source,bash]
 ----
-podman version
-podman info
-podman run --rm quay.io/podman/hello
+command -v ansible-playbook
+ansible-playbook --version
+git --version
 ----
 
-* `podman info` must succeed.
-* On macOS/Windows, `podman machine list` should show the default machine as *running*.
-====
+These commands must succeed before starting the lab. Note the executable path and Python runtime shown by `ansible-playbook --version`; your chosen AI tool needs access to the same installation. If Ansible is missing or fails to start, complete your normal Ansible installation process or ask the facilitator before continuing.
 
-[NOTE]
-====
-This lab does *not* walk through installing Podman.
-If these checks fail, install link:https://podman-desktop.io/[Podman Desktop,window=_blank] (or use your platform package manager) and return here.
-====
+== 2: Clone the Workshop
 
-== 1: Overview
+Clone once; if you already have the checkout, change to its repository root instead:
 
-link:https://cursor.com[Cursor,window=_blank] is an AI-enhanced code editor built on a VS Code–compatible foundation.
-At Red Hat, Cursor is an approved AI development tool for associate use (subject to local laws and Works Council availability).
-
-This lab gets you from *no Cursor install* to a verified workspace at the *repository root*, running *inside* the community Ansible Development Tools container via *Podman*.
-
-You will copy these sample files from `workshop-content/01-cursor-workspace/samples/` to the repository root:
-
-* `.devcontainer/devcontainer.json` — ADT container definition for Podman
-* `.vscode/settings.json` — points Dev Containers at `podman`
-
-Those root copies are gitignored so each participant keeps their own local settings.
-
-== 2: Request Cursor Access
-
-.Procedure
-====
-. Review the internal Cursor overview on The Source: link:{cursor_source_url}[Cursor — AI Tools,window=_blank].
-. Confirm you are in a supported region.
-+
-Cursor is available upon request to developers at Red Hat, subject to local laws and regulations.
-Works Council–supported countries currently approved for use include the Netherlands, Germany, Austria, Spain, and France.
-Cursor is *not* available in China or the regions of Crimea, Donetsk, and Luhansk in Ukraine.
-Accessing Cursor through a VPN solely to bypass regional restrictions violates the contractual terms of use.
-. Submit a request using the Cursor access request form (VPN required): link:{cursor_access_request_url}[Cursor Access Request,window=_blank].
-. Wait for the confirmation email (typically within about five minutes).
-Follow the link in the email to complete Cursor account access.
-. If you do not receive email, check junk/spam first, then contact your facilitator or `pge-cloudops@redhat.com`.
-====
-
-== 3: Install Cursor
-
-.Procedure
-====
-. Open link:https://cursor.com/download[Cursor download,window=_blank] and select the installer for your OS (macOS, Windows, or Linux).
-+
-image::01-cursor-workspace/cursor-download-page.png[Cursor download page with macOS, Windows, and Linux installers,width=720]
-. Run the installer and launch Cursor.
-. Sign in when prompted using the account that received Cursor access.
-+
-image::01-cursor-workspace/cursor-sign-in.png[Cursor welcome screen with Sign in button,width=720]
-====
-
-.Verification
-====
-* Cursor launches without license or authentication errors.
-====
-
-== 4: Install the Dev Containers Extension
-
-.Procedure
-====
-. Switch from the *Agent* layout to the *Editor* (IDE) layout.
-+
-If Cursor opened in the Agent-focused view, you need the normal IDE layout (sidebar, Extensions, editor) for the rest of this lab.
-Press `Cmd+E` (macOS) or `Ctrl+E` (Windows/Linux) to toggle to *Editor*.
-You should see the activity bar on the left (Explorer, Search, Extensions, and so on).
-. In Cursor, open *Extensions* (`Ctrl+Shift+X` / `Cmd+Shift+X`).
-. Search for *Dev Containers* published by *Anysphere*.
-+
-If the extension does not appear under that name, search the Extensions marketplace for `anysphere.remote-containers` and install that result.
-. Install *Dev Containers* (`anysphere.remote-containers`).
-+
-image::01-cursor-workspace/cursor-dev-containers-extension.png[Extensions view showing Dev Containers by Anysphere with Install button,width=720]
-. Reload Cursor if prompted.
-====
-
-== 5: Clone the Workshop and Open the Repository Root
-
-.Procedure
-====
-. Clone the workshop repository:
-+
-[source,sh]
+[source,bash]
 ----
 git clone {workshop_repo_url}.git
 cd ansible-amers-ai-workshop
 ----
-. In Cursor: *File → Open Folder…* and select the *repository root*:
-+
+
+Keep your existing Ansible environment available in the terminal used to launch the CLI or run validation.
+
+== 3: Codex Setup (Choose CLI or Desktop)
+
+Follow this section only if you chose Codex. Install one interface below; for CLI on macOS, choose one installer. Desktop sign-in is included in the desktop steps.
+
+=== Codex CLI — RHEL and macOS
+
+On RHEL, ensure the installer utilities and sandbox prerequisite are available: `sudo dnf install -y curl tar gzip less bubblewrap`. On macOS, use the existing download utilities. Run the standalone installer as your regular user:
+
+[source,bash]
 ----
-ansible-amers-ai-workshop
+curl -fsSL https://chatgpt.com/codex/install.sh -o /tmp/codex-install.sh
+less /tmp/codex-install.sh
+sh /tmp/codex-install.sh
+export PATH="$HOME/.local/bin:$PATH"
+codex --version
+codex --help
 ----
-====
 
-== 6: Copy Sample Dev Container Config to the Repository Root
+The installer configures your shell path. Open a new terminal afterward, or use the `PATH` command above in the current one. Run the installer again to update. See link:https://learn.chatgpt.com/docs/codex/cli[official CLI installation,window=_blank].
 
-Cursor looks for `.devcontainer/` and `.vscode/` at the folder you opened (the repository root).
-Sample files are provided under Lab 1; you copy them into place so you see how the setup works.
+==== macOS Homebrew Alternative
 
-.What each file does
-====
-* `.devcontainer/devcontainer.json` — tells Dev Containers which image to run (ADT), container options for Podman, and which extensions to install inside the container
-* `.vscode/settings.json` — sets `dev.containers.dockerPath` to `podman` so Cursor uses Podman instead of Docker
-====
+If you prefer Homebrew, choose it instead of the standalone CLI installer:
 
-.Procedure
-====
-. From the repository root, copy the samples:
-+
-[source,sh]
+[source,bash]
 ----
-cp -R workshop-content/01-cursor-workspace/samples/.devcontainer .
-cp -R workshop-content/01-cursor-workspace/samples/.vscode .
+brew install --cask codex
+codex --version
 ----
-. Confirm the files exist at the root:
-+
-[source,sh]
+
+Update this installation with `brew upgrade --cask codex`.
+
+=== Desktop Codex — macOS
+
+. Download the ChatGPT desktop app from link:https://chatgpt.com/download/[the official download page,window=_blank].
+. Install and launch it, complete enterprise OAuth/SSO sign-in, and select the assigned enterprise workspace.
+. Choose *Codex* and open the workshop repository folder.
+
+See link:https://learn.chatgpt.com/docs/app[the desktop app guide,window=_blank].
+
+=== Desktop RPM — Unsupported Preview on RHEL
+
+The Linux desktop app is a preview. *RHEL is not a supported desktop distribution.* These steps adapt the official Fedora RPM installation for RHEL; installation and runtime compatibility on RHEL have not been verified.
+
+Check `uname -m`, then download the matching package into `~/Downloads`:
+
+[cols="1,3"]
+|===
+| Architecture | Package
+| `x86_64` | link:https://persistent.oaistatic.com/codex-app-prod/linux/rpm/latest/chatgpt.x86_64.rpm[Download x64 RPM]
+| `aarch64` | link:https://persistent.oaistatic.com/codex-app-prod/linux/rpm/latest/chatgpt.aarch64.rpm[Download ARM64 RPM]
+|===
+
+For x64:
+
+[source,bash]
 ----
-ls -la .devcontainer/devcontainer.json .vscode/settings.json
+cd "$HOME/Downloads"
+sudo dnf install ./chatgpt.x86_64.rpm
 ----
-. Open `.devcontainer/devcontainer.json` and `.vscode/settings.json` in Cursor and skim them so you know what you copied.
-====
 
-.Verification
-====
-In *Settings*, search for `docker path` and confirm it shows `podman`.
+For ARM64, use `sudo dnf install ./chatgpt.aarch64.rpm`. Let DNF resolve dependencies from enabled repositories; if that fails, use Codex CLI for the lab.
 
-image::01-cursor-workspace/cursor-docker-path-settings-ui.png[Settings UI showing Dev Containers Docker Path set to podman,width=720]
-====
+Open *ChatGPT* from the applications menu, or run `chatgpt` in your graphical desktop session. Complete enterprise OAuth/SSO sign-in, select the enterprise workspace, choose *Codex*, and open the workshop folder. If the package installation successfully configured the OpenAI repository, update with `sudo dnf upgrade --refresh chatgpt`.
 
-[NOTE]
-====
-Root `.devcontainer/` and `.vscode/` are listed in `.gitignore`.
-Do not commit your copies—each person manages their own local config.
-====
+See link:https://learn.chatgpt.com/docs/linux/linux-app[official Linux desktop support and RPM instructions,window=_blank]. RHEL remains an unsupported preview target even if installation succeeds.
 
-== 7: Reopen in the ADT Dev Container
+=== Enterprise CLI Sign-In (CLI Users Only)
 
-.Procedure
-====
-. Open the Command Palette and run *Dev Containers: Reopen in Container*.
-+
-image::01-cursor-workspace/cursor-reopen-in-container.png[Command Palette with Dev Containers Reopen in Container selected,width=720]
-. Wait for Podman to pull/start `{ansible_dev_tools_image}` and for the status bar to show a Dev Container connection.
-. Open *Terminal → New Terminal*.
-This shell is *inside* the ADT container.
-====
+From a terminal:
 
-.Verification
-====
-[source,sh]
+[source,bash]
 ----
+codex login
+codex login status
+----
+
+Choose *Sign in with ChatGPT*, use your work identity, complete enterprise OAuth/SSO, and select the assigned enterprise workspace. Confirm workspace selection during sign-in; `codex login status` reports the authentication method.
+
+For a RHEL SSH session, use `codex login --device-auth`, open the printed link on your laptop, and complete the same enterprise sign-in. Device login must be enabled by the workspace administrator. If it is disabled, use the SSH callback forwarding flow in link:https://learn.chatgpt.com/docs/auth[the authentication guide,window=_blank]. Keep cached authentication credentials out of Git.
+
+=== Permissions
+
+Permissions determine where Codex can write files, whether generated commands can use the network, and when an action needs approval. In the CLI, use `/permissions` to inspect the active policy; in desktop Codex, use the permissions control beneath the composer. Routine commands allowed by the sandbox can run without asking every time. Enterprise requirements can restrict the options available to you.
+
+==== Recommended settings for this lab
+
+Use workspace editing with human review for requests that need more access. The default configuration file on RHEL and macOS is `~/.codex/config.toml`; if you already use `CODEX_HOME`, edit its `config.toml` instead.
+
+*This file may already contain settings*, including model choices, project entries, and enterprise defaults. Inspect it first and back it up. Merge the proposed keys into the existing file; do not replace the whole file or append duplicate keys or table headers. For a new file, the example below is a complete starting point. These are user defaults and cannot override managed requirements.
+
+[source,bash]
+----
+mkdir -p "$HOME/.codex"
+if [ -f "$HOME/.codex/config.toml" ]; then
+  cp "$HOME/.codex/config.toml" "$HOME/.codex/config.toml.backup-$(date +%Y%m%d-%H%M%S)"
+fi
+${EDITOR:-vi} "$HOME/.codex/config.toml"
+----
+
+[source,toml]
+----
+approval_policy = "on-request"
+approvals_reviewer = "user"
+sandbox_mode = "workspace-write"
+web_search = "disabled"
+
+[sandbox_workspace_write]
+network_access = false
+----
+
+[cols="1,3"]
+|===
+| Setting | What it means for a first-time user
+| `approval_policy = "on-request"` | Codex can perform routine actions inside its permissions. When it requests an action requiring more access, it can ask you to approve it; this does not prompt for every command.
+| `approvals_reviewer = "user"` | Approval requests go to you rather than an automatic reviewer, so you can read the proposed command and its purpose.
+| `sandbox_mode = "workspace-write"` | Generated commands can edit the workspace and run local validation. Writes outside the permitted roots are restricted; this is not a promise that reads are limited to the workspace.
+| `web_search = "disabled"` | Hosted web search is off for the local workshop exercises; supplied files provide the initial context.
+| `network_access = false` | Commands inside the workspace sandbox cannot freely contact remote services. This is separate from web search and does not block Codex's own sign-in or model connection.
+|===
+
+Place top-level keys before TOML table headers. If `[sandbox_workspace_write]` already exists, update `network_access` inside that table. Restart Codex and check the active permissions before your first prompt. The same sample is available at `workshop-content/01-codex-workspace/samples/config.toml`.
+
+Common CLI examples, using your existing Ansible installation:
+
+[source,bash]
+----
+codex -s read-only -a on-request
+codex -s workspace-write -a on-request
+codex -C workshop-content/02-shell-to-ansible
+codex resume --last
+----
+
+If Ansible needs environment activation, tell Codex your actual activation command or give it the absolute executable path verified in section 1. The lab folder's guide also covers named profiles, command rules, and administrator requirements.
+
+=== References
+
+* link:https://learn.chatgpt.com/docs/codex/cli[Codex CLI installation]
+* link:https://learn.chatgpt.com/docs/app[Desktop app and Codex]
+* link:https://learn.chatgpt.com/docs/linux/linux-app[Linux desktop preview and RPM support]
+* link:https://learn.chatgpt.com/docs/auth[Enterprise account sign-in and SSH authentication]
+* link:https://learn.chatgpt.com/docs/config-file/config-basic[Configuration locations and precedence]
+* link:https://learn.chatgpt.com/docs/sandboxing[Permissions, approvals, and sandboxing]
+* link:https://learn.chatgpt.com/docs/developer-commands?surface=cli[CLI commands and flags]
+
+== 4: Cursor Setup (Choose CLI or Desktop)
+
+Follow this section only if you chose Cursor. Request access, then install either CLI or desktop.
+
+=== Request Access
+
+. Review link:{cursor_source_url}[Cursor — AI Tools on The Source,window=_blank] for current eligibility and regional availability.
+. Submit link:{cursor_access_request_url}[the Cursor access request,window=_blank] using your Red Hat identity (VPN required).
+. Complete the account setup in the confirmation email. If access is missing, check spam and contact the facilitator or `pge-cloudops@redhat.com`.
+
+Use the current internal guidance for availability rather than relying on a fixed country list in this workshop.
+
+=== CLI Installation — RHEL and macOS
+
+Run the installer as your regular user:
+
+[source,bash]
+----
+curl -fsSL https://cursor.com/install -o /tmp/cursor-install.sh
+less /tmp/cursor-install.sh
+bash /tmp/cursor-install.sh
+export PATH="$HOME/.local/bin:$PATH"
+agent --version
+agent login
+agent status
+----
+
+Complete sign-in with the account approved for Cursor access. From the workshop repository root, use your existing Ansible environment and start an interactive session with `agent`. The CLI can update with `agent update`. See link:https://cursor.com/docs/cli/installation[CLI installation,window=_blank] and link:https://cursor.com/docs/cli/reference/authentication[CLI sign-in,window=_blank].
+
+If you chose CLI, skip the desktop installation steps below and continue to the Cursor Permissions and References subsections before host runtime verification.
+
+=== Desktop Installation — RHEL
+
+Download the *Linux RPM* for your architecture from link:https://cursor.com/download[Cursor downloads,window=_blank]. Save it in `~/Downloads`, then install the exact filename you downloaded:
+
+[source,bash]
+----
+cd "$HOME/Downloads"
+sudo dnf install './<downloaded-cursor-package>.rpm'
+----
+
+Replace `<downloaded-cursor-package>` with the actual filename. Launch *Cursor* from the applications menu and sign in with the account that received access. For repository-based installation and updates, see link:https://cursor.com/docs/get-started/quickstart[Cursor's RHEL/Fedora setup,window=_blank].
+
+=== Desktop Installation — macOS
+
+. Download the macOS installer for Apple Silicon or Intel from link:https://cursor.com/download[Cursor downloads,window=_blank].
+. Open the `.dmg`, move Cursor into *Applications*, and launch it.
+. Sign in with the account that received Cursor access.
+
+=== Open the Workspace (Desktop Users Only)
+
+In Cursor, choose *File → Open Folder…* and select the repository root, `ansible-amers-ai-workshop`. Open *Terminal → New Terminal*, activate your existing Ansible environment if needed, and verify it is available:
+
+[source,bash]
+----
+command -v ansible-playbook
 ansible-playbook --version
-ansible-lint --version
 ----
-====
 
-== 8: Run the Sample Playbook
+Use the same installation you verified in section 1. An optional *Ansible* extension published by Red Hat adds YAML editing and language support; terminal validation uses your installed Ansible tools.
 
-.Procedure
-====
-. In the Dev Container terminal:
-+
-[source,sh]
+=== Permissions
+
+Cursor desktop and Cursor CLI have different configuration files. Use only the instructions for your chosen interface. In desktop Cursor, open *Settings → Agents → Approvals & Execution*. In the CLI, permissions are configured in `~/.cursor/cli-config.json` or the project-specific `.cursor/cli.json`. A CLI configuration file does not configure the desktop Run Mode.
+
+==== Recommended settings for this lab — desktop
+
+Use *Auto-review* with sandboxing enabled. Routine allowlisted calls run immediately, supported shell commands run in the sandbox, and other calls are evaluated by an automatic reviewer. Some actions therefore run without a human prompt. For Cursor 3.23 or later, choose *Read Access → Workspace* so reads outside the workspace require approval unless included in the read allowlist. Keep the existing enterprise restrictions in place.
+
+To steer Auto-review toward asking before publishing, installing software, or changing remote systems, merge this example into `~/.cursor/permissions.json` (all projects) or `<repo>/.cursor/permissions.json` (this workshop only):
+
+[source,json]
 ----
-cd workshop-content/01-cursor-workspace
+{
+  "autoRun": {
+    "allow_instructions": [],
+    "block_instructions": [
+      "Commands that publish code, including git push, should require my approval first.",
+      "Commands that install software or change host configuration should require my approval first.",
+      "Commands that connect to managed hosts or change AWS resources should require my approval first."
+    ]
+  }
+}
+----
+
+`allow_instructions` is empty because the lab adds no special automatic exceptions. `block_instructions` describes actions the reviewer should block so the agent can choose another approach or ask you to approve. These sentences guide a model-based reviewer; they are not deterministic command-deny rules. Team Auto-review policy can take precedence over these local files. If Auto-review is unavailable under your enterprise policy, use *Allowlist* with no added automatic allowances and follow the administrator's restrictions.
+
+==== Recommended settings for this lab — CLI
+
+Inspect and back up `~/.cursor/cli-config.json`, then merge these settings. The CLI may already have created this file when you signed in. If you use `CURSOR_CONFIG_DIR` or `XDG_CONFIG_HOME`, use the configured location instead. For a new file, this is a complete starting point:
+
+[source,json]
+----
+{
+  "version": 1,
+  "editor": { "vimMode": false },
+  "approvalMode": "allowlist",
+  "permissions": {
+    "allow": [],
+    "deny": ["Shell(sudo)", "Shell(rm)"]
+  }
+}
+----
+
+[cols="1,3"]
+|===
+| Setting | What it means for a first-time user
+| `version: 1` | Selects the documented CLI configuration format.
+| `editor.vimMode: false` | Uses normal text-input keys; preserve your preference if you already use Vim bindings.
+| `approvalMode: "allowlist"` | Uses explicit permission rules rather than unrestricted execution or automatic review.
+| `permissions.allow: []` | Adds no blanket automatic approvals. Review approval requests before accepting them; existing sandbox behavior can still permit supported actions.
+| `permissions.deny` | Blocks commands whose base command is `sudo` or `rm`. These token rules do not block every possible way to change or remove files, and deny entries take precedence over allow entries.
+|===
+
+Use an interactive `agent` session for this lab and inspect each command request. If a deny rule blocks a task you intended, review the task and perform the approved host operation yourself or deliberately revise the applicable rule.
+
+==== Preserve existing settings before editing
+
+*All of these files may already have contents.* Back up only the files you intend to edit, using commands such as:
+
+[source,bash]
+----
+mkdir -p "$HOME/.cursor"
+if [ -f "$HOME/.cursor/cli-config.json" ]; then
+  cp "$HOME/.cursor/cli-config.json" "$HOME/.cursor/cli-config.json.backup-$(date +%Y%m%d-%H%M%S)"
+fi
+if [ -f "$HOME/.cursor/permissions.json" ]; then
+  cp "$HOME/.cursor/permissions.json" "$HOME/.cursor/permissions.json.backup-$(date +%Y%m%d-%H%M%S)"
+fi
+----
+
+For project-scoped files, back up the corresponding file under the repository's `.cursor/` directory instead. Preserve unrelated settings and existing restrictions. Update an existing JSON object instead of pasting a second top-level object; merge permission arrays without duplicate entries. An empty example array does not mean you should erase existing rules. JSON cannot contain comments or trailing commas. Restart the selected interface after editing and inspect its active mode and permissions. Samples are in `workshop-content/01-codex-workspace/samples/cursor/`; review them before merging, rather than copying over an existing file.
+
+=== References
+
+* link:https://cursor.com/docs/get-started/quickstart[Desktop installation and first workspace]
+* link:https://cursor.com/download[Desktop downloads]
+* link:https://cursor.com/docs/cli/installation[CLI installation and updates]
+* link:https://cursor.com/docs/cli/reference/authentication[CLI account sign-in]
+* link:https://cursor.com/docs/agent/security/run-modes[Desktop Run Modes, Auto-review, read access, and configuration files]
+* link:https://cursor.com/docs/cli/reference/configuration[CLI configuration locations and schema]
+* link:https://cursor.com/docs/cli/reference/permissions[CLI permission tokens and rule matching]
+
+== 5: Verify the Host Runtime
+
+In your OS terminal or the terminal of your selected desktop app, return to the repository root. Use your existing Ansible environment and run:
+
+[source,bash]
+----
+cd workshop-content/01-codex-workspace
+ansible-playbook --syntax-check playbooks/hello.yml
 ansible-playbook playbooks/hello.yml
 ----
-====
 
-.Expected result
-====
-The playbook completes successfully and prints a hello message with the Ansible version from the ADT container.
-====
+If `ansible-lint` is already installed, you can also run `ansible-lint playbooks/hello.yml`.
 
-== 9: Verify Your Setup
+The sample targets only `localhost`, prints the host OS, Ansible version, and Python executable, and verifies Linux or macOS. It does not contact managed nodes or change host configuration.
 
-[cols="1,2"]
+Use this first prompt in either Codex or Cursor with the repository open:
+
+[source,text]
+----
+Read README.adoc and workshop-content/02-shell-to-ansible/README.adoc.
+Explain the workshop structure and prerequisites for converting the legacy
+shell script to Ansible. Commands run on my RHEL or macOS workstation.
+Use my existing working Ansible installation for validation. If its environment
+is unavailable, report the missing command and ask for the environment details.
+Keep this task to inspection and explanation, and do not connect to managed hosts.
+----
+
+== 6: Setup Checklist and Troubleshooting
+
+[cols="1,3"]
 |===
 | Check | Success criteria
-
-| Podman ready
-| `podman info` succeeds; machine *running* (macOS/Windows) or `podman.socket` active (Linux)
-
-| Cursor access
-| Signed in without license errors
-
-| Config copied to root
-| `.devcontainer/devcontainer.json` and `.vscode/settings.json` exist at the repository root
-
-| Connected to ADT container
-| Status bar shows Dev Container; `ansible-playbook --version` works in the terminal
-
-| Sample playbook
-| `ansible-playbook playbooks/hello.yml` succeeds from `workshop-content/01-cursor-workspace`
+| Selected AI tool | Your chosen Codex or Cursor interface signs in with the approved account and opens the checkout
+| Installation choice | One tool and one interface are sufficient; checks for the other paths are optional
+| Existing Ansible installation | `ansible-playbook --version` succeeds in the terminal used by your selected tool
+| Local verification | Syntax check and the sample playbook pass on `localhost`; lint is optional
 |===
 
-[#troubleshoot-podman]
-== 10: Troubleshooting
+* *Ansible is missing or fails:* Restore your existing working installation or ask the facilitator; this lab assumes that prerequisite is complete.
+* *Your AI tool cannot find Ansible:* Use the existing activation command or absolute executable path from section 1.
+* *Codex shell networking is blocked:* Inspect the active policy. A one-session override is `-c 'sandbox_workspace_write.network_access=true'` when the task needs it and managed policy permits it.
+* *Linux sandbox fails:* Check `bwrap --version` and the namespace restrictions with the facilitator; keep SELinux enabled.
+* *RHEL desktop RPM fails to install or launch:* This is an unsupported preview path; use Codex CLI and retain the error for troubleshooting.
+* *Cursor sign-in fails:* Confirm the access request completed and that you used the approved account.
 
-[cols="1,2"]
-|===
-| Symptom | What to try
+== 7: Next Steps
 
-| Dev Containers still calls `docker`
-| Confirm you copied `.vscode/settings.json` to the *repository root*, reopen the folder, confirm `which podman` works
-
-| No Dev Container prompt / config not found
-| Confirm `.devcontainer/devcontainer.json` is at the repository root (not only under `samples/`)
-
-| `podman machine` not running
-| `podman machine start` or start the machine in Podman Desktop
-
-| Permission / socket errors on Linux
-| `systemctl --user enable --now podman.socket`
-
-| GUI-launched Cursor cannot find `podman`
-| Launch Cursor from a shell where `podman` is on `PATH`
-|===
-
-Use *Dev Containers: Show Log* from the Command Palette while reproducing failures.
-
-== 11: Next Steps
-
-Proceed to xref:02-shell-to-ansible.adoc[Module 2: Shell-to-Ansible Migration].
-Keep using this same Dev Container session at the repository root.
+Proceed to xref:02-shell-to-ansible.adoc[Module 2: Shell-to-Ansible Migration]. Keep your existing Ansible environment available in the terminal used for validation and review `git diff` after AI edits.

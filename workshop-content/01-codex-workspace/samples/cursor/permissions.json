@@ -1,0 +1,10 @@
+{
+  "autoRun": {
+    "allow_instructions": [],
+    "block_instructions": [
+      "Commands that publish code, including git push, should require my approval first.",
+      "Commands that install software or change host configuration should require my approval first.",
+      "Commands that connect to managed hosts or change AWS resources should require my approval first."
+    ]
+  }
+}

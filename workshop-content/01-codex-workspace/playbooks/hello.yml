@@ -1,0 +1,18 @@
+---
+- name: Verify the host Ansible runtime for Codex and Cursor
+  hosts: localhost
+  gather_facts: true
+  tasks:
+    - name: Print the local runtime details
+      ansible.builtin.debug:
+        msg: >-
+          Hello from Accelerating Ansible Delivery with AI.
+          Ansible {{ ansible_version.full }} is running on
+          {{ ansible_facts['system'] }} using {{ ansible_playbook_python }}.
+
+    - name: Confirm the workstation runs Linux or macOS
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['system'] in ['Linux', 'Darwin']
+        success_msg: Host runtime check passed for Lab 1.
+        fail_msg: Run this lab on a RHEL or macOS workstation.

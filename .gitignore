@@ -11,9 +11,8 @@ www/
 # Ignore IDE and editor files
 .idea/
 
-# Learner-copied Cursor/Dev Container config at repo root (each user manages their own)
+# Personal editor settings at the repository root
 /.vscode/
-/.devcontainer/
 
 # Ignore logs and temporary files
 *.log

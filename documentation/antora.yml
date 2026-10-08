@@ -15,12 +15,11 @@ asciidoc:
     # Repository reference (used in contribution links)
     workshop_repo_url: "https://github.com/redhat-services-platform-team/ansible-amers-ai-workshop"
 
-    # Lab 1 — Cursor access and Ansible Development Tools
+    # Lab 1 — Cursor access
     cursor_source_url: "https://source.redhat.com/projects_and_programs/ai/ai_tools/cursor"
     # VPN required — PGE Cursor license request form
     cursor_access_request_url: "https://devservices.dpp.openshift.com/support/cursor_license_request/"
     cursor_internal_user_guide_url: "https://docs.google.com/document/d/16AV-1J5munHd-ev4oYuoayxl91sCS4muAL6vgsFkdZw"
-    ansible_dev_tools_image: "ghcr.io/ansible/community-ansible-dev-tools:latest"
 
     # Lab 4 — Delivering with AI (RHDP AWS Blank Open Environment)
     rhdp_aws_blank_catalog_url: "https://catalog.demo.redhat.com/catalog/babylon-catalog-prod?item=babylon-catalog-prod/sandboxes-gpte.sandbox-open.prod"

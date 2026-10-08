@@ -1,0 +1,16 @@
+# Experimental Codex execution rules; evaluated for requests outside the sandbox.
+prefix_rule(
+    pattern = ["git", "push"],
+    decision = "prompt",
+    justification = "Review the destination and changes before publishing.",
+    match = ["git push origin workshop/codex-lab"],
+    not_match = ["git status"],
+)
+
+prefix_rule(
+    pattern = ["sudo"],
+    decision = "forbidden",
+    justification = "Run approved host setup manually outside the Codex session.",
+    match = ["sudo dnf install git", "sudo brew install ansible"],
+    not_match = ["dnf info git"],
+)
