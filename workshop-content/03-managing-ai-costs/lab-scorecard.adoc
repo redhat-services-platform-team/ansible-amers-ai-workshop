@@ -1,8 +1,10 @@
 = Lab scorecard: Module 3 managing AI costs
 
-Record one row per model run on the same Python NetBox migration.
+Use the Module 2 rows for optional experiment notes. Record the prompt source and any changes to context, model, or mode; leave unused rows blank.
+Module 3 rows record model runs on the same NetBox migration with fixed inputs.
 Use `prompt.md`, `legacy/install_netbox.py`, `legacy/.env.example`, and `migration-checklist.adoc` under `workshop-content/02-shell-to-ansible/`.
-Keep the prompt and attachments constant across runs unless the facilitator directs a change.
+For Module 3, keep the supplied prompt and attachments constant across runs unless the facilitator directs a change.
+Module 2 experiments may differ and are not directly comparable to these timed runs.
 Record generation and static review time separately from optional deployment checks.
 In Notes, include missing behavior, syntax results, and which runtime checks you completed or left untested.
 
@@ -14,8 +16,8 @@ Usage pools observed:
 |===
 | Run | Model and router mode | Tool and mode | Minutes | User turns | Decision: merge, edit, or discard | Notes: corrections, context, usage, validation
 
-| Module 2 Model A | | | | | |
-| Module 2 Model B | | | | | |
+| Module 2 first attempt | | | | | |
+| Module 2 optional experiment | | | | | |
 | Run A, cost-efficient | | | | | |
 | Run B, balanced | | | | | |
 | Run C, escalation | | | | | |

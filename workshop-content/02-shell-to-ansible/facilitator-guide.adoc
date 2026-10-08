@@ -7,34 +7,44 @@ The source files are copied from `~/netbox-python`.
 The comments describe fifty fictional maintainers. Executable code remains unchanged.
 Introduce the handover story, then ask learners to trace execution from `main()`.
 
-Have learners complete Lab 1 with a working Ansible environment.
-Assign two approved models and keep tool, interaction mode, source files, checklist, and canonical prompt constant.
-Only the output destination changes between runs.
-Do not provide one model's generated project to another.
+Have learners complete Lab 1 with a working Ansible environment and access to an approved model.
+The purpose is to get new users comfortable writing prompts, adding file context, asking follow-up questions, and reviewing output.
+Let them choose whether to start with an explanation, a plan, a focused conversion, or a fuller project.
 
-The base exercise covers generation, syntax checking, and code review.
-Use the migration checklist to check each installer stage.
-Deployment and second-run behavior need separate runtime testing.
+Ask everyone to write and send their own first prompt before opening `prompt.md`.
+Avoid handing out a model prompt before they have tried their own wording.
+After that first attempt, offer the supplied prompt as a resource they can borrow from, edit, or try in a separate conversation.
+The migration checklist is also a reference, not a prerequisite they must complete before using the tool.
+
+Allow changes to prompts, approved models, and interaction modes.
+Ask learners to save their original prompt and note what changed between attempts.
+A partial result with useful observations can complete the lab.
+Do not grade this exercise as a full deployment or a controlled model comparison.
+
+Generation and review stay local. Deployment and second-run behavior need separate runtime testing.
 The lab does not include a finished reference solution.
 
 == Suggested pacing
 
-Allow 60 to 90 minutes for the migration:
+Allow 45 to 60 minutes for exploration:
 
-* 15 minutes for source inspection and behavior mapping.
-* 20 to 25 minutes for Model A generation and review.
-* 20 to 25 minutes for Model B generation and review.
-* 10 to 15 minutes for comparison and scorecard discussion.
+* 5 to 10 minutes to inspect the inputs and write a first prompt.
+* 15 to 20 minutes to try follow-up requests and review generated changes.
+* 10 to 15 minutes to try another prompt, model, or mode, or to consult the example prompt.
+* 10 to 15 minutes to validate available output and discuss observations.
 
-Schedule deployment validation separately.
-Use the same time limit for both models and record incomplete results.
-A full stack migration may not finish in one prompt.
-Module 3 retains a 15-user-turn cap and records partial outputs or discarded runs when the cap is reached.
-Use its 30-minute session to demonstrate one run or review prepared projects.
+Use the available time to help learners investigate their questions.
+If a full migration takes too long, suggest a smaller installer stage or an explanation of the current output.
+Do not require a second model or finished project to complete the exercise.
+Schedule optional deployment validation separately.
+
+Module 3 uses the supplied prompt unchanged, fixed input files, and a 15-user-turn limit for its cost comparison.
+Lab 2's experiments can differ in prompt, context, and mode, so their timing and results are not directly comparable to those controlled runs.
 
 == Review priorities
 
-Use `migration-checklist.adoc` to locate each source stage in the generated project.
+Offer `migration-checklist.adoc` when learners want to review their output more closely.
+Use the relevant rows for a partial conversion; reviewing every stage is not a completion requirement for this lab.
 Check that Ansible tasks replace the installer stages. A command that runs the Python script does not complete the migration.
 Review collection dependencies and project-relative paths before syntax checking.
 
@@ -86,7 +96,8 @@ If you need to compare the source installer, test it on a separate fresh VM.
 
 == Debrief
 
-Ask which project preserved secrets and release state, and what missing behavior the review caught.
-Record generation time, turns, manual edits, and coverage gaps in the existing Module 2 scorecard rows.
-Keep optional runtime time separate from generation time for cost comparisons.
-Module 3 repeats this same migration in fresh `run-a`, `run-b`, and `run-c` project directories.
+Ask what each first prompt produced and which follow-up changed the response.
+Invite learners to share something they accepted, corrected, or rejected after inspecting the output.
+Record prompt sources and changes to models, context, or mode in the optional Module 2 scorecard rows or a notebook.
+Leave unused rows blank and keep optional deployment time separate.
+Module 3 returns to the same installer with fixed inputs and the supplied prompt in fresh `run-a`, `run-b`, and `run-c` directories.

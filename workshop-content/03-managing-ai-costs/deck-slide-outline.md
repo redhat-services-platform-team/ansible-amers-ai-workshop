@@ -9,8 +9,8 @@ Introduce the workshop and module. Explain that model choice, attached context, 
 
 ## Slide 2: Compare spending after comparing models
 
-Module 2 migrated the Python NetBox installer with two models. Module 3 repeats that task and records usage alongside review work.
-Ask learners to open their Module 2 scorecard rows.
+Module 2 let learners try their own prompts while exploring the NetBox migration. Module 3 uses the same installer with the supplied prompt unchanged to compare model runs.
+Ask learners to open their Module 2 notes. Explain that those experiments may have different prompts and modes, so their timings are not directly comparable to fixed-prompt runs.
 
 - Keep `install_netbox.py`, `.env.example`, the checklist, and `prompt.md` identical across runs.
 - Compare accepted results and omissions, as well as time and turns.
@@ -33,7 +33,7 @@ Ask learners to record their own pool names and reset date on the scorecard.
 
 Assign a cost-efficient model for Run A, a balanced model for Run B, and an approved escalation model for Run C.
 If the account has no escalation model, repeat B using Agent and record the mode change.
-Use the same prompt as Module 2. Compare whether model choice changes coverage gaps and review time.
+Use the supplied `prompt.md` unchanged for all Module 3 runs. Compare whether model choice changes coverage gaps and review time.
 
 ## Slide 6: Inputs, outputs, and context
 

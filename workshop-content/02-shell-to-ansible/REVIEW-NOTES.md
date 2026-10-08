@@ -13,16 +13,16 @@ The lab title, navigation, overview, prompt, Lab 1 handoff, and Module 3 inputs 
 
 ## Exercise design
 
-- Generate separate Model A and Model B projects with identical inputs, checklist, and prompt.
-- Use the existing RHEL or macOS control environment. Target a dedicated CentOS Stream 10 host, as the source requires.
-- Require a report showing where each installer stage is implemented, how inputs map to variables, and how the project preserves secrets and release state.
-- Complete generation, syntax validation, and code review in the base exercise. Deployment and second-run behavior need separate runtime testing.
-- Keep optional deployment time separate from generation time. Use a fresh VM or restored clean snapshot for each model.
-- Use fresh project directories in Module 3. Record incomplete results when its turn limit is reached.
+- Learners write and send their own first prompt before consulting `prompt.md`.
+- Offer the supplied prompt as a resource after that attempt. Learners can borrow requirements, edit it, or compare a separate run.
+- Encourage follow-up requests and changes to approved models, file context, and interaction modes. Save prompts, output, and observations under `attempt-1/` and optional `attempt-2/` folders.
+- Accept plans and partial conversions when learners can explain what they tried and what remains. Tool familiarity and review are the completion goals.
+- Use the existing RHEL or macOS control environment. Optional deployment targets a dedicated disposable CentOS Stream 10 host.
+- Keep Module 3's fixed-prompt comparison separate. Its inputs, run directories, and turn limit remain unchanged.
 
 ## Review before delivery
 
-- Try the proposed 60 to 90 minutes and choose the same generation time limit for both models.
+- Try the proposed 45 to 60 minute exploration and check whether new users have enough time for follow-up requests.
 - Decide whether to supply disposable CentOS Stream 10 VMs for deployment checks.
 - Confirm approved models and access to collection installation.
 - Test generated projects on disposable targets before offering any as a deployment reference.

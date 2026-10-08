@@ -4,7 +4,7 @@ Allow 30 minutes for teaching and a short generation or review demo.
 Learners follow `documentation/modules/ROOT/pages/03-managing-ai-costs.adoc` and record results in `lab-scorecard.adoc`.
 Use `deck-slide-outline.md` to build the slides.
 
-The task is the same Python NetBox migration as Module 2.
+Use the same Python NetBox installer as Module 2, but switch from open experimentation to fixed inputs and the supplied prompt unchanged.
 Learners compare usage, time, and corrections, then write three rules for their own work.
 The shared inputs are under `workshop-content/02-shell-to-ansible/`: `legacy/install_netbox.py`, `legacy/.env.example`, `migration-checklist.adoc`, and `prompt.md`.
 
@@ -21,7 +21,7 @@ The shared inputs are under `workshop-content/02-shell-to-ansible/`: `legacy/ins
 
 | Minutes | Slides | What to cover |
 |---------|--------|---------------|
-| 0 to 2 | 2 | Show the shared task and connect the Module 2 scorecard rows to Runs A, B, and C. |
+| 0 to 2 | 2 | Show the shared installer. Explain why Module 3 fixes the prompt and inputs after Module 2's open experiments. |
 | 2 to 6 | 3 and 4 | Show plan allowances, model choice, tokens, interaction mode, and usage pools. Refer to current provider documentation for rates. |
 | 6 to 8 | 6 | Explain prompt, attachment, and history usage. Show the installer inputs and exclude unrelated files and prior outputs. |
 | 8 to 10 | 7 and 8 | Explain agent calls within a user turn. Ask which Module 2 output needed corrections. |
@@ -29,6 +29,8 @@ The shared inputs are under `workshop-content/02-shell-to-ansible/`: `legacy/ins
 | 12 to 16 | 12 and 13 | Compare usage with review time and corrections. Ask learners to choose practical rules for future work. |
 | 16 to 26 | 11 | Demonstrate one run or compare prepared projects. Record missing behavior and syntax results, then check visible usage. |
 | 26 to 30 | 14 | Assign remaining runs and personal rules as homework. Introduce Module 4 and take questions. |
+
+Module 2 notes can inform the discussion, but their prompts, context, and modes may differ. Do not treat their time or outputs as a controlled model comparison.
 
 ## Demo
 

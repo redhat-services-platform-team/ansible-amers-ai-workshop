@@ -2,7 +2,8 @@
 
 ## Current task
 
-Module 3 repeats the Python NetBox migration from Module 2 with the same `legacy/install_netbox.py`, `legacy/.env.example`, `migration-checklist.adoc`, and `prompt.md`.
+Module 3 uses the NetBox installer and input files from Module 2 with the supplied `prompt.md` unchanged for each run.
+Module 2 starts with student-written prompts and allows open experimentation. Those results may have different prompts, context, or modes and are not a controlled comparison with Module 3.
 The timed comparison covers generation and static review.
 Optional deployment checks use a disposable CentOS Stream 10 VM and have separate timing.
 

@@ -1,13 +1,14 @@
 = Module 2 lab assets: Python to Ansible
 
 Migrate a NetBox installer with fifty fictional maintainers and contradictory handover notes.
-Read the code to determine what it actually does.
+Write your own first prompt, try follow-up requests, and inspect the generated output.
+This lab gives new users time to experiment with Codex or Cursor. A complete migration is not required.
 
 == Files
 
 * `legacy/install_netbox.py` comes from `~/netbox-python/install_netbox.py`. We added fictional maintainer comments. Executable behavior is unchanged.
 * `legacy/.env.example` is copied unchanged from the same directory. Secret values are blank.
-* `prompt.md` is the canonical migration prompt shared with Module 3.
+* `prompt.md` is an optional resource for Lab 2. Try your own prompt first, then borrow, edit, or compare the example. Module 3 uses it unchanged for its fixed-prompt comparison.
 * `starter/inventory.ini.example` names the `netbox_lab` group and contains a documentation-only host address.
 * `migration-checklist.adoc` maps installer behavior to review criteria.
 * `facilitator-guide.adoc` covers delivery and optional deployment validation.
@@ -21,15 +22,16 @@ The exercise now migrates Python rather than the previous shell-script example.
 
 [source,text]
 ----
-output/<your-name>/model-a/
-output/<your-name>/model-b/
+output/<your-name>/attempt-1/
+output/<your-name>/attempt-2/
 ----
 
-Each generated project contains `site.yml`, task or role files, templates as needed, `vars/example.yml`, `inventory.ini.example`, and a README.
-Declare additional collection dependencies in `requirements.yml` when needed.
-Module 3 uses `run-a/`, `run-b/`, and `run-c/` under the same learner directory.
-Keep the canonical prompt and both input files identical across model comparisons.
-Only the output destination changes.
+Save prompts, notes, and generated files in the attempt folders. Create `attempt-2/` only if you want a separate experiment.
+A full project may include `site.yml`, task or role files, templates, variable examples, an inventory, a README, and collection requirements.
+A plan or partial conversion is also useful if you record what you tried and what remains.
+
+Change prompts, models, or interaction modes as you explore and record those changes.
+Module 3 uses `run-a/`, `run-b/`, and `run-c/` under the same learner directory, with fixed inputs and the supplied prompt unchanged.
 
 == Control host and managed host
 

@@ -1,7 +1,7 @@
 = Lab: Managing AI costs
 
 [abstract]
-Repeat the Module 2 NetBox migration with three models. Compare usage, time, and corrections, then write rules for your own AI-assisted work.
+Use the NetBox installer from Module 2 for a fixed-prompt comparison of three models. Compare usage, time, and corrections, then write rules for your own work.
 
 == Learning objectives
 
@@ -27,6 +27,8 @@ Slide references below match the outline.
 Keep link:https://cursor.com/dashboard/spending[Spending,window=_blank] open during the lab.
 If it is unavailable, record elapsed time and turns, and use your enterprise usage report if available.
 These measurements alone do not establish spend.
+
+Module 2 encouraged your own prompts and experiments. Here, use the supplied `prompt.md` unchanged and hold the input files constant across runs.
 
 The timed runs cover generation and static review.
 Keep optional VM deployment checks separate from this timing.
@@ -105,7 +107,8 @@ A syntax pass does not prove that NetBox deploys correctly or that a second run 
 
 _Facilitator slides 2, 12, and 13 cover the Module 2 comparison and review costs._
 
-Compare the Module 2 rows with Runs A, B, and C if you completed both labs.
+Compare Runs A, B, and C using their fixed inputs.
+You can also discuss your Module 2 notes, but those attempts may have different prompts, context, or modes. Their time and results are not a controlled comparison with these runs.
 Answer in your scorecard notes or notebook:
 
 * Which accepted result needed the fewest user turns?

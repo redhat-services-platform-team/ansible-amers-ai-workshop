@@ -1,7 +1,7 @@
 = Lab: Python-to-Ansible NetBox migration
 
 [abstract]
-Migrate the Python NetBox installer into an Ansible project with two AI models. Review each result for missing behavior and problems on a second run.
+Write your own prompt to start migrating the Python NetBox installer. Try follow-up requests, explore the tools, and inspect what they produce.
 
 == The handover
 
@@ -15,17 +15,19 @@ Read the code to determine what the installer does.
 
 == Learning objectives
 
-* Trace the installer's execution order, dependencies, and saved state.
-* Use AI to build an Ansible project with modules, templates, and handlers.
-* Check how the migration handles credentials, release selection, second runs, and target requirements.
-* Compare two generated projects using the same inputs and validation rules.
+* Write a prompt in your own words and give the tool relevant files.
+* Try follow-up requests and see how they change the response.
+* Review generated changes and use Ansible validation when you have runnable output.
+* Record what helped, what confused you, and what you want to try next.
 
 == Before you start
 
 Complete xref:01-cursor-workspace.adoc[Module 1: Workspace setup].
 Use Codex or Cursor and your existing Ansible environment on the RHEL or macOS control workstation.
-Your facilitator will name two approved models, Model A and Model B.
-Keep the tool and interaction mode constant across both runs.
+Choose an approved model available in your tool.
+You can change prompts, models, or interaction modes as you experiment.
+A partial migration is a useful result if you can explain what you tried and what remains.
+You do not need to finish a full NetBox deployment in this lab.
 
 Run terminal commands from the repository root unless a step changes directories.
 
@@ -45,137 +47,136 @@ Open both inputs:
 * `workshop-content/02-shell-to-ansible/legacy/install_netbox.py`
 * `workshop-content/02-shell-to-ansible/legacy/.env.example`
 
-Trace `main()` and the functions it calls.
-Use `workshop-content/02-shell-to-ansible/migration-checklist.adoc` to record what each stage changes.
+Start with `main()` and follow a few of its function calls.
+Notice the packages, database, services, and saved state it manages.
+You can ask the tool to explain unfamiliar code after you write your first prompt.
+Use the code to check its answer and the claims in the maintainer comments.
 
-[cols="1,2",options="header"]
-|===
-| Stage | Questions to answer before generation
-| Inputs and validation | Which defaults, environment overrides, and validation rules affect the install?
-| State | Where are secrets and the chosen release stored? What happens on the next run?
-| Packages and database | What must exist before PostgreSQL and Valkey can serve NetBox?
-| Application | How are the release, service user, config, migrations, and admin account created?
-| Services and web access | Which systemd units, Nginx files, TLS options, SELinux rules, and firewall ports are managed?
-| Verification | What does the readiness probe prove, and what does it leave untested?
-|===
+The migration checklist is available at `workshop-content/02-shell-to-ansible/migration-checklist.adoc` when you want a closer review.
+You do not need to understand every installer stage before starting.
 
-Write down two rerun risks and one security limitation you found in the code.
-For example, service restarts occur unconditionally, and the local HTTPS probe does not verify certificate trust.
-Use the code to check the claims in the comments.
-
-== Step 2: Create separate project directories
+== Step 2: Prepare a place for your work
 
 Replace `learner` with your name without spaces:
 
 [source,bash]
 ----
 lab_output=workshop-content/02-shell-to-ansible/output/learner
-mkdir -p "$lab_output/model-a" "$lab_output/model-b"
-cp workshop-content/02-shell-to-ansible/starter/inventory.ini.example "$lab_output/model-a/"
-cp workshop-content/02-shell-to-ansible/starter/inventory.ini.example "$lab_output/model-b/"
+mkdir -p "$lab_output/attempt-1"
+cp workshop-content/02-shell-to-ansible/starter/inventory.ini.example "$lab_output/attempt-1/"
 ----
 
-The starter inventory uses the `netbox_lab` group and a documentation-only IP address.
+The starter inventory names the `netbox_lab` group and uses a documentation-only IP address.
 Leave it as an example during generation and syntax review.
-Learner output is ignored by Git.
+Git ignores learner output.
+Save your first prompt and a few notes in this folder so you can compare them with later attempts.
 
-== Step 3: Generate with Model A
+== Step 3: Write your own first prompt
 
-. Start a new conversation and select Model A.
-. Attach both legacy inputs or tell the agent to read their exact paths. Use the same migration checklist for both models.
-. Paste `workshop-content/02-shell-to-ansible/prompt.md` unchanged. Add an instruction naming your `model-a/` output directory.
-. Start a timer and check how the plan accounts for each installer stage.
-. Let it generate the project, then inspect the diff before accepting it.
+Before opening `prompt.md`, write a request in your own words.
+You might ask for a migration plan, an explanation followed by a small conversion, or an initial Ansible project.
+Choose a starting point that you can review.
 
-The project should include `site.yml`, non-secret variable examples, an example inventory, and a README.
-Use task or role files and templates where needed.
-A wrapper that simply executes `install_netbox.py` does not complete the migration.
+Think about what the tool needs to know:
 
-Check the following:
+* What do you want it to do with the installer?
+* Which source files should it read?
+* Where should it save generated files?
+* What should it explain so you can review the result?
 
-* The play targets `netbox_lab`, with privilege escalation on the managed host.
-* The project implements every installer stage or lists what is missing.
-* Generated secrets survive reruns and stay out of logs and example files.
-* The project keeps the saved release and rejects an unmanaged install.
-* Handlers reload or restart services when required. The README explains any commands that could not use a module.
-* The README explains inputs, dependencies, execution, and what remains untested.
+Include the local output directory and tell the tool to generate or explain code without executing the installer or deploying it.
+Keep real credentials out of the conversation.
+The control workstation runs Ansible; the installer targets a dedicated CentOS Stream 10 host.
 
-Count every follow-up prompt and manual correction as rework.
-Do not ask the agent to deploy while generating the project.
+. Start a conversation in Codex or Cursor and select your model.
+. Attach the installer and `.env.example`, or give their repository paths to the agent.
+. Send your own prompt and read the response before accepting changes.
+. Save the prompt and note what the tool understood, what it assumed, and what you would change.
 
-== Step 4: Validate the project locally
+There is no required wording or single correct prompt.
+If the answer misses your intent, use that to decide your next request.
 
-In a subshell, enter Model A's project so relative role, template, and variable paths resolve correctly:
+== Step 4: Experiment with follow-up requests
+
+Try something that answers a question you have about the tool or output.
+For example, ask it to explain a generated task, convert one installer stage, revise a variable name, or check whether secrets survive a second run.
+Inspect the diff after each change.
+
+You can also try a fresh conversation, another approved model, or a different interaction mode.
+If you want to preserve the first attempt, create another folder:
+
+[source,bash]
+----
+mkdir -p "$lab_output/attempt-2"
+cp workshop-content/02-shell-to-ansible/starter/inventory.ini.example "$lab_output/attempt-2/"
+----
+
+Tell the tool to save the new attempt there.
+Changing one thing at a time can help you see its effect, but you are free to explore.
+Record prompt and mode changes so you can explain the differences you see.
+
+=== Optional prompt resource
+
+After trying your own prompt, you can read `workshop-content/02-shell-to-ansible/prompt.md`.
+It is a detailed example, not the required starting prompt for this lab.
+Borrow useful requirements, edit it, or try it in a separate conversation to compare the response.
+You can also ask the tool to suggest improvements to your original prompt.
+Note which suggestions you choose and why.
+
+The example asks for a full migration, which may take longer than a focused experiment.
+Use as much of it as helps your current task.
+
+== Step 5: Review and validate what you have
+
+Look at the files the tool created and compare them with the installer.
+Use the migration checklist as a reference when needed.
+Ask the tool to explain anything you cannot follow, then check the explanation against the code.
+Pay attention to target hosts, saved secrets, release selection, and tasks that always restart services.
+Record missing behavior rather than assuming the output is complete.
+
+If your attempt has `site.yml` and `inventory.ini.example`, check syntax from that project directory:
 
 [source,bash]
 ----
 (
-  cd "$lab_output/model-a"
+  cd "$lab_output/attempt-1"
   ansible-playbook -i inventory.ini.example --syntax-check site.yml
 )
 ----
 
+Adjust the paths if the tool used a different layout.
 If the project declares collection dependencies, review `requirements.yml` and install them in your existing Ansible environment before retrying:
 
 [source,bash]
 ----
 (
-  cd "$lab_output/model-a"
+  cd "$lab_output/attempt-1"
   ansible-galaxy collection install -r requirements.yml
 )
 ----
 
-Run that command only when the generated project includes `requirements.yml`.
-If syntax validation needs variable files, follow the generated README and use non-secret examples.
-Record missing dependencies or configuration requirements.
+Run the collection command only if that file exists.
+Follow the generated README for non-secret variable files needed by validation.
+Read any error before asking for a correction, and compare the next result with the previous one.
 
-Syntax checking does not contact the target, install NetBox, prove credentials are stable, or establish idempotency.
-Use the migration checklist to review the implementation and mark runtime checks as untested.
-Read the source's validation rules and compare them with the generated assertions.
-Request corrections for missing behavior even if the syntax check passes.
+If you only generated a plan or a partial conversion, record that instead of trying to validate a missing project.
+Syntax checking does not prove a deployment works or that a second run preserves credentials and release state.
+Keep runtime behavior marked as untested until you test it on a disposable target.
 
-== Step 5: Repeat with Model B
+== Step 6: Reflect on the experiment
 
-. Start a new conversation with Model B. Do not include Model A's project or conversation.
-. Supply the same two legacy inputs, migration checklist, and unchanged canonical prompt.
-. Change only the destination instruction to your `model-b/` directory.
-. Review the plan, generated project, and behavior coverage using the same criteria.
-. Run the syntax check from Model B's project directory and record the same evidence.
+Save brief notes alongside your prompts and generated files:
 
-[source,bash]
-----
-(
-  cd "$lab_output/model-b"
-  ansible-playbook -i inventory.ini.example --syntax-check site.yml
-)
-----
+* What did your first prompt produce?
+* Which follow-up or tool setting changed the result?
+* What did you accept, edit, or reject after reading the output?
+* What remains incomplete or untested?
+* What would you try next?
 
-== Step 6: Compare the migrations
-
-[source,bash]
-----
-diff -ru "$lab_output/model-a" "$lab_output/model-b"
-----
-
-`diff` exits with code 1 when the projects differ.
-Compare what the projects do and how much work they need before you would accept them.
-
-[cols="1,2",options="header"]
-|===
-| Criterion | Evidence
-| Coverage | The project implements each stage, including TLS, SELinux, and readiness checks, or lists what is missing
-| State and secrets | The project reuses credentials and the selected release, protects files and logs, and rejects unmanaged installs
-| Second runs | Modules, handlers, and command guards prevent unnecessary work; the README explains restrictions on concurrent runs
-| Instructions | The inventory, variables, dependencies, validation commands, and deployment steps are clear
-| Verification | Record syntax results, review findings, and runtime checks completed or left untested
-| Rework | Follow-up prompts, manual edits, unresolved gaps, and elapsed time
-|===
-
-Fill the existing Module 2 Model A and Model B rows in `workshop-content/03-managing-ai-costs/lab-scorecard.adoc` or a notebook copy.
-Record actual model names, tool and mode, elapsed minutes, and user turns including the initial prompt.
-Use `merge` for an accepted result without manual edits, `edit` for a result you corrected, and `discard` for an unsuitable result.
-Record deployment testing separately from this review decision.
-Write one sentence explaining your preference and the largest remaining risk.
+You can use the Module 2 rows in `workshop-content/03-managing-ai-costs/lab-scorecard.adoc` or your own notebook.
+Record the actual model, tool and mode, and whether you used your own prompt, an edited example, or the supplied prompt.
+Leave the optional experiment row blank if you only made one attempt.
+Differences here can come from your prompts, context, model, or mode. They are observations to discuss, not a controlled model ranking.
 
 == Step 7: Optional deployment validation
 
@@ -185,7 +186,7 @@ Replace the example address and user in a separate `inventory.ini`, following th
 Review the complete project before running it.
 Use the generated project's documented variables and secret storage.
 
-. Start each model from a separate fresh VM or the same restored clean snapshot.
+. Start each attempt from a fresh VM or restore the same clean snapshot before comparing deployments.
 . Deploy using the project's README. Confirm the enabled and active PostgreSQL, Valkey, NetBox, NetBox worker, and Nginx services.
 . Check the login page through Nginx and verify the configured admin account without recording credentials.
 . Run again with identical inputs. Investigate every repeated change, migration, and restart.
@@ -198,12 +199,17 @@ On a second run, check whether repeated work is needed or simply carried over fr
 
 == Completion checklist
 
-* You saved both projects and their reports in separate directories.
-* Syntax checks pass, or the scorecard explains rejected or incomplete results.
-* You reviewed persistent state, secrets, release selection, and all installer stages.
-* The scorecard distinguishes static review from any runtime validation.
-* You recorded a preferred result and remaining gaps.
+* You wrote and sent your own first prompt.
+* You tried a follow-up request or another change and inspected its effect.
+* You saved the prompts, output, and notes about what you learned.
+* You recorded validation results or explained why the output was not ready for validation.
+* You identified a question or improvement to explore next.
 
-Proceed to xref:03-managing-ai-costs.adoc[Module 3: Managing AI Costs], which reuses these inputs and the same prompt for its cost comparison.
+An unfinished migration can satisfy this lab.
+The goal is to get familiar with the tools and learn how to guide and review their output.
+
+Proceed to xref:03-managing-ai-costs.adoc[Module 3: Managing AI costs].
+That lab uses the supplied `prompt.md` unchanged across runs to compare models with fixed inputs.
+Your experiments here are useful discussion notes, but their prompts and settings may differ from that comparison.
 
 If you see an error in this lab, fork and submit a pull request against link:{workshop_repo_url}[{workshop_repo_url},window=_blank].
