@@ -4,76 +4,203 @@ on:
   workflow_dispatch:
     inputs:
       publish:
-        description: Publish this branch to the shared GitHub Pages site
+        description: Publish main or this branch's PR preview
         type: boolean
         default: false
+      pr_number:
+        description: PR number (required when manually publishing a non-main branch)
+        type: string
+        default: ''
   pull_request:
     branches: [main]
+    types: [opened, synchronize, reopened, closed]
   push:
     branches: [main]
 
-# Checkout needs this explicitly, especially for a private repository.
 permissions:
   contents: read
+  pages: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      pr_number: ${{ steps.target.outputs.pr_number }}
+      site_url: ${{ steps.target.outputs.site_url }}
+      cleanup: ${{ steps.target.outputs.cleanup }}
     steps:
-      - name: Checkout
+      - name: Checkout requested content
+        if: github.event.action != 'closed'
         uses: actions/checkout@v6
         with:
+          path: source
           persist-credentials: false
+      - name: Checkout main content
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          path: main-source
+          persist-credentials: false
+      - name: Test preview assembly
+        if: github.event.action != 'closed'
+        working-directory: source
+        run: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s utilities -p test_pages_preview.py
+      - name: Read Pages configuration
+        id: pages
+        uses: actions/configure-pages@v6
+      - name: Select preview path
+        id: target
+        env:
+          BASE_URL: ${{ steps.pages.outputs.base_url }}
+          INPUT_PR: ${{ inputs.pr_number }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, subprocess
+          from pathlib import Path
+          event = json.loads(Path(os.environ['GITHUB_EVENT_PATH']).read_text())
+          number = ''
+          cleanup = event.get('action') == 'closed'
+          if os.environ['GITHUB_EVENT_NAME'] == 'pull_request':
+              number = str(event['number'])
+          elif os.environ['GITHUB_REF'] != 'refs/heads/main':
+              number = os.environ['INPUT_PR']
+              if not re.fullmatch(r'[1-9][0-9]*', number):
+                  raise SystemExit('Select this branch\'s PR number in pr_number.')
+              pr = json.loads(subprocess.check_output([
+                  'gh', 'api', f"repos/{os.environ['GITHUB_REPOSITORY']}/pulls/{number}"
+              ]))
+              if (pr['state'] != 'open' or pr['head']['ref'] != os.environ['GITHUB_REF_NAME']
+                      or pr['head']['repo']['full_name'] != os.environ['GITHUB_REPOSITORY']):
+                  raise SystemExit('The selected PR must be open and belong to this repository and branch.')
+          base = os.environ['BASE_URL'].rstrip('/')
+          url = f'{base}/previews/pr-{number}' if number and not cleanup else base
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write(f'pr_number={number}\nsite_url={url}\ncleanup={str(cleanup).lower()}\n')
+          PY
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
           node-version: '22'
       - name: Install Antora
         run: npm install --global @antora/cli@3.1 @antora/site-generator@3.1
-      - name: Build workshop
-        run: antora generate default-site.yml --stacktrace
-      - name: Upload downloadable preview
-        uses: actions/upload-artifact@v4
+      - name: Build main site
+        working-directory: main-source
+        env:
+          SITE_URL: ${{ steps.pages.outputs.base_url }}
+        run: antora generate default-site.yml --stacktrace --url "$SITE_URL"
+      - name: Build PR preview
+        if: steps.target.outputs.pr_number != '' && steps.target.outputs.cleanup != 'true'
+        working-directory: source
+        env:
+          SITE_URL: ${{ steps.target.outputs.site_url }}
+        run: antora generate default-site.yml --stacktrace --url "$SITE_URL"
+      - name: Upload main site
+        uses: actions/upload-artifact@v7
         with:
-          name: workshop-preview
-          path: www
+          name: workshop-main
+          path: main-source/www
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
-      - name: Upload Pages artifact
-        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.publish)
-        uses: actions/upload-pages-artifact@v4
+      - name: Upload PR preview
+        if: steps.target.outputs.pr_number != '' && steps.target.outputs.cleanup != 'true'
+        uses: actions/upload-artifact@v7
         with:
-          path: www
-      - name: Preview instructions
-        run: |
-          cat >> "$GITHUB_STEP_SUMMARY" <<'EOF'
-          ## Workshop preview
-          Download **workshop-preview** from this run's Artifacts section, extract it,
-          then run `python3 -m http.server 8080` inside the extracted folder.
-          Open http://localhost:8080/ to browse the workshop.
-
-          Main branch pushes publish to GitHub Pages when hosting is enabled.
-          To publish another branch, manually run this workflow with **publish** checked.
-          This replaces the shared Pages site; it does not create a separate PR URL.
-          EOF
+          name: workshop-preview
+          path: source/www
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
 
   deploy:
-    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.publish)
+    # Fork PRs get build artifacts only. Never run their code with publishing credentials.
+    if: >-
+      github.event_name == 'push' ||
+      (github.event_name == 'workflow_dispatch' && inputs.publish) ||
+      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
     needs: build
     runs-on: ubuntu-latest
     permissions:
+      contents: write
       pages: write
       id-token: write
+    # Serialize the read/modify/write of the complete site, not just the final upload.
     concurrency:
       group: gh-pages
       cancel-in-progress: false
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ needs.build.outputs.site_url }}/
     steps:
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
+      - name: Checkout publishing utilities
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: controller
+      - name: Download main site
+        uses: actions/download-artifact@v8
+        with:
+          name: workshop-main
+          path: main-site
+      - name: Download PR preview
+        if: needs.build.outputs.pr_number != '' && needs.build.outputs.cleanup != 'true'
+        uses: actions/download-artifact@v8
+        with:
+          name: workshop-preview
+          path: preview-site
+      - name: Load previously published site
+        working-directory: controller
+        run: |
+          if git ls-remote --exit-code origin refs/heads/gh-pages; then
+            git fetch origin gh-pages
+            git worktree add -B gh-pages ../pages-state FETCH_HEAD
+          else
+            git worktree add --detach ../pages-state HEAD
+            git -C ../pages-state checkout --orphan gh-pages
+            git -C ../pages-state rm -rf .
+          fi
+      - name: Preserve previews and update requested site
+        env:
+          PR_NUMBER: ${{ needs.build.outputs.pr_number }}
+          CLEANUP: ${{ needs.build.outputs.cleanup }}
+        run: |
+          args=(--site pages-state --main main-site)
+          if [ -n "$PR_NUMBER" ]; then
+            args+=(--pr "$PR_NUMBER")
+            if [ "$CLEANUP" = 'true' ]; then
+              args+=(--remove)
+            else
+              args+=(--preview preview-site)
+            fi
+          fi
+          python3 controller/utilities/pages_preview.py "${args[@]}"
+      - name: Save generated site
+        working-directory: pages-state
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          PR_NUMBER: ${{ needs.build.outputs.pr_number }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --all
+          if ! git diff --cached --quiet; then
+            git commit -m "Update Pages from $SOURCE_SHA (PR ${PR_NUMBER:-main})"
+            git push origin HEAD:gh-pages
+          fi
+      - name: Upload combined Pages site
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: pages-state
+          include-hidden-files: true
       - name: Deploy GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
+      - name: Link to published workshop
+        env:
+          SITE_URL: ${{ needs.build.outputs.site_url }}
+          CLEANUP: ${{ needs.build.outputs.cleanup }}
+        run: |
+          if [ "$CLEANUP" = 'true' ]; then
+            echo 'PR preview removed; main and other previews preserved.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "Workshop: $SITE_URL/" >> "$GITHUB_STEP_SUMMARY"

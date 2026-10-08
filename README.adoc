@@ -64,25 +64,37 @@ utilities/lab-clean   # Remove built site output
 
 === Preview from GitHub
 
-Pull requests targeting `main` build the workshop automatically with the *Workshop preview and Pages* workflow.
-Open the workflow run from the pull request's checks, then download the `workshop-preview` artifact.
-Extract the ZIP and run the following command inside the extracted folder:
+The *Workshop preview and Pages* workflow publishes `main` at the site root:
 
-[source,sh]
-----
-python3 -m http.server 8080
-----
+https://redhat-services-platform-team.github.io/ansible-amers-ai-workshop/
 
-Open http://localhost:8080/ to browse the generated workshop.
-These builds do not require GitHub Pages to be enabled.
+Each pull request from a branch in this repository gets a separate preview, updated when commits are pushed:
 
-For a hosted preview, a repository administrator must first select *Settings → Pages → Build and deployment → Source → GitHub Actions*.
-Private repositories require a GitHub plan that supports Pages; check the site's visibility settings before publishing workshop content.
+https://redhat-services-platform-team.github.io/ansible-amers-ai-workshop/previews/pr-3/
+
+Replace `3` with the pull request number.
+The deployment link in the workflow run and the pull request's deployment activity points to that preview.
+Antora builds the preview with its own base URL so navigation, assets, and canonical links stay within it.
+Closing or merging a pull request removes its preview; other previews remain available.
+Automatic preview publishing and cleanup take effect once this workflow is merged into `main`.
+
+To publish an unmerged branch manually, open *Actions → Workshop preview and Pages → Run workflow*:
+
+. Select the branch.
+. Check *publish*.
+. Enter its open pull request number in *pr_number*.
+
+Manual publishing from `main` refreshes the root without replacing previews.
+Leave *publish* unchecked to build downloadable artifacts only.
+Fork pull requests build artifacts but do not publish or receive repository write credentials.
+
+The workflow saves the combined generated site on the `gh-pages` branch, preserving other previews between runs.
+It rebuilds the root from `main` during every publishing run.
+Keep *Settings → Pages → Build and deployment → Source* set to *GitHub Actions*, not branch publishing.
+The `github-pages` environment must allow deployments from the preview branches.
+A repository administrator can select *Settings → Environments → github-pages → Deployment branches and tags → No restriction*.
 See https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages[GitHub's custom workflow documentation].
 
-Once enabled, pushes to `main` publish automatically.
-To publish an unmerged branch, open *Actions → Workshop preview and Pages → Run workflow*, select that branch, and check *publish*.
-The `github-pages` environment must allow deployments from the selected branch under *Settings → Environments → github-pages*.
-The deployment job links to the hosted site.
-Branch publishing replaces the shared site; it does not create a separate URL for each pull request.
-Leave *publish* unchecked to generate only a downloadable preview.
+Download `workshop-main` or `workshop-preview` from the workflow run's Artifacts section to inspect a generated build.
+Hosted builds contain their published base URL; use the hosted preview to verify navigation.
+For a local preview with local links, use the build utilities above.
