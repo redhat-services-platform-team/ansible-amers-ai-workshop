@@ -48,7 +48,7 @@
     <span class="nav-text">Labs</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="01-cursor-workspace.html">1. Cursor Workspace Setup</a>
+    <a class="nav-link" href="01-cursor-workspace.html">1. Workspace Setup</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="02-shell-to-ansible.html">2. Shell-to-Ansible Migration</a>
@@ -127,7 +127,7 @@
 <h2 id="_overview"><a class="anchor" href="#_overview"></a>Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Accelerating Ansible Delivery with AI provides a hands-on learning experience focused on applying AI-assisted development workflows to Ansible automation. Participants build a Cursor workspace, migrate legacy shell scripts to Ansible, analyze the cost factors of AI code assistance, and compete in a timed team challenge to deploy a fault-tolerant web application on AWS.</p>
+<p>Accelerating Ansible Delivery with AI provides a hands-on learning experience focused on applying AI-assisted development workflows to Ansible automation. Participants set up a workspace with Codex or Cursor, migrate legacy shell scripts to Ansible, analyze the cost factors of AI code assistance, and compete in a timed team challenge to deploy a fault-tolerant web application on AWS.</p>
 </div>
 </div>
 </div>
@@ -140,7 +140,7 @@
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Cursor Workspace Setup</strong>: Build and configure an AI-assisted development workspace using Cursor</p>
+<p><strong>Workspace Setup</strong>: Build and configure an AI-assisted development workspace using Codex or Cursor (CLI or desktop) with host Ansible tools</p>
 </li>
 <li>
 <p><strong>Shell-to-Ansible Migration</strong>: Refactor legacy shell scripts into an Ansible project using multiple AI models to compare their performance and output</p>
@@ -170,10 +170,16 @@
 <p>Familiarity with YAML syntax and shell scripting</p>
 </li>
 <li>
-<p><strong>Podman</strong> installed and configured on your local machine (required for Lab 1 Dev Containers and for previewing this documentation locally)</p>
+<p>A RHEL or macOS workstation with a <strong>working Ansible installation already available</strong></p>
 </li>
 <li>
-<p>A Cursor account (setup covered in Lab 1)</p>
+<p>Permission to install your selected AI tool (setup covered in Lab 1)</p>
+</li>
+<li>
+<p>Access to your selected tool: enterprise Codex or an approved Cursor account</p>
+</li>
+<li>
+<p>Optional: Podman for previewing this documentation locally</p>
 </li>
 </ul>
 </div>
@@ -184,7 +190,7 @@
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-This workshop does not require pre-provisioned OpenShift, AAP, Showroom, or other platform services. Lab exercises run in your local Cursor workspace via Podman. Preview and refresh this documentation with the Antora viewer container — see the <a href="appendix.html" class="xref page">Appendix</a>.
+This workshop does not require pre-provisioned OpenShift, AAP, Showroom, or other platform services. Lab exercises run directly on your workstation using your existing Ansible installation. Preview and refresh this documentation with the Antora viewer container — see the <a href="appendix.html" class="xref page">Appendix</a>.
 </td>
 </tr>
 </table>
@@ -200,7 +206,7 @@ This workshop does not require pre-provisioned OpenShift, AAP, Showroom, or othe
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p><strong><a href="01-cursor-workspace.html" class="xref page">Cursor Workspace Setup</a></strong>: Build and configure an AI-assisted development workspace using Cursor</p>
+<p><strong><a href="01-cursor-workspace.html" class="xref page">Workspace Setup</a></strong>: Build and configure an AI-assisted development workspace using Codex or Cursor (CLI or desktop) with host Ansible tools</p>
 </li>
 <li>
 <p><strong><a href="02-shell-to-ansible.html" class="xref page">Shell-to-Ansible Migration</a></strong>: Refactor legacy shell scripts into Ansible using multiple AI models</p>
@@ -224,7 +230,7 @@ This workshop does not require pre-provisioned OpenShift, AAP, Showroom, or othe
 <div class="ulist">
 <ul>
 <li>
-<p>Configure Cursor as an AI-assisted development environment for Ansible work</p>
+<p>Configure your choice of Codex or Cursor with local Ansible tools</p>
 </li>
 <li>
 <p>Compare AI model outputs when refactoring legacy shell scripts into Ansible</p>
@@ -246,7 +252,7 @@ This workshop does not require pre-provisioned OpenShift, AAP, Showroom, or othe
 <p>To view these labs in a browser, launch the Antora viewer with Podman as described in <a href="appendix.html#view-workshop-docs-locally" class="xref page">View Workshop Documentation Locally</a>.</p>
 </div>
 <div class="paragraph">
-<p>Begin with <a href="01-cursor-workspace.html" class="xref page">Module 1: Cursor Workspace Setup</a>. Each module includes detailed instructions, exercises, and verification steps.</p>
+<p>Begin with <a href="01-cursor-workspace.html" class="xref page">Module 1: Workspace Setup</a>. Each module includes detailed instructions, exercises, and verification steps.</p>
 </div>
 <div class="paragraph">
 <p>For questions or issues, refer to the <a href="appendix.html" class="xref page">Appendix</a> or contact your instructor.</p>
@@ -254,7 +260,7 @@ This workshop does not require pre-provisioned OpenShift, AAP, Showroom, or othe
 </div>
 </div>
 <nav class="pagination">
-  <span class="next"><a href="01-cursor-workspace.html" class="query-params-link">1. Cursor Workspace Setup</a></span>
+  <span class="next"><a href="01-cursor-workspace.html" class="query-params-link">1. Workspace Setup</a></span>
 </nav>
 </article>
 <aside class="toc sidebar" data-title="Contents" data-levels="2">
