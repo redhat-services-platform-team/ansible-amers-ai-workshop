@@ -1,28 +1,52 @@
-= Module 2 lab assets — Shell to Ansible
+= Module 2 lab assets: Python to Ansible
 
-== What you have
+Migrate the NetBox installer that has accumulated fifty fictional maintainers, contradictory handovers, and responsibility for keeping the company operational.
+Read the code to determine what it actually does.
 
-* `legacy/configure-workshop-app.sh` — small bash script that creates an app directory and writes a config file.
-* `prompt.md` — copy-paste prompt for Cursor Chat or Agent (reused unchanged in Module 3: Managing AI Costs).
-* `output/` — create your own subdirectory here for generated playbooks (not committed).
+== Files
 
-== Suggested layout (per learner)
+* `legacy/install_netbox.py` is copied from `~/netbox-python/install_netbox.py`. Workshop comments add the maintainer story; executable behavior is unchanged.
+* `legacy/.env.example` is copied unchanged from the same directory. Secret values are blank.
+* `prompt.md` is the canonical migration prompt shared with Module 3.
+* `starter/inventory.ini.example` names the `netbox_lab` group and contains a documentation-only host address.
+* `migration-checklist.adoc` maps installer behavior to review criteria.
+* `facilitator-guide.adoc` covers delivery and optional deployment validation.
+* `output/` contains learner projects and is ignored by Git.
 
-[source,bash]
+Follow `documentation/modules/ROOT/pages/02-shell-to-ansible.adoc` for the learner instructions.
+The existing `02-shell-to-ansible` directory and page names are retained so workshop links keep working.
+The exercise now migrates Python rather than the previous shell-script example.
+
+== Output layout
+
+[source,text]
 ----
-workshop-content/02-shell-to-ansible/output/<your-name>/site.yml
+output/<your-name>/model-a/
+output/<your-name>/model-b/
 ----
 
-Module 3 cost runs use separate folders so you can compare models without overwriting:
+Each generated project contains `site.yml`, task or role files, templates as needed, `vars/example.yml`, `inventory.ini.example`, and a README.
+Declare additional collection dependencies in `requirements.yml` when needed.
+Module 3 uses `run-a/`, `run-b/`, and `run-c/` under the same learner directory.
+Keep the canonical prompt and both input files identical across model comparisons.
+Only the output destination changes.
 
-[source,bash]
-----
-workshop-content/02-shell-to-ansible/output/<your-name>/run-a/site.yml
-workshop-content/02-shell-to-ansible/output/<your-name>/run-b/site.yml
-workshop-content/02-shell-to-ansible/output/<your-name>/run-c/site.yml
-----
+== Control host and managed host
 
-== Variables the script uses
+Use your existing Ansible installation on your RHEL or macOS control workstation for generation and syntax checks.
+The installer explicitly supports a dedicated CentOS Stream 10 managed host.
+Do not run the installer on your workstation or an existing shared server.
+It installs packages, changes PostgreSQL and Nginx configuration, starts services, and may open firewall ports.
 
-The script reads `APP_ROOT`, `APP_PORT`, `APP_ENV`, and `APP_NAME` from the environment (defaults are in the script).
-Your playbook may use `vars:` or a small `group_vars` file in your output folder—keep it next to your playbook.
+The base exercise requires no live target.
+An optional deployment needs a disposable CentOS Stream 10 VM, SSH access, sudo, and network access to release archives and package sources.
+Use separate fresh VMs or restore the same clean snapshot before testing each model.
+Do not run the Python installer and generated Ansible project on the same dirty baseline for a fair comparison.
+
+== Secrets and version state
+
+The script stores its selected release and generated credentials in `/etc/netbox-installer/state.json` on the managed host.
+It retains the first resolved release, rejects changes to saved secrets, and refuses an unmanaged `/opt/netbox`.
+The migration must account for these behaviors.
+The original uses permissive lab defaults such as wildcard allowed hosts and HTTP; review them explicitly.
+Real secrets belong in approved secret storage or an encrypted Ansible Vault file outside committed examples.

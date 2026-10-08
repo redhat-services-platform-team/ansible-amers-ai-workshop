@@ -1,0 +1,42 @@
+= NetBox migration review checklist
+
+Use the executable source to verify these requirements.
+For each row, record the generated file/task, behavior differences, and evidence as reviewed, syntax-checked, runtime-tested, or missing.
+
+[cols="1,3",options="header"]
+|===
+| Source stage | Behavior to account for
+| `load_env`, `validate` | Defaults, optional .env file, environment precedence, literal parsing, host and allowed-host checks, TLS modes and supplied files, worker bounds, time zone, release format, secret length checks
+| `main` | Root execution, CentOS Stream 10 check, single-installer file lock, dependency order, redacted failure handling
+| `prepare_state` | Root-only state directory and file, persisted generated secrets, resolve `latest` once, retain managed version, reject secret rotation and version changes, refuse an unmanaged `/opt/netbox`
+| `install_packages` | All package dependencies from the source, enabled/active Valkey, PONG check
+| `database` | Initialize PostgreSQL only when needed, ordered loopback SCRAM rules, config ownership, role/password, UTF8 database ownership, schema grant, database connectivity
+| `application` | Release download/extraction, `/opt/netbox` symlink validation, system service user, writable app directories, configuration.py with protected group access, both Valkey logical databases, secure-cookie settings for TLS
+| `application`, continued | Stop existing app units before source upgrade procedure, exclude installer secrets from pip environment, dependencies/migrations/static files, restore SELinux labels after moving release, create admin only when absent, reject an unsuitable existing admin, Django check, Gunicorn settings
+| `services` | NetBox and RQ worker units, service dependencies, restricted service account and unit settings, daemon reload, enable/start and restart behavior
+| `webserver` | HTTP, self-signed TLS, supplied PEM files, protected private key, HTTPS redirect, dedicated-host Nginx config, static alias, proxy headers, config validation before restart
+| `webserver`, continued | SELinux network-connect boolean, persistent static-file labels and relabeling, optional HTTP/HTTPS firewall services and reload
+| `verify` | All five units enabled and active, bounded login-page retries through Nginx with the configured Host header and CSRF marker, local HTTPS probe trust limitation
+|===
+
+== Input mapping
+
+Account for all keys in `.env.example`, including the four blank secret fields.
+Document any deliberate precedence or input-format changes.
+Explicitly identify changes to wildcard allowed hosts, HTTP defaults, or enabled firewall management.
+Do not assume changing a default alone establishes a secure deployment.
+
+== Rerun review
+
+* Does a second run reuse secrets and the selected release?
+* What triggers migrations, dependency installation, daemon reloads, and service restarts?
+* Can two runs change persistent state concurrently? If the migration cannot preserve the source lock, document and enforce an operating restriction.
+* Do command guards measure the actual desired state, or only the existence of a marker?
+* Are failures and check-mode limitations explicit?
+
+== Optional runtime evidence
+
+On a disposable target, record first-run health and the second-run recap.
+Check actual state alongside change counts.
+A `changed_when: false` task can still mutate the host.
+Record the tested TLS mode, firewall option, and credential/version reuse without including secrets.

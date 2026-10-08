@@ -244,8 +244,9 @@ Start with this prompt in Codex or Cursor:
 ```text
 Read README.adoc and workshop-content/02-shell-to-ansible/README.adoc.
 Explain the workshop structure and the prerequisites for converting the legacy
-shell script to Ansible. Include differences between a RHEL control host and a
-macOS control host. Use my existing working Ansible installation.
+Python NetBox installer to Ansible. Include differences between a RHEL control
+host and a macOS control host, with a dedicated CentOS Stream 10 managed host.
+Use my existing working Ansible installation.
 Keep this task to inspection and explanation.
 ```
 
@@ -616,11 +617,12 @@ behavior and do not enforce sandbox permissions. See
 Try a focused task in a workspace-write session:
 
 ```text
-Read workshop-content/02-shell-to-ansible/legacy/configure-workshop-app.sh.
-Explain its assumptions, then propose an idempotent Ansible conversion.
-Wait for my choice of output filename before creating the playbook. Target RHEL
-managed nodes and account for macOS as a possible control host. After creating
-the playbook, use my existing Ansible installation and run syntax validation. Report the diff
+Read workshop-content/02-shell-to-ansible/legacy/install_netbox.py.
+Also read legacy/.env.example in the same directory. Explain the assumptions,
+then propose an idempotent Ansible project for a dedicated CentOS Stream 10 host.
+Wait for my choice of output directory before creating the project. My RHEL or
+macOS workstation is the control host. After generation, use my existing Ansible
+installation for syntax validation. Report the diff
 and validation results. Do not connect to managed hosts for this task.
 ```
 

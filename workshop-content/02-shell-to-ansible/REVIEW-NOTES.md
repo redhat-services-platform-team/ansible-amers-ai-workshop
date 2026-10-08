@@ -1,37 +1,32 @@
-# Module 2 — review notes (scaffold from Module 3 / cost lab work)
+# Module 2 review notes
 
-**Owner:** Person building full Module 2 Antora lab. **Do not delete** until merged into final Module 2 docs.
+## Current scenario
 
-## What we added (assumptions)
+Lab 2 migrates `legacy/install_netbox.py` and `legacy/.env.example`, copied from `~/netbox-python`.
+The copied Python script has fictional comments about fifty maintainers and an undocumented company-critical deployment.
+Only comments changed; its Python AST matches the original.
+The example environment file is unchanged and contains blank secret values.
 
-| Item | Purpose |
-|------|---------|
-| `legacy/configure-workshop-app.sh` | Single legacy script for shell→Ansible exercise |
-| `prompt.md` | **Canonical migration prompt** — Module 3 reuses this verbatim for A/B/C model runs |
-| `README.adoc` | Paths for learner output under `output/<name>/` |
-| `documentation/modules/ROOT/pages/02-shell-to-ansible.adoc` | Minimal step-by-step lab (learner-first); expand, don’t replace tone |
+The previous shell script and toy reference playbook have been removed.
+The existing module directory and Antora page filenames remain stable to preserve links.
+The page title, navigation, overview, canonical prompt, Lab 1 handoff, and Module 3 dependencies now describe Python-to-Ansible migration.
 
-## What Module 3 depends on
+## Exercise design
 
-- **Same script:** `legacy/configure-workshop-app.sh`
-- **Same prompt:** `prompt.md`
-- **Scorecard rows:** “Module 2 — Model A/B” in `workshop-content/03-managing-ai-costs/lab-scorecard.adoc`
+- Generate separate Ansible projects for Model A and Model B using identical legacy inputs, migration checklist, and prompt.
+- Use the existing RHEL/macOS Ansible control environment. Target the script's supported dedicated CentOS Stream 10 managed host.
+- Require behavior coverage, persistent secrets and release state, clear input mapping, modules/templates/handlers, explicit command exceptions, and project instructions.
+- The base definition of done is static generation, syntax validation, and an honest coverage report. Actual installation and idempotency remain unverified without a disposable target.
+- Keep deployment optional and separate from model-generation timing. Use clean, independent target baselines.
+- Preserve Module 3's fresh run directories and turn cap. Reaching the cap with gaps is an incomplete result, not a successful migration.
 
-If you change the script path, prompt text, or definition of done, update:
+## Remaining delivery review
 
-- `documentation/modules/ROOT/pages/03-managing-ai-costs.adoc`
-- `workshop-content/03-managing-ai-costs/facilitator-talk-track.md`
-- `workshop-content/03-managing-ai-costs/deck-slide-outline.md`
+- Pilot the proposed 60 to 90 minutes and choose a common generation time limit.
+- Decide whether the workshop provides disposable CentOS Stream 10 VMs for optional deployment validation.
+- Confirm approved model assignments and collection-installation access.
+- Validate generated projects on real disposable targets before treating any output as a deployable reference solution.
 
-## Open questions for review
+## Shared dependencies
 
-1. **Script realism** — Is `configure-workshop-app.sh` the right size/story for customer engagements, or should we swap in a multi-file bash example?
-2. **Output layout** — We assumed `output/<learner>/site.yml` and `run-a|b|c/` for Module 3; OK for gitignore / facilitator grading?
-3. **Model names** — Antora uses “Model A / B / C” placeholders; align with deck and org-approved model list.
-4. **Validation** — Do we require `ansible-playbook --check` against localhost, or syntax-check only (current)?
-5. **Module 2 compare section** — We stubbed a simple table; add rubric (idempotency, FQCN, readability) when you flesh out §5.
-6. **Remove duplicate content** — Module 2 overview is minimal; long-form Ansible migration teaching can live in slides or facilitator notes, not Antora essay.
-
-## Removed from Module 3 (do not resurrect without discussion)
-
-- Idempotency-only scenario under `workshop-content/03-managing-ai-costs/scenario/` (playbook refactor). Cost lab is **same migration task as Module 2**, not a second Ansible exercise.
+Changes to the source inputs, canonical prompt, or benchmark stopping rule require review of the Module 3 learner page, facilitator talk track, deck outline, and scorecard.

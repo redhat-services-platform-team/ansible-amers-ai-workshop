@@ -4,14 +4,14 @@ Welcome to the {lab_name}!
 
 == Overview
 
-{lab_name} provides a hands-on learning experience focused on applying AI-assisted development workflows to Ansible automation. Participants set up a workspace with Codex or Cursor, migrate legacy shell scripts to Ansible, analyze the cost factors of AI code assistance, and compete in a timed team challenge to deploy a fault-tolerant web application on AWS.
+{lab_name} provides a hands-on learning experience focused on applying AI-assisted development workflows to Ansible automation. Participants set up a workspace with Codex or Cursor, migrate a legacy Python NetBox installer to Ansible, analyze the cost factors of AI code assistance, and compete in a timed team challenge to deploy a fault-tolerant web application on AWS.
 
 == Practical Exercises
 
 Through a series of progressive labs, you'll gain practical experience with:
 
 * **Workspace Setup**: Build and configure an AI-assisted development workspace using Codex or Cursor (CLI or desktop) with host Ansible tools
-* **Shell-to-Ansible Migration**: Refactor legacy shell scripts into an Ansible project using multiple AI models to compare their performance and output
+* **Python-to-Ansible NetBox migration**: Refactor a legacy Python NetBox installer into an Ansible project using multiple AI models to compare their performance and output
 * **Managing AI Costs**: Analyze and manage the cost factors associated with AI code assistance
 * **Delivering with AI**: In randomly assigned groups of four, design, develop, and deploy a fault-tolerant web application on AWS using Cursor AI and Ansible
 
@@ -33,7 +33,7 @@ NOTE: This workshop does not require pre-provisioned OpenShift, AAP, Showroom, o
 The workshop is organized into four sequential modules:
 
 . **xref:01-cursor-workspace.adoc[Workspace Setup]**: Build and configure an AI-assisted development workspace using Codex or Cursor (CLI or desktop) with host Ansible tools
-. **xref:02-shell-to-ansible.adoc[Shell-to-Ansible Migration]**: Refactor legacy shell scripts into Ansible using multiple AI models
+. **xref:02-shell-to-ansible.adoc[Python-to-Ansible NetBox migration]**: Refactor a legacy Python NetBox installer into Ansible using multiple AI models
 . **xref:03-managing-ai-costs.adoc[Managing AI Costs]**: Analyze and manage cost factors associated with AI code assistance
 . **xref:04-aws-lab-provisioning.adoc[Delivering with AI]**: Team challenge — deliver a fault-tolerant web application on AWS with Cursor AI and Ansible
 
@@ -42,7 +42,7 @@ The workshop is organized into four sequential modules:
 By the end of this workshop, you will be able to:
 
 * Configure your choice of Codex or Cursor with local Ansible tools
-* Compare AI model outputs when refactoring legacy shell scripts into Ansible
+* Compare AI model outputs when migrating a legacy Python NetBox installer into Ansible
 * Identify and manage cost factors related to AI code assistance
 * Design and present a fault-tolerant AWS web application that is deployed and updated with Ansible
 

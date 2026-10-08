@@ -1,7 +1,7 @@
 = Lab: Managing AI Costs
 
 [abstract]
-Use the same shell-to-Ansible task as Module 2 to compare models, usage, and spend—and write three guardrails.
+Use the same Python-to-Ansible NetBox task as Module 2 to compare models, usage, and spend—and write three guardrails.
 
 == Learning Objectives
 
@@ -14,7 +14,7 @@ After completing this module, you will be able to:
 
 == Before you start
 
-* Complete xref:02-shell-to-ansible.adoc[Module 2: Shell-to-Ansible Migration] or skim `workshop-content/02-shell-to-ansible/legacy/configure-workshop-app.sh` and `prompt.md` so the task is familiar.
+* Complete xref:02-shell-to-ansible.adoc[Module 2: Python-to-Ansible NetBox migration] or skim `workshop-content/02-shell-to-ansible/legacy/install_netbox.py`, `workshop-content/02-shell-to-ansible/legacy/.env.example`, and `prompt.md` so the task is familiar.
 * If your facilitator uses slides, follow along with `workshop-content/03-managing-ai-costs/deck-slide-outline.md` (slide numbers below match that outline).
 * Facilitators: `workshop-content/03-managing-ai-costs/facilitator-talk-track.md` (talk track—not required reading for learners).
 * Scorecard: `workshop-content/03-managing-ai-costs/lab-scorecard.adoc`
@@ -24,6 +24,8 @@ After completing this module, you will be able to:
 ====
 Keep link:https://cursor.com/dashboard/spending[Spending,window=_blank] open in a browser tab during this lab.
 ====
+
+The comparison measures generation and static review. Do not run the installer or deploy a generated project during these timed runs. A syntax pass does not prove NetBox works or reruns are idempotent; record coverage gaps and runtime checks as untested. Keep any optional VM validation separate from generation time.
 
 == Step 1: Record your billing context
 
@@ -48,7 +50,7 @@ _Facilitator deck: slide 9 (usage patterns)._
 
 _Facilitator deck: slides 5–6, 10–11 (model choice, context size, scorecard)._
 
-You will migrate `configure-workshop-app.sh` to Ansible **three times**. Each run uses a **new** chat thread and the **same** `prompt.md`.
+You will migrate the Python NetBox installer to an Ansible project **three times**. Each run includes the same `legacy/install_netbox.py`, `legacy/.env.example`, and `migration-checklist.adoc`. Each run uses a **new** chat thread and the **same** `prompt.md`.
 
 . Create three output folders, for example:
 
@@ -70,22 +72,22 @@ workshop-content/02-shell-to-ansible/output/<your-name>/run-c/
 == Step 4: Run A
 
 . New Cursor Chat or Agent thread; select **Run A** model.
-. Attach **only** `workshop-content/02-shell-to-ansible/legacy/configure-workshop-app.sh`.
-. Paste the full `prompt.md`; tell the model to write the playbook under your `run-a/` folder.
-. Accept or edit the result until `ansible-playbook --syntax-check` passes on your new playbook.
+. Attach `workshop-content/02-shell-to-ansible/legacy/install_netbox.py`, its `.env.example`, and the Module 2 migration checklist. Do not attach prior generated projects.
+. Paste the full `prompt.md`; tell the model to write the Ansible project under your `run-a/` folder.
+. Review stage coverage and state handling. From the generated project directory, run `ansible-playbook -i inventory.ini.example --syntax-check site.yml`, following its README for declared collection dependencies and non-secret variable files. Stop when the canonical definition of done is met or the run reaches 15 user turns. Record remaining gaps if the limit is reached.
 . **Before** opening Spending, fill scorecard row **Run A**: model, Chat or Agent, minutes, user turns, quality (merge / edit / discard), notes (context size, rework).
 . Glance at Spending; note subjective usage **low / medium / high** for this run (optional column on scorecard).
 
 == Step 5: Run B
 
-. **New thread.** Same attachment. **Same** `prompt.md` text. Save under `run-b/`.
-. Syntax-check the playbook.
+. **New thread.** Same attachments. **Same** `prompt.md` text. Save under `run-b/`.
+. Review coverage and syntax-check the project using the same rules and stopping limit as Run A.
 . Fill scorecard row **Run B** (same columns as Run A).
 
 == Step 6: Run C
 
 . **New thread.** Same rules as Run B. Save under `run-c/`.
-. Fill scorecard row **Run C**.
+. Review coverage and syntax-check the project using the same rules and stopping limit as Run A. Fill scorecard row **Run C**.
 
 . Stop each run at definition of done in `prompt.md` or after **15 user turns**, whichever comes first.
 
@@ -106,13 +108,13 @@ _Facilitator deck: slide 12._
 
 . On `lab-scorecard.adoc`, complete **Personal optimization rules** (three sentences you will actually follow).
 
-Examples: cheap model first on small migrations; only attach the shell script; syntax-check before a second Agent message.
+Examples: try a cheaper model before escalating; attach only the shared installer inputs and checklist; read validation errors before another Agent message.
 
 == Step 9 (optional): CLI agent
 
 _Facilitator deck: slide 7._
 
-. Repeat **Run A** with `cursor-agent` using the same `prompt.md` and script path; add a note on the scorecard if turns or usage differ from in-editor Agent.
+. Repeat **Run A** with `cursor-agent` using the same `prompt.md`, both legacy input files, and migration checklist; add a note on the scorecard if turns or usage differ from in-editor Agent.
 
 == Next Steps
 

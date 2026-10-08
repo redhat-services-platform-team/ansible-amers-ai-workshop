@@ -1,7 +1,9 @@
 = Lab scorecard — Module 3 Managing AI Costs
 
-Record one row per model run on the *same* shell-to-Ansible task (`workshop-content/02-shell-to-ansible/prompt.md` + `legacy/configure-workshop-app.sh`).
+Record one row per model run on the *same* Python-to-Ansible NetBox migration (`workshop-content/02-shell-to-ansible/prompt.md` + `legacy/install_netbox.py` + `legacy/.env.example` + `migration-checklist.adoc`).
 Hold prompts and attachments constant across runs unless the facilitator directs otherwise.
+Record generation/static-review time separately from any optional deployment validation.
+Include coverage gaps, syntax results, and runtime-tested or untested status in Notes.
 
 **Billing period reset date:**
 

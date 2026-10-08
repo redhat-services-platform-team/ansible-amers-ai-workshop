@@ -374,7 +374,8 @@ Use this first prompt in either Codex or Cursor with the repository open:
 ----
 Read README.adoc and workshop-content/02-shell-to-ansible/README.adoc.
 Explain the workshop structure and prerequisites for converting the legacy
-shell script to Ansible. Commands run on my RHEL or macOS workstation.
+Python NetBox installer to Ansible. My RHEL or macOS workstation is the control
+host; optional deployment targets a disposable CentOS Stream 10 VM.
 Use my existing working Ansible installation for validation. If its environment
 is unavailable, report the missing command and ask for the environment details.
 Keep this task to inspection and explanation, and do not connect to managed hosts.
@@ -400,4 +401,4 @@ Keep this task to inspection and explanation, and do not connect to managed host
 
 == 7: Next Steps
 
-Proceed to xref:02-shell-to-ansible.adoc[Module 2: Shell-to-Ansible Migration]. Keep your existing Ansible environment available in the terminal used for validation and review `git diff` after AI edits.
+Proceed to xref:02-shell-to-ansible.adoc[Module 2: Python-to-Ansible NetBox migration]. Keep your existing Ansible environment available in the terminal used for validation and review `git diff` after AI edits.

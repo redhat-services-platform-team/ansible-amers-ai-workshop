@@ -1,6 +1,6 @@
 * Labs
 ** xref:01-cursor-workspace.adoc[1. Workspace Setup]
-** xref:02-shell-to-ansible.adoc[2. Shell-to-Ansible Migration]
+** xref:02-shell-to-ansible.adoc[2. Python-to-Ansible NetBox migration]
 ** xref:03-managing-ai-costs.adoc[3. Managing AI Costs]
 ** xref:04-aws-lab-provisioning.adoc[4. Delivering with AI]
 * xref:appendix.adoc[Appendix]
