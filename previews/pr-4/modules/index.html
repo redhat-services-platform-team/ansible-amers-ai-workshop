@@ -48,13 +48,13 @@
     <span class="nav-text">Labs</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="01-cursor-workspace.html">1. Workspace Setup</a>
+    <a class="nav-link" href="01-cursor-workspace.html">1. Workspace setup</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="02-shell-to-ansible.html">2. Python-to-Ansible NetBox migration</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="03-managing-ai-costs.html">3. Managing AI Costs</a>
+    <a class="nav-link" href="03-managing-ai-costs.html">3. Managing AI costs</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="04-aws-lab-provisioning.html">4. Delivering with AI</a>
@@ -66,10 +66,10 @@
     <a class="nav-link" href="appendix.html">Appendix</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="appendix.html#view-workshop-docs-locally">View Workshop Documentation Locally</a>
+    <a class="nav-link" href="appendix.html#view-workshop-docs-locally">View workshop documentation locally</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="appendix.html#refresh-local-docs">Refresh Local Documentation</a>
+    <a class="nav-link" href="appendix.html#refresh-local-docs">Refresh local documentation</a>
   </li>
 </ul>
   </li>
@@ -119,148 +119,70 @@
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Welcome to the Accelerating Ansible Delivery with AI!</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_overview"><a class="anchor" href="#_overview"></a>Overview</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Accelerating Ansible Delivery with AI provides a hands-on learning experience focused on applying AI-assisted development workflows to Ansible automation. Participants set up a workspace with Codex or Cursor, migrate a legacy Python NetBox installer to Ansible, analyze the cost factors of AI code assistance, and compete in a timed team challenge to deploy a fault-tolerant web application on AWS.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_practical_exercises"><a class="anchor" href="#_practical_exercises"></a>Practical Exercises</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Through a series of progressive labs, you&#8217;ll gain practical experience with:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Workspace Setup</strong>: Build and configure an AI-assisted development workspace using Codex or Cursor (CLI or desktop) with host Ansible tools</p>
-</li>
-<li>
-<p><strong>Python-to-Ansible NetBox migration</strong>: Refactor a legacy Python NetBox installer into an Ansible project using multiple AI models to compare their performance and output</p>
-</li>
-<li>
-<p><strong>Managing AI Costs</strong>: Analyze and manage the cost factors associated with AI code assistance</p>
-</li>
-<li>
-<p><strong>Delivering with AI</strong>: In randomly assigned groups of four, design, develop, and deploy a fault-tolerant web application on AWS using Cursor AI and Ansible</p>
-</li>
-</ul>
+<p>Use Codex or Cursor with Ansible to migrate a Python NetBox installer, compare AI model usage, and complete a team deployment challenge on AWS.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_prerequisites"><a class="anchor" href="#_prerequisites"></a>Prerequisites</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>Before starting this workshop, ensure you have:</p>
-</div>
 <div class="ulist">
 <ul>
 <li>
-<p>Basic understanding of Linux command line operations</p>
+<p>Basic Linux command-line skills and familiarity with YAML and scripting.</p>
 </li>
 <li>
-<p>Familiarity with YAML syntax and shell scripting</p>
+<p>A RHEL or macOS workstation with a working Ansible installation.</p>
 </li>
 <li>
-<p>A RHEL or macOS workstation with a <strong>working Ansible installation already available</strong></p>
+<p>Permission to install your chosen AI tool and access to enterprise Codex or an approved Cursor account.</p>
 </li>
 <li>
-<p>Permission to install your selected AI tool (setup covered in Lab 1)</p>
-</li>
-<li>
-<p>Access to your selected tool: enterprise Codex or an approved Cursor account</p>
-</li>
-<li>
-<p>Optional: Podman for previewing this documentation locally</p>
+<p>Optional Podman access to preview the documentation locally.</p>
 </li>
 </ul>
 </div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-This workshop does not require pre-provisioned OpenShift, AAP, Showroom, or other platform services. Lab exercises run directly on your workstation using your existing Ansible installation. Preview and refresh this documentation with the Antora viewer container — see the <a href="appendix.html" class="xref page">Appendix</a>.
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>Lab 2&#8217;s generation and review steps run on your workstation.
+Optional deployment checks need a disposable CentOS Stream 10 VM.
+Lab 4 uses an AWS sandbox.
+The workshop does not require OpenShift, AAP, or Showroom services.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_lab_structure"><a class="anchor" href="#_lab_structure"></a>Lab Structure</h2>
+<h2 id="_labs"><a class="anchor" href="#_labs"></a>Labs</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>The workshop is organized into four sequential modules:</p>
-</div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p><strong><a href="01-cursor-workspace.html" class="xref page">Workspace Setup</a></strong>: Build and configure an AI-assisted development workspace using Codex or Cursor (CLI or desktop) with host Ansible tools</p>
+<p><a href="01-cursor-workspace.html" class="xref page">Workspace setup</a>. Configure Codex or Cursor with your local Ansible tools, using the CLI or desktop interface.</p>
 </li>
 <li>
-<p><strong><a href="02-shell-to-ansible.html" class="xref page">Python-to-Ansible NetBox migration</a></strong>: Refactor a legacy Python NetBox installer into Ansible using multiple AI models</p>
+<p><a href="02-shell-to-ansible.html" class="xref page">Python-to-Ansible NetBox migration</a>. Generate two Ansible projects from the same legacy installer and compare their behavior and review requirements.</p>
 </li>
 <li>
-<p><strong><a href="03-managing-ai-costs.html" class="xref page">Managing AI Costs</a></strong>: Analyze and manage cost factors associated with AI code assistance</p>
+<p><a href="03-managing-ai-costs.html" class="xref page">Managing AI costs</a>. Repeat the migration with different models and record usage, time, and corrections.</p>
 </li>
 <li>
-<p><strong><a href="04-aws-lab-provisioning.html" class="xref page">Delivering with AI</a></strong>: Team challenge — deliver a fault-tolerant web application on AWS with Cursor AI and Ansible</p>
+<p><a href="04-aws-lab-provisioning.html" class="xref page">Delivering with AI</a>. Work in randomly assigned groups of four to design and deploy a fault-tolerant web application on AWS with Cursor and Ansible.</p>
 </li>
 </ol>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_learning_outcomes"><a class="anchor" href="#_learning_outcomes"></a>Learning Outcomes</h2>
+<h2 id="_start_the_workshop"><a class="anchor" href="#_start_the_workshop"></a>Start the workshop</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>By the end of this workshop, you will be able to:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Configure your choice of Codex or Cursor with local Ansible tools</p>
-</li>
-<li>
-<p>Compare AI model outputs when migrating a legacy Python NetBox installer into Ansible</p>
-</li>
-<li>
-<p>Identify and manage cost factors related to AI code assistance</p>
-</li>
-<li>
-<p>Design and present a fault-tolerant AWS web application that is deployed and updated with Ansible</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_getting_started"><a class="anchor" href="#_getting_started"></a>Getting Started</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>To view these labs in a browser, launch the Antora viewer with Podman as described in <a href="appendix.html#view-workshop-docs-locally" class="xref page">View Workshop Documentation Locally</a>.</p>
-</div>
-<div class="paragraph">
-<p>Begin with <a href="01-cursor-workspace.html" class="xref page">Module 1: Workspace Setup</a>. Each module includes detailed instructions, exercises, and verification steps.</p>
-</div>
-<div class="paragraph">
-<p>For questions or issues, refer to the <a href="appendix.html" class="xref page">Appendix</a> or contact your instructor.</p>
+<p>Begin with <a href="01-cursor-workspace.html" class="xref page">Module 1: Workspace setup</a>.
+For a local documentation preview, follow <a href="appendix.html#view-workshop-docs-locally" class="xref page">View workshop documentation locally</a>.
+Use the <a href="appendix.html" class="xref page">Appendix</a> or ask your instructor if you need help.</p>
 </div>
 </div>
 </div>
 <nav class="pagination">
-  <span class="next"><a href="01-cursor-workspace.html" class="query-params-link">1. Workspace Setup</a></span>
+  <span class="next"><a href="01-cursor-workspace.html" class="query-params-link">1. Workspace setup</a></span>
 </nav>
 </article>
 <aside class="toc sidebar" data-title="Contents" data-levels="2">

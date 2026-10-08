@@ -49,13 +49,13 @@
     <span class="nav-text">Labs</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="01-cursor-workspace.html">1. Workspace Setup</a>
+    <a class="nav-link" href="01-cursor-workspace.html">1. Workspace setup</a>
   </li>
   <li class="nav-item is-current-page" data-depth="2">
     <a class="nav-link" href="02-shell-to-ansible.html">2. Python-to-Ansible NetBox migration</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="03-managing-ai-costs.html">3. Managing AI Costs</a>
+    <a class="nav-link" href="03-managing-ai-costs.html">3. Managing AI costs</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="04-aws-lab-provisioning.html">4. Delivering with AI</a>
@@ -67,10 +67,10 @@
     <a class="nav-link" href="appendix.html">Appendix</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="appendix.html#view-workshop-docs-locally">View Workshop Documentation Locally</a>
+    <a class="nav-link" href="appendix.html#view-workshop-docs-locally">View workshop documentation locally</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="appendix.html#refresh-local-docs">Refresh Local Documentation</a>
+    <a class="nav-link" href="appendix.html#refresh-local-docs">Refresh local documentation</a>
   </li>
 </ul>
   </li>
@@ -123,7 +123,7 @@
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-Turn a company-critical Python NetBox installer into an Ansible project, then compare how two AI models handle its behavior and maintenance risks.
+Migrate the Python NetBox installer into an Ansible project with two AI models. Review each result for missing behavior and problems on a second run.
 </blockquote>
 </div>
 </div>
@@ -138,8 +138,8 @@ Your assignment is to replace it with automation the next maintainer can review 
 </div>
 <div class="paragraph">
 <p>The maintainer history is workshop fiction.
-The installation code is a real Python installer copied from <code>netbox-python</code>; only comments were added.
-Treat the code as the source of truth.</p>
+We copied the installer from <code>netbox-python</code> and added comments. Its executable code is unchanged.
+Read the code to determine what the installer does.</p>
 </div>
 </div>
 </div>
@@ -149,13 +149,13 @@ Treat the code as the source of truth.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Read a procedural installer and map its dependencies and persistent state.</p>
+<p>Trace the installer&#8217;s execution order, dependencies, and saved state.</p>
 </li>
 <li>
 <p>Use AI to build an Ansible project with modules, templates, and handlers.</p>
 </li>
 <li>
-<p>Review credentials, release selection, rerun behavior, and host assumptions.</p>
+<p>Check how the migration handles credentials, release selection, second runs, and target requirements.</p>
 </li>
 <li>
 <p>Compare two generated projects using the same inputs and validation rules.</p>
@@ -168,7 +168,7 @@ Treat the code as the source of truth.</p>
 <h2 id="_before_you_start"><a class="anchor" href="#_before_you_start"></a>Before you start</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Complete <a href="01-cursor-workspace.html" class="xref page">Module 1: Workspace Setup</a>.
+<p>Complete <a href="01-cursor-workspace.html" class="xref page">Module 1: Workspace setup</a>.
 Use Codex or Cursor and your existing Ansible environment on the RHEL or macOS control workstation.
 Your facilitator will name two approved models, Model A and Model B.
 Keep the tool and interaction mode constant across both runs.</p>
@@ -182,9 +182,9 @@ Keep the tool and interaction mode constant across both runs.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>The base exercise generates and reviews code without connecting to a managed host.
+<p>Generate and review the projects locally for the base exercise.
 Deployment validation is a separate optional step on a disposable CentOS Stream 10 VM.
-The source installer requires root and changes system configuration; do not execute it on your control workstation.</p>
+The installer requires root and changes system configuration. Do not execute it on your control workstation.</p>
 </div>
 </div>
 </div>
@@ -249,7 +249,7 @@ Use <code>workshop-content/02-shell-to-ansible/migration-checklist.adoc</code> t
 <div class="paragraph">
 <p>Write down two rerun risks and one security limitation you found in the code.
 For example, service restarts occur unconditionally, and the local HTTPS probe does not verify certificate trust.
-Identify facts from the code separately from jokes in comments.</p>
+Use the code to check the claims in the comments.</p>
 </div>
 </div>
 </div>
@@ -283,13 +283,13 @@ Learner output is ignored by Git.</p>
 <p>Start a new conversation and select Model A.</p>
 </li>
 <li>
-<p>Attach both legacy inputs or tell the agent to read their exact paths. Include the migration checklist as the common review criteria for both models.</p>
+<p>Attach both legacy inputs or tell the agent to read their exact paths. Use the same migration checklist for both models.</p>
 </li>
 <li>
 <p>Paste <code>workshop-content/02-shell-to-ansible/prompt.md</code> unchanged. Add an instruction naming your <code>model-a/</code> output directory.</p>
 </li>
 <li>
-<p>Start a timer and review the model&#8217;s behavior map and plan.</p>
+<p>Start a timer and check how the plan accounts for each installer stage.</p>
 </li>
 <li>
 <p>Let it generate the project, then inspect the diff before accepting it.</p>
@@ -297,11 +297,12 @@ Learner output is ignored by Git.</p>
 </ol>
 </div>
 <div class="paragraph">
-<p>The project should include <code>site.yml</code>, task or role files, templates as needed, non-secret variable examples, an example inventory, and a README.
+<p>The project should include <code>site.yml</code>, non-secret variable examples, an example inventory, and a README.
+Use task or role files and templates where needed.
 A wrapper that simply executes <code>install_netbox.py</code> does not complete the migration.</p>
 </div>
 <div class="paragraph">
-<p>Review especially:</p>
+<p>Check the following:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -309,19 +310,19 @@ A wrapper that simply executes <code>install_netbox.py</code> does not complete 
 <p>The play targets <code>netbox_lab</code>, with privilege escalation on the managed host.</p>
 </li>
 <li>
-<p>Every installer stage has an implementation or an explicitly recorded gap.</p>
+<p>The project implements every installer stage or lists what is missing.</p>
 </li>
 <li>
 <p>Generated secrets survive reruns and stay out of logs and example files.</p>
 </li>
 <li>
-<p>A saved release stays pinned; an unmanaged install is rejected.</p>
+<p>The project keeps the saved release and rejects an unmanaged install.</p>
 </li>
 <li>
-<p>Handlers control necessary reloads and restarts, with documented command exceptions.</p>
+<p>Handlers reload or restart services when required. The README explains any commands that could not use a module.</p>
 </li>
 <li>
-<p>The README explains input mapping, dependencies, execution, and untested behavior.</p>
+<p>The README explains inputs, dependencies, execution, and what remains untested.</p>
 </li>
 </ul>
 </div>
@@ -365,7 +366,7 @@ Record missing dependencies or configuration requirements.</p>
 <p>Syntax checking does not contact the target, install NetBox, prove credentials are stable, or establish idempotency.
 Use the migration checklist to review the implementation and mark runtime checks as untested.
 Read the source&#8217;s validation rules and compare them with the generated assertions.
-Request focused corrections for missing behavior instead of accepting a successful syntax check as completion.</p>
+Request corrections for missing behavior even if the syntax check passes.</p>
 </div>
 </div>
 </div>
@@ -411,7 +412,7 @@ Request focused corrections for missing behavior instead of accepting a successf
 </div>
 <div class="paragraph">
 <p><code>diff</code> exits with code 1 when the projects differ.
-Compare behavior and maintainability, rather than file count alone.</p>
+Compare what the projects do and how much work they need before you would accept them.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -427,23 +428,23 @@ Compare behavior and maintainability, rather than file count alone.</p>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Coverage</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Every installer stage is accounted for, including TLS, SELinux, and readiness</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The project implements each stage, including TLS, SELinux, and readiness checks, or lists what is missing</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">State and secrets</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Credential persistence, protected files/logs, release pinning, unmanaged-install refusal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The project reuses credentials and the selected release, protects files and logs, and rejects unmanaged installs</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Rerun design</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Module choices, handlers, guarded migrations and commands, concurrent-run policy</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Second runs</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Modules, handlers, and command guards prevent unnecessary work; the README explains restrictions on concurrent runs</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Operability</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Clear inventory, input mapping, dependencies, validation and deployment instructions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Instructions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The inventory, variables, dependencies, validation commands, and deployment steps are clear</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Verification</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Syntax result, review findings, runtime evidence or explicit untested status</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Record syntax results, review findings, and runtime checks completed or left untested</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Rework</p></td>
@@ -455,8 +456,8 @@ Compare behavior and maintainability, rather than file count alone.</p>
 <p>Fill the existing Module 2 Model A and Model B rows in <code>workshop-content/03-managing-ai-costs/lab-scorecard.adoc</code> or a notebook copy.
 Record actual model names, tool and mode, elapsed minutes, and user turns including the initial prompt.
 Use <code>merge</code> for an accepted result without manual edits, <code>edit</code> for a result you corrected, and <code>discard</code> for an unsuitable result.
-These labels describe your review decision, not a verified production deployment.
-Write one sentence explaining your preference and the most significant remaining risk.</p>
+Record deployment testing separately from this review decision.
+Write one sentence explaining your preference and the largest remaining risk.</p>
 </div>
 </div>
 </div>
@@ -485,7 +486,7 @@ Use the generated project&#8217;s documented variables and secret storage.</p>
 <p>Run again with identical inputs. Investigate every repeated change, migration, and restart.</p>
 </li>
 <li>
-<p>Confirm the selected release and credential state stayed stable. Do not print secrets into the scorecard.</p>
+<p>Confirm the selected release and saved credentials did not change. Do not print secrets into the scorecard.</p>
 </li>
 <li>
 <p>Test optional TLS and firewall behavior separately if time permits. Record which branches you actually tested.</p>
@@ -494,8 +495,8 @@ Use the generated project&#8217;s documented variables and secret storage.</p>
 </div>
 <div class="paragraph">
 <p>A first check-mode pass may lack packages, files, or databases required by later tasks.
-Review documented check-mode limitations instead of treating check mode as an isolated deployment test.
-For a repeated install, distinguish necessary reconciliation from unconditional work inherited from the script.</p>
+Read the project&#8217;s check-mode limitations before interpreting the result.
+On a second run, check whether repeated work is needed or simply carried over from the script.</p>
 </div>
 </div>
 </div>
@@ -505,7 +506,7 @@ For a repeated install, distinguish necessary reconciliation from unconditional 
 <div class="ulist">
 <ul>
 <li>
-<p>Both model projects and their coverage reports are saved separately.</p>
+<p>You saved both projects and their reports in separate directories.</p>
 </li>
 <li>
 <p>Syntax checks pass, or the scorecard explains rejected or incomplete results.</p>
@@ -530,8 +531,8 @@ For a repeated install, distinguish necessary reconciliation from unconditional 
 </div>
 </div>
 <nav class="pagination">
-  <span class="prev"><a href="01-cursor-workspace.html" class="query-params-link">1. Workspace Setup</a></span>
-  <span class="next"><a href="03-managing-ai-costs.html" class="query-params-link">3. Managing AI Costs</a></span>
+  <span class="prev"><a href="01-cursor-workspace.html" class="query-params-link">1. Workspace setup</a></span>
+  <span class="next"><a href="03-managing-ai-costs.html" class="query-params-link">3. Managing AI costs</a></span>
 </nav>
 </article>
 <aside class="toc sidebar" data-title="Contents" data-levels="2">

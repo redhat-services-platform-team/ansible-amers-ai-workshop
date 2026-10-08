@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Lab: Managing AI Costs :: Accelerating Ansible Delivery with AI</title>
+    <title>Lab: Managing AI costs :: Accelerating Ansible Delivery with AI</title>
     <link rel="canonical" href="https://redhat-services-platform-team.github.io/ansible-amers-ai-workshop/previews/pr-4/modules/03-managing-ai-costs.html">
     <link rel="prev" href="02-shell-to-ansible.html">
     <link rel="next" href="04-aws-lab-provisioning.html">
@@ -49,13 +49,13 @@
     <span class="nav-text">Labs</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="01-cursor-workspace.html">1. Workspace Setup</a>
+    <a class="nav-link" href="01-cursor-workspace.html">1. Workspace setup</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="02-shell-to-ansible.html">2. Python-to-Ansible NetBox migration</a>
   </li>
   <li class="nav-item is-current-page" data-depth="2">
-    <a class="nav-link" href="03-managing-ai-costs.html">3. Managing AI Costs</a>
+    <a class="nav-link" href="03-managing-ai-costs.html">3. Managing AI costs</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="04-aws-lab-provisioning.html">4. Delivering with AI</a>
@@ -67,10 +67,10 @@
     <a class="nav-link" href="appendix.html">Appendix</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="appendix.html#view-workshop-docs-locally">View Workshop Documentation Locally</a>
+    <a class="nav-link" href="appendix.html#view-workshop-docs-locally">View workshop documentation locally</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="appendix.html#refresh-local-docs">Refresh Local Documentation</a>
+    <a class="nav-link" href="appendix.html#refresh-local-docs">Refresh local documentation</a>
   </li>
 </ul>
   </li>
@@ -112,41 +112,38 @@
   <ul>
     <li><a href="index.html">Accelerating Ansible Delivery with AI</a></li>
     <li>Labs</li>
-    <li><a href="03-managing-ai-costs.html">3. Managing AI Costs</a></li>
+    <li><a href="03-managing-ai-costs.html">3. Managing AI costs</a></li>
   </ul>
 </nav>
 </div>
   <div class="content">
 <article class="doc">
-<h1 class="page">Lab: Managing AI Costs</h1>
+<h1 class="page">Lab: Managing AI costs</h1>
 <div id="preamble">
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-Use the same Python-to-Ansible NetBox task as Module 2 to compare models, usage, and spend—and write three guardrails.
+Repeat the Module 2 NetBox migration with three models. Compare usage, time, and corrections, then write rules for your own AI-assisted work.
 </blockquote>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_learning_objectives"><a class="anchor" href="#_learning_objectives"></a>Learning Objectives</h2>
+<h2 id="_learning_objectives"><a class="anchor" href="#_learning_objectives"></a>Learning objectives</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>After completing this module, you will be able to:</p>
-</div>
 <div class="ulist">
 <ul>
 <li>
-<p>Name what drives AI usage cost (pools, model, tokens, Chat vs Agent)</p>
+<p>Identify the account, model, tokens, and interaction mode that affect usage.</p>
 </li>
 <li>
-<p>Run the <strong>same</strong> migration prompt with three models and record time, turns, and quality</p>
+<p>Compare three models using the same migration prompt and inputs.</p>
 </li>
 <li>
-<p>Connect Module 2 results to dollars-and-cents habits (cheaper model first, small context, verify before re-prompt)</p>
+<p>Record the work needed to accept each output.</p>
 </li>
 <li>
-<p>Write three personal rules to use AI more efficiently</p>
+<p>Choose practical rules for controlling usage.</p>
 </li>
 </ul>
 </div>
@@ -155,41 +152,41 @@ Use the same Python-to-Ansible NetBox task as Module 2 to compare models, usage,
 <div class="sect1">
 <h2 id="_before_you_start"><a class="anchor" href="#_before_you_start"></a>Before you start</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>Complete <a href="02-shell-to-ansible.html" class="xref page">Module 2: Python-to-Ansible NetBox migration</a> or read its installer and example inputs.
+The shared files are under <code>workshop-content/02-shell-to-ansible/</code>:</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p>Complete <a href="02-shell-to-ansible.html" class="xref page">Module 2: Python-to-Ansible NetBox migration</a> or skim <code>workshop-content/02-shell-to-ansible/legacy/install_netbox.py</code>, <code>workshop-content/02-shell-to-ansible/legacy/.env.example</code>, and <code>prompt.md</code> so the task is familiar.</p>
+<p><code>legacy/install_netbox.py</code></p>
 </li>
 <li>
-<p>If your facilitator uses slides, follow along with <code>workshop-content/03-managing-ai-costs/deck-slide-outline.md</code> (slide numbers below match that outline).</p>
+<p><code>legacy/.env.example</code></p>
 </li>
 <li>
-<p>Facilitators: <code>workshop-content/03-managing-ai-costs/facilitator-talk-track.md</code> (talk track—not required reading for learners).</p>
+<p><code>migration-checklist.adoc</code></p>
 </li>
 <li>
-<p>Scorecard: <code>workshop-content/03-managing-ai-costs/lab-scorecard.adoc</code></p>
-</li>
-<li>
-<p>Canonical prompt (do not edit for benchmarking): <code>workshop-content/02-shell-to-ansible/prompt.md</code></p>
+<p><code>prompt.md</code></p>
 </li>
 </ul>
 </div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
 <div class="paragraph">
-<p>Keep <a href="https://cursor.com/dashboard/spending" target="_blank" rel="noopener">Spending</a> open in a browser tab during this lab.</p>
-</div>
-</td>
-</tr>
-</table>
+<p>Use <code>workshop-content/03-managing-ai-costs/lab-scorecard.adoc</code> or a notebook copy to record results.
+Facilitators can use <code>facilitator-talk-track.md</code> and <code>deck-slide-outline.md</code> in that directory.
+Slide references below match the outline.</p>
 </div>
 <div class="paragraph">
-<p>The comparison measures generation and static review. Do not run the installer or deploy a generated project during these timed runs. A syntax pass does not prove NetBox works or reruns are idempotent; record coverage gaps and runtime checks as untested. Keep any optional VM validation separate from generation time.</p>
+<p>Keep <a href="https://cursor.com/dashboard/spending" target="_blank" rel="noopener">Spending</a> open during the lab.
+If it is unavailable, record elapsed time and turns, and use your enterprise usage report if available.
+These measurements alone do not establish spend.</p>
+</div>
+<div class="paragraph">
+<p>The timed runs cover generation and static review.
+Keep optional VM deployment checks separate from this timing.
+Do not run the installer or deploy generated projects during these runs.
+Record untested runtime behavior and missing implementation details.</p>
 </div>
 </div>
 </div>
@@ -197,95 +194,83 @@ Use the same Python-to-Ansible NetBox task as Module 2 to compare models, usage,
 <h2 id="_step_1_record_your_billing_context"><a class="anchor" href="#_step_1_record_your_billing_context"></a>Step 1: Record your billing context</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><em>Facilitator deck: slides 3–4 (what you pay for; usage pools).</em></p>
+<p><em>Facilitator slides 3 and 4 cover billing and usage pools.</em></p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Open <a href="https://cursor.com/dashboard/spending" target="_blank" rel="noopener">Spending</a>.</p>
+<p>Open Spending or your enterprise usage report.</p>
 </li>
 <li>
-<p>Write down: <strong>billing period reset date</strong> and the <strong>names of the usage pools</strong> you see (for example Cursor Models vs Other Models).</p>
+<p>Record the billing period reset date and the pool names shown in your account.</p>
 </li>
 <li>
-<p>In Cursor, note your <strong>current chat/agent model</strong> and Router mode if shown (Cost, Balance, Intelligence, or pinned model).</p>
+<p>Record the selected model, interaction mode, and any router mode shown in the tool.</p>
 </li>
 <li>
-<p><strong>Record</strong> pool names and reset date at the top of <code>lab-scorecard.adoc</code> or your notebook.</p>
+<p>Add these details to the scorecard or your notebook.</p>
 </li>
 </ol>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_step_2_pattern_check_2_minutes"><a class="anchor" href="#_step_2_pattern_check_2_minutes"></a>Step 2: Pattern check (2 minutes)</h2>
+<h2 id="_step_2_review_usage_patterns"><a class="anchor" href="#_step_2_review_usage_patterns"></a>Step 2: Review usage patterns</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><em>Facilitator deck: slide 9 (usage patterns).</em></p>
+<p><em>Facilitator slide 9 covers usage patterns. Allow two minutes.</em></p>
 </div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>For each pattern below, write <strong>one example</strong> from Module 2, this workshop, or your job (one line each):</p>
+<div class="paragraph">
+<p>Write one example from Module 2, the workshop, or your work for each pattern:</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Surgical ask</strong> — one or two files, narrow change</p>
+<p>A narrow request that names one change and the relevant files.</p>
 </li>
 <li>
-<p><strong>Retry loop</strong> — vague prompt or many fix-it-again turns</p>
+<p>Repeated requests to fix an output that still fails review or validation.</p>
 </li>
 <li>
-<p><strong>Agent marathon</strong> — long thread with many tool steps</p>
+<p>A long agent session with many tool calls.</p>
 </li>
 </ul>
-</div>
-</li>
-</ol>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_step_3_prepare_three_migration_runs_same_task_as_module_2"><a class="anchor" href="#_step_3_prepare_three_migration_runs_same_task_as_module_2"></a>Step 3: Prepare three migration runs (same task as Module 2)</h2>
+<h2 id="_step_3_prepare_three_migration_runs"><a class="anchor" href="#_step_3_prepare_three_migration_runs"></a>Step 3: Prepare three migration runs</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><em>Facilitator deck: slides 5–6, 10–11 (model choice, context size, scorecard).</em></p>
+<p><em>Facilitator slides 5, 6, 10, and 11 cover models, inputs, and recording results.</em></p>
 </div>
 <div class="paragraph">
-<p>You will migrate the Python NetBox installer to an Ansible project <strong>three times</strong>. Each run includes the same <code>legacy/install_netbox.py</code>, <code>legacy/.env.example</code>, and <code>migration-checklist.adoc</code>. Each run uses a <strong>new</strong> chat thread and the <strong>same</strong> <code>prompt.md</code>.</p>
+<p>Migrate the same Python NetBox installer three times.
+Use a new conversation for each run and keep the prompt and input files unchanged.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Create three output folders, for example:</p>
+<p>Create output directories under your learner folder:</p>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">workshop-content/02-shell-to-ansible/output/&lt;your-name&gt;/run-a/
+<pre class="highlightjs highlight"><code class="language-text hljs" data-lang="text">workshop-content/02-shell-to-ansible/output/&lt;your-name&gt;/run-a/
 workshop-content/02-shell-to-ansible/output/&lt;your-name&gt;/run-b/
 workshop-content/02-shell-to-ansible/output/&lt;your-name&gt;/run-c/</code></pre>
 </div>
 </div>
 </li>
 <li>
-<p>Open <code>workshop-content/02-shell-to-ansible/prompt.md</code> and keep it ready to copy-paste verbatim each time.</p>
+<p>Keep the canonical <code>prompt.md</code> ready to copy for each run.</p>
 </li>
 <li>
-<p>Decide which model you will use for each run (facilitator may assign):</p>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Run A</strong> — cost-efficient (for example Composer or Cost Router default)</p>
-</li>
-<li>
-<p><strong>Run B</strong> — balanced / mid-tier</p>
-</li>
-<li>
-<p><strong>Run C</strong> — frontier or team “escalation” model (or repeat B with Agent if your plan has no frontier)</p>
-</li>
-</ul>
-</div>
+<p>Choose the models your facilitator assigns. Use a cost-efficient model for Run A, a balanced model for Run B, and an approved escalation model for Run C.</p>
 </li>
 </ol>
+</div>
+<div class="paragraph">
+<p>If no escalation model is available, repeat B using Agent and record the mode change.
+Changing the mode means the comparison includes that difference as well as model choice.</p>
 </div>
 </div>
 </div>
@@ -295,24 +280,34 @@ workshop-content/02-shell-to-ansible/output/&lt;your-name&gt;/run-c/</code></pre
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>New Cursor Chat or Agent thread; select <strong>Run A</strong> model.</p>
+<p>Start a new conversation and select the Run A model.</p>
 </li>
 <li>
-<p>Attach <code>workshop-content/02-shell-to-ansible/legacy/install_netbox.py</code>, its <code>.env.example</code>, and the Module 2 migration checklist. Do not attach prior generated projects.</p>
+<p>Attach the legacy installer, <code>.env.example</code>, and migration checklist. Keep prior generated projects out of the conversation.</p>
 </li>
 <li>
-<p>Paste the full <code>prompt.md</code>; tell the model to write the Ansible project under your <code>run-a/</code> folder.</p>
+<p>Paste <code>prompt.md</code> unchanged and name your <code>run-a/</code> output directory.</p>
 </li>
 <li>
-<p>Review stage coverage and state handling. From the generated project directory, run <code>ansible-playbook -i inventory.ini.example --syntax-check site.yml</code>, following its README for declared collection dependencies and non-secret variable files. Stop when the canonical definition of done is met or the run reaches 15 user turns. Record remaining gaps if the limit is reached.</p>
+<p>Review the generated project against the checklist.</p>
 </li>
 <li>
-<p><strong>Before</strong> opening Spending, fill scorecard row <strong>Run A</strong>: model, Chat or Agent, minutes, user turns, quality (merge / edit / discard), notes (context size, rework).</p>
+<p>Follow its README for collection dependencies and non-secret variable files. From the generated project directory, run <code>ansible-playbook -i inventory.ini.example --syntax-check site.yml</code>.</p>
 </li>
 <li>
-<p>Glance at Spending; note subjective usage <strong>low / medium / high</strong> for this run (optional column on scorecard).</p>
+<p>Stop when the definition of done in <code>prompt.md</code> is met or you reach 15 user turns, whichever comes first. Record any missing behavior at the limit.</p>
+</li>
+<li>
+<p>Fill the Run A scorecard row with the actual model, tool and mode, elapsed minutes, user turns, review decision, and corrections.</p>
+</li>
+<li>
+<p>Check Spending. If exact usage is unavailable, you may record a subjective low, medium, or high estimate in Notes.</p>
 </li>
 </ol>
+</div>
+<div class="paragraph">
+<p>Count the initial prompt and every follow-up as user turns.
+A syntax pass does not prove that NetBox deploys correctly or that a second run leaves credentials and release state unchanged.</p>
 </div>
 </div>
 </div>
@@ -322,13 +317,16 @@ workshop-content/02-shell-to-ansible/output/&lt;your-name&gt;/run-c/</code></pre
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p><strong>New thread.</strong> Same attachments. <strong>Same</strong> <code>prompt.md</code> text. Save under <code>run-b/</code>.</p>
+<p>Start a new conversation and select Run B&#8217;s model.</p>
 </li>
 <li>
-<p>Review coverage and syntax-check the project using the same rules and stopping limit as Run A.</p>
+<p>Use the same attachments and unchanged prompt. Save the project under <code>run-b/</code>.</p>
 </li>
 <li>
-<p>Fill scorecard row <strong>Run B</strong> (same columns as Run A).</p>
+<p>Review coverage and check syntax using the same steps and stopping rule as Run A.</p>
+</li>
+<li>
+<p>Fill the Run B scorecard row.</p>
 </li>
 </ol>
 </div>
@@ -340,84 +338,76 @@ workshop-content/02-shell-to-ansible/output/&lt;your-name&gt;/run-c/</code></pre
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p><strong>New thread.</strong> Same rules as Run B. Save under <code>run-c/</code>.</p>
+<p>Start a new conversation and select Run C&#8217;s model or assigned mode.</p>
 </li>
 <li>
-<p>Review coverage and syntax-check the project using the same rules and stopping limit as Run A. Fill scorecard row <strong>Run C</strong>.</p>
+<p>Use the same attachments and unchanged prompt. Save the project under <code>run-c/</code>.</p>
 </li>
 <li>
-<p>Stop each run at definition of done in <code>prompt.md</code> or after <strong>15 user turns</strong>, whichever comes first.</p>
+<p>Review coverage and check syntax using the same steps and stopping rule as Run A.</p>
+</li>
+<li>
+<p>Fill the Run C scorecard row.</p>
 </li>
 </ol>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_step_7_compare_module_2_and_runs_ac"><a class="anchor" href="#_step_7_compare_module_2_and_runs_ac"></a>Step 7: Compare Module 2 and Runs A–C</h2>
+<h2 id="_step_7_compare_the_results"><a class="anchor" href="#_step_7_compare_the_results"></a>Step 7: Compare the results</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><em>Facilitator deck: slides 2, 12–13 (bridge from Module 2; cost vs delay vs rework).</em></p>
+<p><em>Facilitator slides 2, 12, and 13 cover the Module 2 comparison and review costs.</em></p>
 </div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>If you completed Module 2, compare scorecard rows <strong>Module 2 — Model A/B</strong> to <strong>Run A/B/C</strong>.</p>
-</li>
-<li>
-<p>Answer in writing (scorecard notes or notebook):</p>
+<div class="paragraph">
+<p>Compare the Module 2 rows with Runs A, B, and C if you completed both labs.
+Answer in your scorecard notes or notebook:</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p>Which run had the <strong>fewest user turns</strong> for acceptable Ansible?</p>
+<p>Which accepted result needed the fewest user turns?</p>
 </li>
 <li>
-<p>Which run would you <strong>ship</strong> under a tight monthly usage cap?</p>
+<p>Which run would you choose under a monthly usage limit, and why?</p>
 </li>
 <li>
-<p>Did a <strong>more expensive model</strong> avoid rework, or did it only burn tokens?</p>
+<p>Did a more expensive model reduce corrections or missing behavior?</p>
 </li>
 </ul>
 </div>
-</li>
-</ol>
+<div class="paragraph">
+<p>Include manual review and edits when comparing the work needed to accept a result.
+Mark incomplete or discarded outputs so they are not counted as successful migrations.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_step_8_three_personal_rules"><a class="anchor" href="#_step_8_three_personal_rules"></a>Step 8: Three personal rules</h2>
+<h2 id="_step_8_write_personal_rules"><a class="anchor" href="#_step_8_write_personal_rules"></a>Step 8: Write personal rules</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><em>Facilitator deck: slide 12.</em></p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>On <code>lab-scorecard.adoc</code>, complete <strong>Personal optimization rules</strong> (three sentences you will actually follow).</p>
-</li>
-</ol>
+<p><em>Facilitator slide 12 covers personal rules.</em></p>
 </div>
 <div class="paragraph">
-<p>Examples: try a cheaper model before escalating; attach only the shared installer inputs and checklist; read validation errors before another Agent message.</p>
+<p>Write three sentences in the scorecard&#8217;s Personal rules section.
+Choose actions you can apply to your work, such as trying a cheaper model before escalating, attaching only relevant inputs, or reading validation errors before requesting a correction.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_step_9_optional_cli_agent"><a class="anchor" href="#_step_9_optional_cli_agent"></a>Step 9 (optional): CLI agent</h2>
+<h2 id="_step_9_optional_cli_comparison"><a class="anchor" href="#_step_9_optional_cli_comparison"></a>Step 9: Optional CLI comparison</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><em>Facilitator deck: slide 7.</em></p>
+<p><em>Facilitator slide 7 covers interaction modes.</em></p>
 </div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Repeat <strong>Run A</strong> with <code>cursor-agent</code> using the same <code>prompt.md</code>, both legacy input files, and migration checklist; add a note on the scorecard if turns or usage differ from in-editor Agent.</p>
-</li>
-</ol>
+<div class="paragraph">
+<p>Repeat Run A with <code>cursor-agent</code> using the same prompt, legacy input files, and checklist.
+Record CLI mode and note any differences in turns or usage compared with the editor run.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_next_steps"><a class="anchor" href="#_next_steps"></a>Next Steps</h2>
+<h2 id="_next_steps"><a class="anchor" href="#_next_steps"></a>Next steps</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Proceed to <a href="04-aws-lab-provisioning.html" class="xref page">Module 4: Delivering with AI</a>.</p>
