@@ -123,7 +123,7 @@
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-Migrate the Python NetBox installer into an Ansible project with two AI models. Review each result for missing behavior and problems on a second run.
+Write your own prompt to start migrating the Python NetBox installer. Try follow-up requests, explore the tools, and inspect what they produce.
 </blockquote>
 </div>
 </div>
@@ -149,16 +149,16 @@ Read the code to determine what the installer does.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Trace the installer&#8217;s execution order, dependencies, and saved state.</p>
+<p>Write a prompt in your own words and give the tool relevant files.</p>
 </li>
 <li>
-<p>Use AI to build an Ansible project with modules, templates, and handlers.</p>
+<p>Try follow-up requests and see how they change the response.</p>
 </li>
 <li>
-<p>Check how the migration handles credentials, release selection, second runs, and target requirements.</p>
+<p>Review generated changes and use Ansible validation when you have runnable output.</p>
 </li>
 <li>
-<p>Compare two generated projects using the same inputs and validation rules.</p>
+<p>Record what helped, what confused you, and what you want to try next.</p>
 </li>
 </ul>
 </div>
@@ -170,8 +170,10 @@ Read the code to determine what the installer does.</p>
 <div class="paragraph">
 <p>Complete <a href="01-cursor-workspace.html" class="xref page">Module 1: Workspace setup</a>.
 Use Codex or Cursor and your existing Ansible environment on the RHEL or macOS control workstation.
-Your facilitator will name two approved models, Model A and Model B.
-Keep the tool and interaction mode constant across both runs.</p>
+Choose an approved model available in your tool.
+You can change prompts, models, or interaction modes as you experiment.
+A partial migration is a useful result if you can explain what you tried and what remains.
+You do not need to finish a full NetBox deployment in this lab.</p>
 </div>
 <div class="paragraph">
 <p>Run terminal commands from the repository root unless a step changes directories.</p>
@@ -205,56 +207,19 @@ The installer requires root and changes system configuration. Do not execute it 
 </ul>
 </div>
 <div class="paragraph">
-<p>Trace <code>main()</code> and the functions it calls.
-Use <code>workshop-content/02-shell-to-ansible/migration-checklist.adoc</code> to record what each stage changes.</p>
+<p>Start with <code>main()</code> and follow a few of its function calls.
+Notice the packages, database, services, and saved state it manages.
+You can ask the tool to explain unfamiliar code after you write your first prompt.
+Use the code to check its answer and the claims in the maintainer comments.</p>
 </div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 66.6667%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Stage</th>
-<th class="tableblock halign-left valign-top">Questions to answer before generation</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Inputs and validation</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Which defaults, environment overrides, and validation rules affect the install?</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">State</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Where are secrets and the chosen release stored? What happens on the next run?</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Packages and database</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">What must exist before PostgreSQL and Valkey can serve NetBox?</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Application</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">How are the release, service user, config, migrations, and admin account created?</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Services and web access</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Which systemd units, Nginx files, TLS options, SELinux rules, and firewall ports are managed?</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Verification</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">What does the readiness probe prove, and what does it leave untested?</p></td>
-</tr>
-</tbody>
-</table>
 <div class="paragraph">
-<p>Write down two rerun risks and one security limitation you found in the code.
-For example, service restarts occur unconditionally, and the local HTTPS probe does not verify certificate trust.
-Use the code to check the claims in the comments.</p>
+<p>The migration checklist is available at <code>workshop-content/02-shell-to-ansible/migration-checklist.adoc</code> when you want a closer review.
+You do not need to understand every installer stage before starting.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_step_2_create_separate_project_directories"><a class="anchor" href="#_step_2_create_separate_project_directories"></a>Step 2: Create separate project directories</h2>
+<h2 id="_step_2_prepare_a_place_for_your_work"><a class="anchor" href="#_step_2_prepare_a_place_for_your_work"></a>Step 2: Prepare a place for your work</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Replace <code>learner</code> with your name without spaces:</p>
@@ -262,202 +227,186 @@ Use the code to check the claims in the comments.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">lab_output=workshop-content/02-shell-to-ansible/output/learner
-mkdir -p "$lab_output/model-a" "$lab_output/model-b"
-cp workshop-content/02-shell-to-ansible/starter/inventory.ini.example "$lab_output/model-a/"
-cp workshop-content/02-shell-to-ansible/starter/inventory.ini.example "$lab_output/model-b/"</code></pre>
+mkdir -p "$lab_output/attempt-1"
+cp workshop-content/02-shell-to-ansible/starter/inventory.ini.example "$lab_output/attempt-1/"</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The starter inventory uses the <code>netbox_lab</code> group and a documentation-only IP address.
+<p>The starter inventory names the <code>netbox_lab</code> group and uses a documentation-only IP address.
 Leave it as an example during generation and syntax review.
-Learner output is ignored by Git.</p>
+Git ignores learner output.
+Save your first prompt and a few notes in this folder so you can compare them with later attempts.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_step_3_generate_with_model_a"><a class="anchor" href="#_step_3_generate_with_model_a"></a>Step 3: Generate with Model A</h2>
+<h2 id="_step_3_write_your_own_first_prompt"><a class="anchor" href="#_step_3_write_your_own_first_prompt"></a>Step 3: Write your own first prompt</h2>
 <div class="sectionbody">
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Start a new conversation and select Model A.</p>
-</li>
-<li>
-<p>Attach both legacy inputs or tell the agent to read their exact paths. Use the same migration checklist for both models.</p>
-</li>
-<li>
-<p>Paste <code>workshop-content/02-shell-to-ansible/prompt.md</code> unchanged. Add an instruction naming your <code>model-a/</code> output directory.</p>
-</li>
-<li>
-<p>Start a timer and check how the plan accounts for each installer stage.</p>
-</li>
-<li>
-<p>Let it generate the project, then inspect the diff before accepting it.</p>
-</li>
-</ol>
+<div class="paragraph">
+<p>Before opening <code>prompt.md</code>, write a request in your own words.
+You might ask for a migration plan, an explanation followed by a small conversion, or an initial Ansible project.
+Choose a starting point that you can review.</p>
 </div>
 <div class="paragraph">
-<p>The project should include <code>site.yml</code>, non-secret variable examples, an example inventory, and a README.
-Use task or role files and templates where needed.
-A wrapper that simply executes <code>install_netbox.py</code> does not complete the migration.</p>
-</div>
-<div class="paragraph">
-<p>Check the following:</p>
+<p>Think about what the tool needs to know:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>The play targets <code>netbox_lab</code>, with privilege escalation on the managed host.</p>
+<p>What do you want it to do with the installer?</p>
 </li>
 <li>
-<p>The project implements every installer stage or lists what is missing.</p>
+<p>Which source files should it read?</p>
 </li>
 <li>
-<p>Generated secrets survive reruns and stay out of logs and example files.</p>
+<p>Where should it save generated files?</p>
 </li>
 <li>
-<p>The project keeps the saved release and rejects an unmanaged install.</p>
-</li>
-<li>
-<p>Handlers reload or restart services when required. The README explains any commands that could not use a module.</p>
-</li>
-<li>
-<p>The README explains inputs, dependencies, execution, and what remains untested.</p>
+<p>What should it explain so you can review the result?</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Count every follow-up prompt and manual correction as rework.
-Do not ask the agent to deploy while generating the project.</p>
+<p>Include the local output directory and tell the tool to generate or explain code without executing the installer or deploying it.
+Keep real credentials out of the conversation.
+The control workstation runs Ansible; the installer targets a dedicated CentOS Stream 10 host.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Start a conversation in Codex or Cursor and select your model.</p>
+</li>
+<li>
+<p>Attach the installer and <code>.env.example</code>, or give their repository paths to the agent.</p>
+</li>
+<li>
+<p>Send your own prompt and read the response before accepting changes.</p>
+</li>
+<li>
+<p>Save the prompt and note what the tool understood, what it assumed, and what you would change.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>There is no required wording or single correct prompt.
+If the answer misses your intent, use that to decide your next request.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_step_4_validate_the_project_locally"><a class="anchor" href="#_step_4_validate_the_project_locally"></a>Step 4: Validate the project locally</h2>
+<h2 id="_step_4_experiment_with_follow_up_requests"><a class="anchor" href="#_step_4_experiment_with_follow_up_requests"></a>Step 4: Experiment with follow-up requests</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>In a subshell, enter Model A&#8217;s project so relative role, template, and variable paths resolve correctly:</p>
+<p>Try something that answers a question you have about the tool or output.
+For example, ask it to explain a generated task, convert one installer stage, revise a variable name, or check whether secrets survive a second run.
+Inspect the diff after each change.</p>
+</div>
+<div class="paragraph">
+<p>You can also try a fresh conversation, another approved model, or a different interaction mode.
+If you want to preserve the first attempt, create another folder:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mkdir -p "$lab_output/attempt-2"
+cp workshop-content/02-shell-to-ansible/starter/inventory.ini.example "$lab_output/attempt-2/"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Tell the tool to save the new attempt there.
+Changing one thing at a time can help you see its effect, but you are free to explore.
+Record prompt and mode changes so you can explain the differences you see.</p>
+</div>
+<div class="sect2">
+<h3 id="_optional_prompt_resource"><a class="anchor" href="#_optional_prompt_resource"></a>Optional prompt resource</h3>
+<div class="paragraph">
+<p>After trying your own prompt, you can read <code>workshop-content/02-shell-to-ansible/prompt.md</code>.
+It is a detailed example, not the required starting prompt for this lab.
+Borrow useful requirements, edit it, or try it in a separate conversation to compare the response.
+You can also ask the tool to suggest improvements to your original prompt.
+Note which suggestions you choose and why.</p>
+</div>
+<div class="paragraph">
+<p>The example asks for a full migration, which may take longer than a focused experiment.
+Use as much of it as helps your current task.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_5_review_and_validate_what_you_have"><a class="anchor" href="#_step_5_review_and_validate_what_you_have"></a>Step 5: Review and validate what you have</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Look at the files the tool created and compare them with the installer.
+Use the migration checklist as a reference when needed.
+Ask the tool to explain anything you cannot follow, then check the explanation against the code.
+Pay attention to target hosts, saved secrets, release selection, and tasks that always restart services.
+Record missing behavior rather than assuming the output is complete.</p>
+</div>
+<div class="paragraph">
+<p>If your attempt has <code>site.yml</code> and <code>inventory.ini.example</code>, check syntax from that project directory:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">(
-  cd "$lab_output/model-a"
+  cd "$lab_output/attempt-1"
   ansible-playbook -i inventory.ini.example --syntax-check site.yml
 )</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>If the project declares collection dependencies, review <code>requirements.yml</code> and install them in your existing Ansible environment before retrying:</p>
+<p>Adjust the paths if the tool used a different layout.
+If the project declares collection dependencies, review <code>requirements.yml</code> and install them in your existing Ansible environment before retrying:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">(
-  cd "$lab_output/model-a"
+  cd "$lab_output/attempt-1"
   ansible-galaxy collection install -r requirements.yml
 )</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Run that command only when the generated project includes <code>requirements.yml</code>.
-If syntax validation needs variable files, follow the generated README and use non-secret examples.
-Record missing dependencies or configuration requirements.</p>
+<p>Run the collection command only if that file exists.
+Follow the generated README for non-secret variable files needed by validation.
+Read any error before asking for a correction, and compare the next result with the previous one.</p>
 </div>
 <div class="paragraph">
-<p>Syntax checking does not contact the target, install NetBox, prove credentials are stable, or establish idempotency.
-Use the migration checklist to review the implementation and mark runtime checks as untested.
-Read the source&#8217;s validation rules and compare them with the generated assertions.
-Request corrections for missing behavior even if the syntax check passes.</p>
+<p>If you only generated a plan or a partial conversion, record that instead of trying to validate a missing project.
+Syntax checking does not prove a deployment works or that a second run preserves credentials and release state.
+Keep runtime behavior marked as untested until you test it on a disposable target.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_step_5_repeat_with_model_b"><a class="anchor" href="#_step_5_repeat_with_model_b"></a>Step 5: Repeat with Model B</h2>
+<h2 id="_step_6_reflect_on_the_experiment"><a class="anchor" href="#_step_6_reflect_on_the_experiment"></a>Step 6: Reflect on the experiment</h2>
 <div class="sectionbody">
-<div class="olist arabic">
-<ol class="arabic">
+<div class="paragraph">
+<p>Save brief notes alongside your prompts and generated files:</p>
+</div>
+<div class="ulist">
+<ul>
 <li>
-<p>Start a new conversation with Model B. Do not include Model A&#8217;s project or conversation.</p>
+<p>What did your first prompt produce?</p>
 </li>
 <li>
-<p>Supply the same two legacy inputs, migration checklist, and unchanged canonical prompt.</p>
+<p>Which follow-up or tool setting changed the result?</p>
 </li>
 <li>
-<p>Change only the destination instruction to your <code>model-b/</code> directory.</p>
+<p>What did you accept, edit, or reject after reading the output?</p>
 </li>
 <li>
-<p>Review the plan, generated project, and behavior coverage using the same criteria.</p>
+<p>What remains incomplete or untested?</p>
 </li>
 <li>
-<p>Run the syntax check from Model B&#8217;s project directory and record the same evidence.</p>
+<p>What would you try next?</p>
 </li>
-</ol>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">(
-  cd "$lab_output/model-b"
-  ansible-playbook -i inventory.ini.example --syntax-check site.yml
-)</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_step_6_compare_the_migrations"><a class="anchor" href="#_step_6_compare_the_migrations"></a>Step 6: Compare the migrations</h2>
-<div class="sectionbody">
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">diff -ru "$lab_output/model-a" "$lab_output/model-b"</code></pre>
-</div>
+</ul>
 </div>
 <div class="paragraph">
-<p><code>diff</code> exits with code 1 when the projects differ.
-Compare what the projects do and how much work they need before you would accept them.</p>
-</div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 66.6667%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Criterion</th>
-<th class="tableblock halign-left valign-top">Evidence</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Coverage</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The project implements each stage, including TLS, SELinux, and readiness checks, or lists what is missing</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">State and secrets</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The project reuses credentials and the selected release, protects files and logs, and rejects unmanaged installs</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Second runs</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Modules, handlers, and command guards prevent unnecessary work; the README explains restrictions on concurrent runs</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Instructions</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The inventory, variables, dependencies, validation commands, and deployment steps are clear</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Verification</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Record syntax results, review findings, and runtime checks completed or left untested</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Rework</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Follow-up prompts, manual edits, unresolved gaps, and elapsed time</p></td>
-</tr>
-</tbody>
-</table>
-<div class="paragraph">
-<p>Fill the existing Module 2 Model A and Model B rows in <code>workshop-content/03-managing-ai-costs/lab-scorecard.adoc</code> or a notebook copy.
-Record actual model names, tool and mode, elapsed minutes, and user turns including the initial prompt.
-Use <code>merge</code> for an accepted result without manual edits, <code>edit</code> for a result you corrected, and <code>discard</code> for an unsuitable result.
-Record deployment testing separately from this review decision.
-Write one sentence explaining your preference and the largest remaining risk.</p>
+<p>You can use the Module 2 rows in <code>workshop-content/03-managing-ai-costs/lab-scorecard.adoc</code> or your own notebook.
+Record the actual model, tool and mode, and whether you used your own prompt, an edited example, or the supplied prompt.
+Leave the optional experiment row blank if you only made one attempt.
+Differences here can come from your prompts, context, model, or mode. They are observations to discuss, not a controlled model ranking.</p>
 </div>
 </div>
 </div>
@@ -474,7 +423,7 @@ Use the generated project&#8217;s documented variables and secret storage.</p>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Start each model from a separate fresh VM or the same restored clean snapshot.</p>
+<p>Start each attempt from a fresh VM or restore the same clean snapshot before comparing deployments.</p>
 </li>
 <li>
 <p>Deploy using the project&#8217;s README. Confirm the enabled and active PostgreSQL, Valkey, NetBox, NetBox worker, and Nginx services.</p>
@@ -506,24 +455,30 @@ On a second run, check whether repeated work is needed or simply carried over fr
 <div class="ulist">
 <ul>
 <li>
-<p>You saved both projects and their reports in separate directories.</p>
+<p>You wrote and sent your own first prompt.</p>
 </li>
 <li>
-<p>Syntax checks pass, or the scorecard explains rejected or incomplete results.</p>
+<p>You tried a follow-up request or another change and inspected its effect.</p>
 </li>
 <li>
-<p>You reviewed persistent state, secrets, release selection, and all installer stages.</p>
+<p>You saved the prompts, output, and notes about what you learned.</p>
 </li>
 <li>
-<p>The scorecard distinguishes static review from any runtime validation.</p>
+<p>You recorded validation results or explained why the output was not ready for validation.</p>
 </li>
 <li>
-<p>You recorded a preferred result and remaining gaps.</p>
+<p>You identified a question or improvement to explore next.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Proceed to <a href="03-managing-ai-costs.html" class="xref page">Module 3: Managing AI Costs</a>, which reuses these inputs and the same prompt for its cost comparison.</p>
+<p>An unfinished migration can satisfy this lab.
+The goal is to get familiar with the tools and learn how to guide and review their output.</p>
+</div>
+<div class="paragraph">
+<p>Proceed to <a href="03-managing-ai-costs.html" class="xref page">Module 3: Managing AI costs</a>.
+That lab uses the supplied <code>prompt.md</code> unchanged across runs to compare models with fixed inputs.
+Your experiments here are useful discussion notes, but their prompts and settings may differ from that comparison.</p>
 </div>
 <div class="paragraph">
 <p>If you see an error in this lab, fork and submit a pull request against <a href="https://github.com/redhat-services-platform-team/ansible-amers-ai-workshop" target="_blank" rel="noopener">https://github.com/redhat-services-platform-team/ansible-amers-ai-workshop</a>.</p>
