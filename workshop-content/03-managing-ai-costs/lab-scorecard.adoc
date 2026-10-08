@@ -5,7 +5,7 @@ Module 3 rows record model runs on the same NetBox migration with fixed inputs.
 Use `prompt.md`, `legacy/install_netbox.py`, `legacy/.env.example`, and `migration-checklist.adoc` under `workshop-content/02-shell-to-ansible/`.
 For Module 3, keep the supplied prompt and attachments constant across runs unless the facilitator directs a change.
 Module 2 experiments may differ and are not directly comparable to these timed runs.
-Record generation and static review time separately from optional deployment checks.
+Record generation and static review time.
 In Notes, include missing behavior, syntax results, and which runtime checks you completed or left untested.
 
 Billing period reset date:

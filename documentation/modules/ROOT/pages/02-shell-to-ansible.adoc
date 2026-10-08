@@ -37,7 +37,6 @@ ansible-playbook --version
 ----
 
 Generate and review the projects locally for the base exercise.
-Deployment validation is a separate optional step on a disposable CentOS Stream 10 VM.
 The installer requires root and changes system configuration. Do not execute it on your control workstation.
 
 == Step 1: Read the inherited installer
@@ -161,7 +160,7 @@ Read any error before asking for a correction, and compare the next result with 
 
 If you only generated a plan or a partial conversion, record that instead of trying to validate a missing project.
 Syntax checking does not prove a deployment works or that a second run preserves credentials and release state.
-Keep runtime behavior marked as untested until you test it on a disposable target.
+Record which behavior you checked and what remains untested.
 
 == Step 6: Reflect on the experiment
 
@@ -177,25 +176,6 @@ You can use the Module 2 rows in `workshop-content/03-managing-ai-costs/lab-scor
 Record the actual model, tool and mode, and whether you used your own prompt, an edited example, or the supplied prompt.
 Leave the optional experiment row blank if you only made one attempt.
 Differences here can come from your prompts, context, model, or mode. They are observations to discuss, not a controlled model ranking.
-
-== Step 7: Optional deployment validation
-
-Use a disposable, dedicated CentOS Stream 10 VM with SSH access and sudo.
-Your facilitator must supply or confirm the target before this step.
-Replace the example address and user in a separate `inventory.ini`, following the generated README.
-Review the complete project before running it.
-Use the generated project's documented variables and secret storage.
-
-. Start each attempt from a fresh VM or restore the same clean snapshot before comparing deployments.
-. Deploy using the project's README. Confirm the enabled and active PostgreSQL, Valkey, NetBox, NetBox worker, and Nginx services.
-. Check the login page through Nginx and verify the configured admin account without recording credentials.
-. Run again with identical inputs. Investigate every repeated change, migration, and restart.
-. Confirm the selected release and saved credentials did not change. Do not print secrets into the scorecard.
-. Test optional TLS and firewall behavior separately if time permits. Record which branches you actually tested.
-
-A first check-mode pass may lack packages, files, or databases required by later tasks.
-Read the project's check-mode limitations before interpreting the result.
-On a second run, check whether repeated work is needed or simply carried over from the script.
 
 == Completion checklist
 

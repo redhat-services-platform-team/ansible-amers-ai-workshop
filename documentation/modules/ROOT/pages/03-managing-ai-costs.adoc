@@ -29,7 +29,6 @@ These measurements alone do not establish spend.
 Module 2 encouraged your own prompts and experiments. Here, use the supplied `prompt.md` unchanged and hold the input files constant across runs.
 
 The timed runs cover generation and static review.
-Keep optional VM deployment checks separate from this timing.
 Do not run the installer or deploy generated projects during these runs.
 Record untested runtime behavior and missing implementation details.
 

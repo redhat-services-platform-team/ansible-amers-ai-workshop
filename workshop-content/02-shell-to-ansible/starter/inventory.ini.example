@@ -1,4 +1,4 @@
-# Documentation address only. Replace it with your disposable lab VM before deployment.
+# Example inventory using a documentation-only address.
 [netbox_lab]
 netbox-demo ansible_host=192.0.2.10 ansible_user=CHANGE_ME
 

@@ -39,11 +39,6 @@ The installer explicitly supports a dedicated CentOS Stream 10 managed host.
 Do not run the installer on your workstation or an existing shared server.
 It installs packages, changes PostgreSQL and Nginx configuration, starts services, and may open firewall ports.
 
-The base exercise requires no live target.
-An optional deployment needs a disposable CentOS Stream 10 VM, SSH access, sudo, and network access to release archives and package sources.
-Use separate fresh VMs or restore the same clean snapshot before testing each model.
-Test the Python installer and generated project on separate fresh targets. An existing install can hide missing setup tasks.
-
 == Secrets and version state
 
 The script stores its selected release and generated credentials in `/etc/netbox-installer/state.json` on the managed host.

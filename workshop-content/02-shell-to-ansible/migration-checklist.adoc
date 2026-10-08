@@ -34,10 +34,3 @@ Explain the effect of each change.
 * Can two runs change persistent state at the same time? If the project cannot preserve the source lock, document and enforce a restriction on concurrent runs.
 * Do command guards check the desired state or only a marker file?
 * Does the README explain failure handling and check-mode limitations?
-
-== Optional runtime evidence
-
-On a disposable target, record first-run service health and the second-run recap.
-Check actual state alongside change counts.
-A task with `changed_when: false` can still change the host.
-Record the tested TLS mode, firewall option, and reuse of credentials and release state without copying secrets into your notes.

@@ -10,7 +10,6 @@ Use Codex or Cursor with Ansible to migrate a Python NetBox installer, compare A
 * Optional Podman access to preview the documentation locally.
 
 Lab 2's generation and review steps run on your workstation.
-Optional deployment checks need a disposable CentOS Stream 10 VM.
 Lab 4 uses an AWS sandbox.
 The workshop does not require OpenShift, AAP, or Showroom services.
 

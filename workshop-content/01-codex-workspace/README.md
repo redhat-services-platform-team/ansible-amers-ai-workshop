@@ -245,7 +245,7 @@ Start with this prompt in Codex or Cursor:
 Read README.adoc and workshop-content/02-shell-to-ansible/README.adoc.
 Explain the workshop structure and the prerequisites for converting the legacy
 Python NetBox installer to Ansible. Explain control-host differences between
-RHEL and macOS. The managed host is a dedicated CentOS Stream 10 VM.
+RHEL and macOS, and explain the installer's managed-host requirements.
 Use my existing working Ansible installation.
 Keep this task to inspection and explanation.
 ```

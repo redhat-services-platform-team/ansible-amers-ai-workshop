@@ -28,4 +28,4 @@ Definition of done for generation:
 - After declared collection dependencies are available, ansible-playbook -i inventory.ini.example --syntax-check site.yml passes from that directory using the existing Ansible installation.
 - A short report maps every installer stage to the generated files and lists behavior changes and missing implementation details. Separate static review from runtime checks that have not occurred.
 - Explain what a second run does to credentials, the selected release, migrations, configuration, and services.
-- Report the checks completed and those that could not run. Deployment and actual idempotency remain unverified until tested on a disposable CentOS Stream 10 host.
+- Report the checks completed and those that could not run. Distinguish syntax validation from runtime behavior you have not checked.
