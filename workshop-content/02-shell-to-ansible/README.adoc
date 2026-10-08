@@ -11,7 +11,6 @@ This lab gives new users time to experiment with Codex or Cursor. A complete mig
 * `prompt.md` is an optional resource for Lab 2. Try your own prompt first, then borrow, edit, or compare the example. Module 3 uses it unchanged for its fixed-prompt comparison.
 * `starter/inventory.ini.example` names the `netbox_lab` group and contains a documentation-only host address.
 * `migration-checklist.adoc` maps installer behavior to review criteria.
-* `facilitator-guide.adoc` covers delivery and optional deployment validation.
 * `output/` contains learner projects and is ignored by Git.
 
 Follow `documentation/modules/ROOT/pages/02-shell-to-ansible.adoc` for the learner instructions.

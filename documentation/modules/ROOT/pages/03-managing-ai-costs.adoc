@@ -21,8 +21,6 @@ The shared files are under `workshop-content/02-shell-to-ansible/`:
 * `prompt.md`
 
 Use `workshop-content/03-managing-ai-costs/lab-scorecard.adoc` or a notebook copy to record results.
-Facilitators can use `facilitator-talk-track.md` and `deck-slide-outline.md` in that directory.
-Slide references below match the outline.
 
 Keep link:https://cursor.com/dashboard/spending[Spending,window=_blank] open during the lab.
 If it is unavailable, record elapsed time and turns, and use your enterprise usage report if available.
@@ -37,16 +35,12 @@ Record untested runtime behavior and missing implementation details.
 
 == Step 1: Record your billing context
 
-_Facilitator slides 3 and 4 cover billing and usage pools._
-
 . Open Spending or your enterprise usage report.
 . Record the billing period reset date and the pool names shown in your account.
 . Record the selected model, interaction mode, and any router mode shown in the tool.
 . Add these details to the scorecard or your notebook.
 
 == Step 2: Review usage patterns
-
-_Facilitator slide 9 covers usage patterns. Allow two minutes._
 
 Write one example from Module 2, the workshop, or your work for each pattern:
 
@@ -55,8 +49,6 @@ Write one example from Module 2, the workshop, or your work for each pattern:
 * A long agent session with many tool calls.
 
 == Step 3: Prepare three migration runs
-
-_Facilitator slides 5, 6, 10, and 11 cover models, inputs, and recording results._
 
 Migrate the same Python NetBox installer three times.
 Use a new conversation for each run and keep the prompt and input files unchanged.
@@ -105,8 +97,6 @@ A syntax pass does not prove that NetBox deploys correctly or that a second run 
 
 == Step 7: Compare the results
 
-_Facilitator slides 2, 12, and 13 cover the Module 2 comparison and review costs._
-
 Compare Runs A, B, and C using their fixed inputs.
 You can also discuss your Module 2 notes, but those attempts may have different prompts, context, or modes. Their time and results are not a controlled comparison with these runs.
 Answer in your scorecard notes or notebook:
@@ -120,14 +110,10 @@ Mark incomplete or discarded outputs so they are not counted as successful migra
 
 == Step 8: Write personal rules
 
-_Facilitator slide 12 covers personal rules._
-
 Write three sentences in the scorecard's Personal rules section.
 Choose actions you can apply to your work, such as trying a cheaper model before escalating, attaching only relevant inputs, or reading validation errors before requesting a correction.
 
 == Step 9: Optional CLI comparison
-
-_Facilitator slide 7 covers interaction modes._
 
 Repeat Run A with `cursor-agent` using the same prompt, legacy input files, and checklist.
 Record CLI mode and note any differences in turns or usage compared with the editor run.
