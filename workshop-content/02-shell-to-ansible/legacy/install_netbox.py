@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # COMPANY INFRASTRUCTURE DEPARTMENT: DO NOT LOSE THIS FILE.
-# 2026-05-31T11:17:50Z | Al Beback | maintainer 50: Maintainers 01-50, 2018-2026. Handover document: "ask whoever wrote it."
-# 2026-05-31T11:28:51Z | Al Beback | maintainer 50: Whoever wrote it has left. Whoever replaced them has also left.
-# 2026-05-31T11:39:52Z | Al Beback | maintainer 50: The CMDB, three dashboards, and somebody's promotion depend on this script.
-# 2026-05-31T11:50:53Z | Al Beback | maintainer 50: Finance calls it a strategic platform. Git history calls it final_final_v7.py.
-# 2026-05-31T12:01:54Z | Al Beback | maintainer 50: If you understand the whole thing, please update the runbook. We cannot find it.
+# 31 May 2026 11:17:50 UTC / Al Beback / About fifty people have owned this since 2018. Handover says "ask whoever wrote it".
+# 31 May 2026 11:28:51 UTC / Al Beback / Whoever wrote it has left. Whoever replaced them has also left.
+# 31 May 2026 11:39:52 UTC / Al Beback / The CMDB, three dashboards, and somebody's promotion depend on this script.
+# 31 May 2026 11:50:53 UTC / Al Beback / Finance calls it a strategic platform. Git history calls it final_final_v7.py.
+# 31 May 2026 12:01:54 UTC / Al Beback / If you understand the whole thing, please update the runbook. We cannot find it.
 # Timestamped maintainer notes are workshop fiction; executable code is unchanged.
 """Install a standalone NetBox stack on CentOS Stream 10 (Python stdlib only).
 
@@ -54,16 +54,16 @@ DEFAULTS = {
 }
 
 
-# 2019-01-22T16:17:07Z | Anita Coffee | maintainer 07: logs are helpful until they contain the database password.
-# 2024-05-03T10:17:41Z | Ben Jammin | maintainer 41: yes, even the error about hiding secrets must hide secrets.
+# [2019-01-22T16:17:07Z] Anita Coffee: logs are helpful until they contain the database password.
+# note from Ben Jammin, May 03, 2024 at 10:17:41 UTC: yes, even the error about hiding secrets must hide secrets.
 def say(message):
     for value in REDACT:
         message = message.replace(value, '<redacted>')
     print(message, flush=True)
 
 
-# 2020-02-06T13:17:12Z | Artie Choke | maintainer 12: no shell=True. We have already funded that incident.
-# 2023-04-10T10:17:33Z | Barb Dwyer | maintainer 33: stderr is stdout now. The monitoring dashboard has opinions.
+# Artie Choke @ 2020/02/06 13:17:12 UTC: no shell=True. We have already funded that incident.
+# Barb Dwyer, 04/10/2023 10:17:33 UTC: stderr is stdout now. The monitoring dashboard has opinions.
 def run(args, *, data=None, env=None, capture=False):
     """Never invoke a shell; redact subprocess output and avoid secret argv."""
     result = subprocess.run(args, input=data, text=True, stdout=subprocess.PIPE,
@@ -76,8 +76,8 @@ def run(args, *, data=None, env=None, capture=False):
     return result.stdout
 
 
-# 2018-01-07T11:17:02Z | Paige Turner | maintainer 02: write a temporary file, then swap it in atomically.
-# 2022-03-20T11:17:26Z | Carrie Oakey | maintainer 26: partial configuration files are how we met the night shift.
+# 07 Jan 2018 11:17:02 UTC / Paige Turner / write a temporary file, then swap it in atomically.
+# 20 Mar 2022 11:17:26 UTC / Carrie Oakey / partial configuration files are how we met the night shift.
 def write(path, text, mode=0o644, group=None):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -94,9 +94,9 @@ def write(path, text, mode=0o644, group=None):
             os.unlink(tmp)
 
 
-# 2019-01-28T10:17:09Z | Polly Graph | maintainer 09: .env is a file format, not an invitation to execute Bash.
-# 2025-05-19T15:17:46Z | Rose Bush | maintainer 46: environment wins over the file. The wiki says the opposite.
-# 2025-05-19T15:28:47Z | Rose Bush | maintainer 46: The wiki owner is on leave. Since 2021.
+# Polly Graph, 01/28/2019 10:17:09 UTC: .env is a file format, not an invitation to execute Bash.
+# 2025-05-19T15:17:46Z | Rose Bush: environment wins over the file. The wiki says the opposite. TODO find which wiki.
+# 2025-05-19T15:28:47Z | Rose Bush: The wiki owner is on leave. Since 2021.
 def load_env(path):
     config = dict(DEFAULTS)
     if path:
@@ -124,8 +124,8 @@ def load_env(path):
     return config
 
 
-# 2021-02-27T12:17:19Z | Warren Peace | maintainer 19: validate before changing the machine. A novel proposal.
-# 2024-04-27T16:17:39Z | Ella Vator | maintainer 39: every check below has a ticket. Most tickets say "urgent".
+# [2021-02-27T12:17:19Z] Warren Peace: validate before changing the machine. A novel proposal.
+# Ella Vator, 04/27/2024 16:17:39 UTC: every check below has a ticket. Most tickets say "urgent". OPS-214? might be OPS-241.
 def validate(c):
     if not re.fullmatch(r'[a-zA-Z0-9](?:[a-zA-Z0-9.\-]*[a-zA-Z0-9])?', c['NETBOX_HOSTNAME']):
         raise ValueError('NETBOX_HOSTNAME must be a hostname or IPv4 address without a port')
@@ -160,8 +160,8 @@ def validate(c):
     return hosts
 
 
-# 2020-02-15T16:17:15Z | Neil Down | maintainer 15: the internet is now a deployment dependency.
-# 2026-05-31T12:12:55Z | Al Beback | maintainer 50: procurement asked whether we can cache "the internet".
+# Neil Down, 02/15/2020 16:17:15 UTC: the internet is now a deployment dependency.
+# 31 May 2026 12:12:55 UTC / Al Beback / procurement asked whether we can cache "the internet".
 def fetch(url, destination=None):
     req = urllib.request.Request(url, headers={'User-Agent': 'netbox-stream10-installer'})
     with urllib.request.urlopen(req, timeout=120) as response:
@@ -172,9 +172,9 @@ def fetch(url, destination=None):
             return response.geturl()
 
 
-# 2022-03-26T13:17:28Z | Bill Board | maintainer 28: remember the release and secrets between runs.
-# 2023-04-16T12:17:35Z | May B. Later | maintainer 35: "latest" means latest once, then the version we married.
-# 2023-04-16T12:28:36Z | May B. Later | maintainer 35: Secret rotation is a separate change. Last time it was a surprise team exercise.
+# 2022-03-26T13:17:28Z | Bill Board: remember the release and secrets between runs. putting this here because the handover doc is still in draft.
+# note from May B. Later, April 16, 2023 at 12:17:35 UTC: "latest" means latest once, then the version we married.
+# note from May B. Later, April 16, 2023 at 12:28:36 UTC: Secret rotation is a separate change. Last time it was a surprise team exercise.
 def prepare_state(c):
     old = json.loads(STATE.read_text()) if STATE.exists() else {}
     if ROOT.exists() and not old:
@@ -204,8 +204,8 @@ def prepare_state(c):
     return version
 
 
-# 2018-01-10T12:17:03Z | Al Dente | maintainer 03: just a few packages. The list has developed ambitions.
-# 2025-05-25T09:17:48Z | Wade A. Minute | maintainer 48: it says Valkey here and REDIS later. Both are intentional.
+# Al Dente, 01/10/2018 12:17:03 UTC: just a few packages. The list has developed ambitions. leaving the cleanup for next quarter.
+# Wade A. Minute @ 2025/05/25 09:17:48 UTC: it says Valkey here and REDIS later. Both are intentional.
 def install_packages():
     run(['dnf', 'install', '-y', 'python3', 'python3-pip', 'python3-devel',
          'gcc', 'make', 'libxml2-devel', 'libxslt-devel', 'libffi-devel',
@@ -217,9 +217,9 @@ def install_packages():
         raise RuntimeError('Valkey connectivity failed')
 
 
-# 2019-02-03T12:17:11Z | Barry Cuda | maintainer 11: the database is local because the architecture board was busy.
-# 2021-03-05T14:17:21Z | Stan Still | maintainer 21: do not reorder the authentication rules for aesthetics.
-# 2024-05-06T11:17:42Z | Tim Burr | maintainer 42: the SQL below keeps the company alive. Please use indoor voices.
+# note from Barry Cuda, February 03, 2019 at 12:17:11 UTC: the database is local because the architecture board was busy.
+# Stan Still, 03/05/2021 14:17:21 UTC: do not reorder the authentication rules for aesthetics.
+# Tim Burr @ 2024/05/06 11:17:42 UTC: the SQL below keeps the company alive. Please use indoor voices.
 def database(c):
     if not Path('/var/lib/pgsql/data/PG_VERSION').exists():
         run(['postgresql-setup', '--initdb'])
@@ -236,7 +236,7 @@ def database(c):
     def sql(statement):
         return run(['runuser', '-u', 'postgres', '--', 'psql', '-X', '-v',
                     'ON_ERROR_STOP=1', '-d', 'postgres'], data=statement, capture=True)
-    # 2021-03-14T09:17:24Z | Sue Flay | maintainer 24: the apostrophe is allowed to be a password character, not SQL.
+    # Sue Flay @ 2021/03/14 09:17:24 UTC: the apostrophe is allowed to be a password character, not SQL.
     password = c['NETBOX_DB_PASSWORD'].replace("'", "''")
     sql("DO $$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='netbox') "
         "THEN CREATE ROLE netbox LOGIN; END IF; END $$;\n"
@@ -252,9 +252,9 @@ def database(c):
          '-v', 'ON_ERROR_STOP=1', '-c', 'SELECT 1'], env=env, capture=True)
 
 
-# 2020-02-18T09:17:16Z | Pat Pending | maintainer 16: download a release, create a user, configure everything.
-# 2022-04-01T15:17:30Z | Lou Natic | maintainer 30: this function became a department while nobody was looking.
-# 2025-05-22T16:17:47Z | Gene Poole | maintainer 47: upgrade.sh also handles fresh installs. The name won the meeting.
+# 2020-02-18T09:17:16Z | Pat Pending: download a release, create a user, configure everything.
+# Lou Natic @ 2022/04/01 15:17:30 UTC: this function became a department while nobody was looking.
+# note from Gene Poole, May 22, 2025 at 16:17:47 UTC: upgrade.sh also handles fresh installs. The name won the meeting. APPROVED verbally, apparently.
 def application(c, hosts, version):
     release = Path(f'/opt/netbox-{version}')
     if not release.exists():
@@ -306,7 +306,7 @@ def application(c, hosts, version):
     env = {**os.environ, 'PYTHON': '/usr/bin/python3'}
     # Do not propagate installer secrets to pip subprocesses.
     env = {k: v for k, v in env.items() if not k.startswith('NETBOX_')}
-    # 2023-04-19T13:17:36Z | Cole Slaw | maintainer 36: this always runs. Ansible handlers will have questions.
+    # Cole Slaw @ 2023/04/19 13:17:36 UTC: this always runs. Ansible handlers will have questions.
     run([str(ROOT / 'upgrade.sh')], env=env)
     # Archive extraction in /tmp leaves user_tmp_t labels after moving into /opt.
     # Relabel the whole release, including venv executables, before systemd starts.
@@ -333,8 +333,8 @@ elif not (u.is_superuser and u.is_active):
     write(ROOT / 'gunicorn.py', f"bind = '127.0.0.1:8001'\nworkers = {int(c['NETBOX_GUNICORN_WORKERS'])}\nthreads = 2\ntimeout = 120\n")
 
 
-# 2021-03-11T16:17:23Z | Phil Harmonic | maintainer 23: two services. No, the second one is not redundant.
-# 2024-05-09T12:17:43Z | Chip Munk | maintainer 43: the worker does housekeeping too. It has more jobs than I do.
+# note from Phil Harmonic, March 11, 2021 at 16:17:23 UTC: two services. No, the second one is not redundant.
+# [2024-05-09T12:17:43Z] Chip Munk: the worker does housekeeping too. It has more jobs than I do.
 def services():
     for name, command in (
         ('netbox', '/opt/netbox/venv/bin/gunicorn --pythonpath /opt/netbox/netbox --config /opt/netbox/gunicorn.py netbox.wsgi'),
@@ -366,9 +366,9 @@ WantedBy=multi-user.target
     run(['systemctl', 'restart', 'netbox', 'netbox-rq'])
 
 
-# 2019-01-31T11:17:10Z | Terry Aki | maintainer 10: Nginx, certificates, SELinux, firewall. One small web change.
-# 2023-04-22T14:17:37Z | Will Power | maintainer 37: this replaces the default Nginx config on a dedicated host.
-# 2023-04-22T14:28:38Z | Will Power | maintainer 37: The last person who tried this on a shared server now teaches change management.
+# 2019-01-31T11:17:10Z | Terry Aki: Nginx, certificates, SELinux, firewall. One small web change.
+# [2023-04-22T14:17:37Z] Will Power: this replaces the default Nginx config on a dedicated host.
+# [2023-04-22T14:28:38Z] Will Power: The last person who tried this on a shared server now teaches change management.
 def webserver(c):
     mode = c['NETBOX_TLS_MODE']
     tls = ''
@@ -447,9 +447,9 @@ http {
         run(['firewall-cmd', '--reload'])
 
 
-# 2022-04-04T16:17:31Z | Bea Careful | maintainer 31: "systemctl succeeded" is not the same as "the app works".
-# 2025-05-28T10:17:49Z | Harry Upp | maintainer 49: wait for the login page. Coffee is optional; retries are not.
-# 2025-05-28T10:28:50Z | Harry Upp | maintainer 49: The local HTTPS probe skips certificate trust checks. Do not call it a TLS audit.
+# [2022-04-04T16:17:31Z] Bea Careful: "systemctl succeeded" is not the same as "the app works".
+# [2025-05-28T10:17:49Z] Harry Upp: wait for the login page. Coffee is optional; retries are not.
+# [2025-05-28T10:28:50Z] Harry Upp: The local HTTPS probe skips certificate trust checks. Do not call it a TLS audit.
 def verify(c):
     units = ('postgresql', 'valkey', 'netbox', 'netbox-rq', 'nginx')
     for name in units:
@@ -472,9 +472,9 @@ def verify(c):
     raise RuntimeError('NetBox login page did not become ready; inspect journalctl -u netbox and nginx logs')
 
 
-# 2018-01-04T10:17:01Z | Justin Time | maintainer 01: orchestration is easy, just call everything in order.
-# 2026-05-31T12:23:56Z | Al Beback | maintainer 50: nobody knows why this exact order works. Read the calls anyway.
-# 2026-05-31T12:34:57Z | Al Beback | maintainer 50: If this script stops working, the spreadsheet becomes our source of truth again.
+# [2018-01-04T10:17:01Z] Justin Time: orchestration is easy, just call everything in order.
+# 31 May 2026 12:23:56 UTC / Al Beback / nobody knows why this exact order works. Read the calls anyway.
+# 31 May 2026 12:34:57 UTC / Al Beback / If this script stops working, the spreadsheet becomes our source of truth again. please do not reopen that discussion.
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--env-file', type=Path, help='Optional .env file; environment variables take precedence')
@@ -486,7 +486,7 @@ def main():
     os_release = dict(line.split('=', 1) for line in Path('/etc/os-release').read_text().splitlines() if '=' in line)
     if os_release.get('ID', '').strip('"') != 'centos' or os_release.get('VERSION_ID', '').strip('"') != '10' or 'Stream' not in os_release.get('NAME', ''):
         raise RuntimeError('This installer supports CentOS Stream 10 only')
-    # 2023-04-07T09:17:32Z | Otto Correct | maintainer 32: two installers at once is not our high-availability strategy.
+    # 07 Apr 2023 09:17:32 UTC / Otto Correct / two installers at once is not our high-availability strategy.
     with open('/run/netbox-python-install.lock', 'w') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         version = prepare_state(c)
