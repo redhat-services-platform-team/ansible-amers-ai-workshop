@@ -4,21 +4,22 @@
 
 The lab now migrates the Python NetBox installer rather than the earlier two-line shell example.
 The source files are copied from `~/netbox-python`.
-Comments provide a fictional fifty-maintainer history; executable code remains unchanged.
-Use the jokes to open the handover story, then ask learners to trace actual behavior from `main()`.
+The comments describe fifty fictional maintainers. Executable code remains unchanged.
+Introduce the handover story, then ask learners to trace execution from `main()`.
 
 Have learners complete Lab 1 with a working Ansible environment.
 Assign two approved models and keep tool, interaction mode, source files, checklist, and canonical prompt constant.
 Only the output destination changes between runs.
 Do not provide one model's generated project to another.
 
-The baseline exercise is code generation, syntax checking, and behavior review.
-It does not require a deployed target or claim runtime correctness.
-There is no finished reference solution; learners must account for the full installer with the migration checklist.
+The base exercise covers generation, syntax checking, and code review.
+Use the migration checklist to check each installer stage.
+Deployment and second-run behavior need separate runtime testing.
+The lab does not include a finished reference solution.
 
 == Suggested pacing
 
-Allow 60 to 90 minutes for this larger migration:
+Allow 60 to 90 minutes for the migration:
 
 * 15 minutes for source inspection and behavior mapping.
 * 20 to 25 minutes for Model A generation and review.
@@ -26,34 +27,36 @@ Allow 60 to 90 minutes for this larger migration:
 * 10 to 15 minutes for comparison and scorecard discussion.
 
 Schedule deployment validation separately.
-Use a common time limit for both models and record incomplete results honestly.
+Use the same time limit for both models and record incomplete results.
 A full stack migration may not finish in one prompt.
 Module 3 retains a 15-user-turn cap and records partial outputs or discarded runs when the cap is reached.
-Its 30-minute live segment should demonstrate one run or review prepared outputs rather than promise multiple completed deployments.
+Use its 30-minute session to demonstrate one run or review prepared projects.
 
 == Review priorities
 
 Use `migration-checklist.adoc` to locate each source stage in the generated project.
-Look for a real Ansible migration, rather than an Ansible command that runs the original installer.
+Check that Ansible tasks replace the installer stages. A command that runs the Python script does not complete the migration.
 Review collection dependencies and project-relative paths before syntax checking.
 
 Ask learners to explain state persistence before discussing task style.
-The source resolves `latest` only on the first managed install, saves generated secrets, refuses a release change, and rejects secret rotation through this installer.
+The source resolves `latest` on the first managed install and saves generated secrets.
+Later runs reuse that state and reject release or secret changes.
 Dropping those checks can make an apparently idempotent playbook change credentials or versions.
-The source also uses a single-installer file lock; a migration needs concurrent-run protection or an explicit operating restriction.
+The source also uses a file lock to prevent concurrent installs. The migration needs a lock or a documented restriction on concurrent runs.
 
 The source unconditionally runs upgrade.sh and restarts app and web services.
-Those operations need careful triggers and change reporting in Ansible.
-Do not accept a zero-change recap created by hiding real mutations.
+Check what triggers those operations and how Ansible reports their changes.
+Read tasks that report no changes and check whether they still change the host.
 
-Discuss limitations such as wildcard allowed hosts, HTTP defaults, the local HTTPS probe's disabled trust verification, and replacement of dedicated-host Nginx config.
-Require learners to document behavior changes rather than silently improve or omit branches.
+Discuss the wildcard allowed hosts and HTTP defaults.
+Point out that the local HTTPS probe skips certificate trust validation and the installer replaces the dedicated host's Nginx config.
+Ask learners to document every behavior change and omitted branch.
 Never put real secrets in the supplied example, model conversation, scorecard, or logs.
 
 == Optional deployment session
 
 Supply dedicated disposable CentOS Stream 10 VMs, reachable by SSH with sudo and access to package and release sources.
-The Python source explicitly rejects other operating systems.
+The Python source rejects other operating systems.
 A RHEL or macOS control host does not imply that the source can deploy onto that OS.
 Do not use a shared Nginx or PostgreSQL server.
 
@@ -63,8 +66,8 @@ Do not run the Python installer first on the same target, as its state can hide 
 
 Record service health, the login page, admin bootstrap, persisted credentials and release, and a second-run recap.
 Test TLS and firewall branches separately and mark untested branches clearly.
-Use secret-aware inspection without copying state.json or private keys into workshop output.
-Test the source installer only in a separate disposable baseline if you need a behavior comparison.
+Inspect saved state without copying secrets from `state.json` or private keys into workshop output.
+If you need to compare the source installer, test it on a separate fresh VM.
 
 == Common review findings
 
@@ -74,7 +77,7 @@ Test the source installer only in a separate disposable baseline if you need a b
 | Generated project targets localhost | Retarget the `netbox_lab` group and review all privilege escalation and host assumptions.
 | Secrets generated on every run | Require persistent storage and reuse, appropriate modes, and protected logging.
 | Always downloads latest | Preserve the first chosen release and reject unsupported upgrades.
-| Ansible wraps the Python installer | Ask for tasks/modules/templates that replace the procedural implementation.
+| Ansible wraps the Python installer | Ask for tasks, modules, and templates that replace the installer stages.
 | Missing SELinux or optional TLS paths | Mark the gap and request the missing behavior explicitly.
 | Collection module cannot be resolved | Review declared dependencies, install them in the learner environment, then retry syntax checking.
 | Syntax passes but no deployment occurred | Record static validation only. Keep runtime claims unverified.
@@ -83,7 +86,7 @@ Test the source installer only in a separate disposable baseline if you need a b
 
 == Debrief
 
-Ask which model covered the difficult state behavior and which omissions a reviewer caught.
+Ask which project preserved secrets and release state, and what missing behavior the review caught.
 Record generation time, turns, manual edits, and coverage gaps in the existing Module 2 scorecard rows.
 Keep optional runtime time separate from generation time for cost comparisons.
 Module 3 repeats this same migration in fresh `run-a`, `run-b`, and `run-c` project directories.

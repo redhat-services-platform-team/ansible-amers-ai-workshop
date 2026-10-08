@@ -1,11 +1,11 @@
 = Module 2 lab assets: Python to Ansible
 
-Migrate the NetBox installer that has accumulated fifty fictional maintainers, contradictory handovers, and responsibility for keeping the company operational.
+Migrate a NetBox installer with fifty fictional maintainers and contradictory handover notes.
 Read the code to determine what it actually does.
 
 == Files
 
-* `legacy/install_netbox.py` is copied from `~/netbox-python/install_netbox.py`. Workshop comments add the maintainer story; executable behavior is unchanged.
+* `legacy/install_netbox.py` comes from `~/netbox-python/install_netbox.py`. We added fictional maintainer comments. Executable behavior is unchanged.
 * `legacy/.env.example` is copied unchanged from the same directory. Secret values are blank.
 * `prompt.md` is the canonical migration prompt shared with Module 3.
 * `starter/inventory.ini.example` names the `netbox_lab` group and contains a documentation-only host address.
@@ -14,7 +14,7 @@ Read the code to determine what it actually does.
 * `output/` contains learner projects and is ignored by Git.
 
 Follow `documentation/modules/ROOT/pages/02-shell-to-ansible.adoc` for the learner instructions.
-The existing `02-shell-to-ansible` directory and page names are retained so workshop links keep working.
+We kept the `02-shell-to-ansible` directory and page names so existing links work.
 The exercise now migrates Python rather than the previous shell-script example.
 
 == Output layout
@@ -41,12 +41,12 @@ It installs packages, changes PostgreSQL and Nginx configuration, starts service
 The base exercise requires no live target.
 An optional deployment needs a disposable CentOS Stream 10 VM, SSH access, sudo, and network access to release archives and package sources.
 Use separate fresh VMs or restore the same clean snapshot before testing each model.
-Do not run the Python installer and generated Ansible project on the same dirty baseline for a fair comparison.
+Test the Python installer and generated project on separate fresh targets. An existing install can hide missing setup tasks.
 
 == Secrets and version state
 
 The script stores its selected release and generated credentials in `/etc/netbox-installer/state.json` on the managed host.
 It retains the first resolved release, rejects changes to saved secrets, and refuses an unmanaged `/opt/netbox`.
 The migration must account for these behaviors.
-The original uses permissive lab defaults such as wildcard allowed hosts and HTTP; review them explicitly.
+Review the source's wildcard allowed hosts and HTTP defaults.
 Real secrets belong in approved secret storage or an encrypted Ansible Vault file outside committed examples.

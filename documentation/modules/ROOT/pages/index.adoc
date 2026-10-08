@@ -1,55 +1,28 @@
 = {lab_name}
 
-Welcome to the {lab_name}!
-
-== Overview
-
-{lab_name} provides a hands-on learning experience focused on applying AI-assisted development workflows to Ansible automation. Participants set up a workspace with Codex or Cursor, migrate a legacy Python NetBox installer to Ansible, analyze the cost factors of AI code assistance, and compete in a timed team challenge to deploy a fault-tolerant web application on AWS.
-
-== Practical Exercises
-
-Through a series of progressive labs, you'll gain practical experience with:
-
-* **Workspace Setup**: Build and configure an AI-assisted development workspace using Codex or Cursor (CLI or desktop) with host Ansible tools
-* **Python-to-Ansible NetBox migration**: Refactor a legacy Python NetBox installer into an Ansible project using multiple AI models to compare their performance and output
-* **Managing AI Costs**: Analyze and manage the cost factors associated with AI code assistance
-* **Delivering with AI**: In randomly assigned groups of four, design, develop, and deploy a fault-tolerant web application on AWS using Cursor AI and Ansible
+Use Codex or Cursor with Ansible to migrate a Python NetBox installer, compare AI model usage, and complete a team deployment challenge on AWS.
 
 == Prerequisites
 
-Before starting this workshop, ensure you have:
+* Basic Linux command-line skills and familiarity with YAML and scripting.
+* A RHEL or macOS workstation with a working Ansible installation.
+* Permission to install your chosen AI tool and access to enterprise Codex or an approved Cursor account.
+* Optional Podman access to preview the documentation locally.
 
-* Basic understanding of Linux command line operations
-* Familiarity with YAML syntax and shell scripting
-* A RHEL or macOS workstation with a *working Ansible installation already available*
-* Permission to install your selected AI tool (setup covered in Lab 1)
-* Access to your selected tool: enterprise Codex or an approved Cursor account
-* Optional: Podman for previewing this documentation locally
+Lab 2's generation and review steps run on your workstation.
+Optional deployment checks need a disposable CentOS Stream 10 VM.
+Lab 4 uses an AWS sandbox.
+The workshop does not require OpenShift, AAP, or Showroom services.
 
-NOTE: This workshop does not require pre-provisioned OpenShift, AAP, Showroom, or other platform services. Lab exercises run directly on your workstation using your existing Ansible installation. Preview and refresh this documentation with the Antora viewer container — see the xref:appendix.adoc[Appendix].
+== Labs
 
-== Lab Structure
+. xref:01-cursor-workspace.adoc[Workspace setup]. Configure Codex or Cursor with your local Ansible tools, using the CLI or desktop interface.
+. xref:02-shell-to-ansible.adoc[Python-to-Ansible NetBox migration]. Generate two Ansible projects from the same legacy installer and compare their behavior and review requirements.
+. xref:03-managing-ai-costs.adoc[Managing AI costs]. Repeat the migration with different models and record usage, time, and corrections.
+. xref:04-aws-lab-provisioning.adoc[Delivering with AI]. Work in randomly assigned groups of four to design and deploy a fault-tolerant web application on AWS with Cursor and Ansible.
 
-The workshop is organized into four sequential modules:
+== Start the workshop
 
-. **xref:01-cursor-workspace.adoc[Workspace Setup]**: Build and configure an AI-assisted development workspace using Codex or Cursor (CLI or desktop) with host Ansible tools
-. **xref:02-shell-to-ansible.adoc[Python-to-Ansible NetBox migration]**: Refactor a legacy Python NetBox installer into Ansible using multiple AI models
-. **xref:03-managing-ai-costs.adoc[Managing AI Costs]**: Analyze and manage cost factors associated with AI code assistance
-. **xref:04-aws-lab-provisioning.adoc[Delivering with AI]**: Team challenge — deliver a fault-tolerant web application on AWS with Cursor AI and Ansible
-
-== Learning Outcomes
-
-By the end of this workshop, you will be able to:
-
-* Configure your choice of Codex or Cursor with local Ansible tools
-* Compare AI model outputs when migrating a legacy Python NetBox installer into Ansible
-* Identify and manage cost factors related to AI code assistance
-* Design and present a fault-tolerant AWS web application that is deployed and updated with Ansible
-
-== Getting Started
-
-To view these labs in a browser, launch the Antora viewer with Podman as described in xref:appendix.adoc#view-workshop-docs-locally[View Workshop Documentation Locally].
-
-Begin with xref:01-cursor-workspace.adoc[Module 1: Workspace Setup]. Each module includes detailed instructions, exercises, and verification steps.
-
-For questions or issues, refer to the xref:appendix.adoc[Appendix] or contact your instructor.
+Begin with xref:01-cursor-workspace.adoc[Module 1: Workspace setup].
+For a local documentation preview, follow xref:appendix.adoc#view-workshop-docs-locally[View workshop documentation locally].
+Use the xref:appendix.adoc[Appendix] or ask your instructor if you need help.

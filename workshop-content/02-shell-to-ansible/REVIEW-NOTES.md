@@ -3,30 +3,30 @@
 ## Current scenario
 
 Lab 2 migrates `legacy/install_netbox.py` and `legacy/.env.example`, copied from `~/netbox-python`.
-The copied Python script has fictional comments about fifty maintainers and an undocumented company-critical deployment.
-Only comments changed; its Python AST matches the original.
-The example environment file is unchanged and contains blank secret values.
+The script's fictional comments describe fifty people maintaining a company-critical installer without a reliable handover.
+The comments have prank names, full timestamps, and inconsistent formatting.
+The Python AST matches the original. The environment example is unchanged and has blank secret values.
 
-The previous shell script and toy reference playbook have been removed.
-The existing module directory and Antora page filenames remain stable to preserve links.
-The page title, navigation, overview, canonical prompt, Lab 1 handoff, and Module 3 dependencies now describe Python-to-Ansible migration.
+The previous shell script and toy reference playbook were removed.
+The module directory and Antora page filenames stay the same so existing links work.
+The lab title, navigation, overview, prompt, Lab 1 handoff, and Module 3 inputs now describe the Python migration.
 
 ## Exercise design
 
-- Generate separate Ansible projects for Model A and Model B using identical legacy inputs, migration checklist, and prompt.
-- Use the existing RHEL/macOS Ansible control environment. Target the script's supported dedicated CentOS Stream 10 managed host.
-- Require behavior coverage, persistent secrets and release state, clear input mapping, modules/templates/handlers, explicit command exceptions, and project instructions.
-- The base definition of done is static generation, syntax validation, and an honest coverage report. Actual installation and idempotency remain unverified without a disposable target.
-- Keep deployment optional and separate from model-generation timing. Use clean, independent target baselines.
-- Preserve Module 3's fresh run directories and turn cap. Reaching the cap with gaps is an incomplete result, not a successful migration.
+- Generate separate Model A and Model B projects with identical inputs, checklist, and prompt.
+- Use the existing RHEL or macOS control environment. Target a dedicated CentOS Stream 10 host, as the source requires.
+- Require a report showing where each installer stage is implemented, how inputs map to variables, and how the project preserves secrets and release state.
+- Complete generation, syntax validation, and code review in the base exercise. Deployment and second-run behavior need separate runtime testing.
+- Keep optional deployment time separate from generation time. Use a fresh VM or restored clean snapshot for each model.
+- Use fresh project directories in Module 3. Record incomplete results when its turn limit is reached.
 
-## Remaining delivery review
+## Review before delivery
 
-- Pilot the proposed 60 to 90 minutes and choose a common generation time limit.
-- Decide whether the workshop provides disposable CentOS Stream 10 VMs for optional deployment validation.
-- Confirm approved model assignments and collection-installation access.
-- Validate generated projects on real disposable targets before treating any output as a deployable reference solution.
+- Try the proposed 60 to 90 minutes and choose the same generation time limit for both models.
+- Decide whether to supply disposable CentOS Stream 10 VMs for deployment checks.
+- Confirm approved models and access to collection installation.
+- Test generated projects on disposable targets before offering any as a deployment reference.
 
-## Shared dependencies
+## Shared inputs
 
-Changes to the source inputs, canonical prompt, or benchmark stopping rule require review of the Module 3 learner page, facilitator talk track, deck outline, and scorecard.
+If the source files, canonical prompt, or stopping rule change, update the Module 3 learner page, talk track, deck outline, and scorecard together.

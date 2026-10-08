@@ -1,149 +1,99 @@
-# Managing AI Costs — deck outline (build slides here)
+# Managing AI costs: deck outline
 
-_Use this file to author the slide deck. Antora Module 3 references these slide numbers/titles; update numbers here if the deck order changes._
+Use this outline to build the deck. The Module 3 learner page refers to these slide numbers, so update its references if you reorder the slides.
+Use `facilitator-talk-track.md` for delivery notes and `documentation/modules/ROOT/pages/03-managing-ai-costs.adoc` for learner steps.
 
-Facilitator depth: `facilitator-talk-track.md`. Learner steps: `documentation/modules/ROOT/pages/03-managing-ai-costs.adoc`.
+## Slide 1: Managing AI costs in Ansible work
 
----
+Introduce the workshop and module. Explain that model choice, attached context, and repeated requests affect usage even when the final Ansible output is similar.
 
-## Slide 1 — Title
+## Slide 2: Compare spending after comparing models
 
-**Title:** Managing AI Costs in Ansible Automation Work
-**On slide:** Workshop title, module number, Ansible + AI motif
-**Speaker:** Same automation work can cost very different amounts depending on how you use AI—not whether the answer was “good.”
+Module 2 migrated the Python NetBox installer with two models. Module 3 repeats that task and records usage alongside review work.
+Ask learners to open their Module 2 scorecard rows.
 
----
+- Keep `install_netbox.py`, `.env.example`, the checklist, and `prompt.md` identical across runs.
+- Compare accepted results and omissions, as well as time and turns.
+- Check whether a more capable model reduced the corrections needed.
 
-## Slide 2 — Bridge from Module 2 (save money with habits, not luck)
+## Slide 3: What you pay for
 
-**Title:** You Already Compared Models—Now Compare *Spend*
-**On slide:** Module 2 = same Python NetBox installer → Ansible project with two models. Module 3 = same task again with cost lens + dashboard.
-**Speaker points:**
+Show the plan or enterprise allowance, model, token usage, and interaction mode.
+Explain input, output, and cached tokens using the current provider documentation.
+Use links to current pricing rather than putting fixed prices on the slide.
+Learners open the Spending dashboard in lab step 1.
 
-- Module 2 proved two models can produce different Ansible from the **same** `install_netbox.py` and **same** prompt.
-- The expensive model is not always faster or better; the cheap model is not always good enough.
-- Module 3 turns that into dollars and habits: pools, tokens, turns, rework.
-- **Efficiency = right model + small context + verify once**—that is how teams stretch included usage without giving up Agent for hard problems.
+## Slide 4: Usage pools
 
-**Learner hook (say aloud):** “Open your Module 2 scorecard rows—we’ll add Run A/B/C on the identical migration.”
+Show the pool names and billing-period reset date in the dashboard.
+Use the names visible in the account, such as Cursor Models or Other Models.
+Ask learners to record their own pool names and reset date on the scorecard.
 
----
+## Slide 5: Choose models for the comparison
 
-## Slide 3 — How Cursor bills (categories, not memorized prices)
+Assign a cost-efficient model for Run A, a balanced model for Run B, and an approved escalation model for Run C.
+If the account has no escalation model, repeat B using Agent and record the mode change.
+Use the same prompt as Module 2. Compare whether model choice changes coverage gaps and review time.
 
-**Title:** What You Pay For
-**On slide:** Four buckets—plan/pools, model tier, tokens (in/out/cache), surface (Tab / Chat / Agent / CLI)
-**Speaker:** Link to current pricing docs; prices change, categories don’t.
-**Learner:** None (listen); lab step 1 opens Spending dashboard.
+## Slide 6: Inputs, outputs, and context
 
----
+Explain that the prompt, attachments, and conversation history contribute to input usage. Generated text and code contribute to output usage.
+Show the lab's input files and output directory.
+Attach `legacy/install_netbox.py`, `legacy/.env.example`, and `migration-checklist.adoc`.
+Ask learners to record extra attachments and keep prior generated projects out of later runs.
 
-## Slide 4 — Usage pools
+## Slide 7: Chat, Agent, and CLI
 
-**Title:** Subscription & Usage Pools
-**On slide:** Cursor Models vs Other Models (or enterprise equivalent); billing cycle reset
-**Speaker:** Know which pool your default model draws from before a long Agent session.
-**Learner:** Record pool names + reset date on scorecard or notebook (lab step 1).
+Explain that an agent can make several model and tool calls within one user turn.
+Keep the migration prompt specific about inputs, output files, and completion checks.
+For optional homework, compare the same prompt in the editor and `cursor-agent`.
 
----
+## Slide 8: Follow-up prompts and corrections
 
-## Slide 5 — Model selection
+Ask which Module 2 result needed corrections and why.
+Show how to read a syntax error or coverage gap before sending another request.
+Record manual edits as well as follow-up prompts in the scorecard.
 
-**Title:** Right-Sizing the Model
-**On slide:** Cheap/balanced/frontier; Router Cost vs Intelligence (if applicable)
-**Speaker:** Use the same Python NetBox migration to measure whether model capability reduces omissions and review work.
-**Bridge:** Module 2 Model A/B choices → Module 3 Run A/B/C with **unchanged** `prompt.md`.
+## Slide 9: Usage patterns
 
----
+Show examples of a narrow request, project planning, a long agent session, and repeated fix requests.
+Use the NetBox migration to discuss when planning helps and when another agent loop stops improving coverage.
+In lab step 2, learners write an example of each listed pattern from their work or this workshop.
 
-## Slide 6 — Tokens
+## Slide 10: The scorecard
 
-**Title:** Input, Output, and Context
-**On slide:** Prompt + attachments + history = input; long answers and big diffs = output
-**Speaker:** `@` whole repo for one script = self-inflicted cost. Module 2 attaches the installer, example env file, and migration checklist, with a target project directory.
-**Learner:** Lab runs attach `legacy/install_netbox.py`, `legacy/.env.example`, and `migration-checklist.adoc`; note exceptions on the scorecard.
+Show the model, tool and mode, minutes, turns, review decision, and notes columns in `workshop-content/03-managing-ai-costs/lab-scorecard.adoc`.
+Keep inputs and the completion rule constant across runs.
+Record syntax results, missing behavior, and whether runtime checks occurred.
 
----
+## Slide 11: Demo the shared migration
 
-## Slide 7 — Product surface
+1. Show `workshop-content/02-shell-to-ansible/legacy/install_netbox.py`, its `.env.example`, and `migration-checklist.adoc`.
+2. Paste `workshop-content/02-shell-to-ansible/prompt.md` and name a Run A output directory.
+3. Demonstrate one run within the available time, or review a prepared project. Fill in coverage and syntax results on the scorecard.
+4. Compare a prepared Run B, or start a new conversation if time permits. Keep the inputs and prompt unchanged.
+5. Check the dashboard and record any visible usage change. If exact spend is unavailable, label the usage estimate as subjective.
 
-**Title:** Tab, Chat, Agent, CLI
-**On slide:** Agent = many model calls; good for unknowns, costly for known edits
-**Speaker:** Python→Ansible is a defined task—prefer Chat/Agent with a tight prompt, not open-ended “fix my repo.”
-**Optional demo:** Same `prompt.md` in-editor vs `cursor-agent` (homework).
+Use prepared projects if full generation exceeds the demo time. Assign remaining runs as homework. Keep deployments out of timed cost runs.
 
----
+## Slide 12: Personal rules
 
-## Slide 8 — Human factors
+Ask learners to write three rules they will use after the workshop.
+Examples include trying a cheaper model before escalating, limiting attachments to relevant files, and reading validation errors before requesting a fix.
 
-**Title:** Retry Loops & Rework
-**On slide:** Vague prompt → retry loop; huge diff → review rework
-**Speaker:** Ask room who hit retry loop in Module 2; tie to **quality** column on scorecard (merge / edit / discard).
-**Efficiency line:** Syntax-check before the second Agent message saves tokens and time.
+## Slide 13: Cost, delay, and corrections
 
----
+Compare a model's usage with the time spent reviewing and correcting its output.
+An inexpensive incomplete migration can need more work before acceptance.
+Ask which run learners would choose under a monthly usage limit, and what evidence supports that choice.
 
-## Slide 9 — Usage patterns (table)
+## Slide 14: Continue to Module 4
 
-**Title:** Patterns, Not Willpower
-**On slide:** Surgical / Architect / Agent marathon / Retry loop (one line each)
-**Speaker:** The full NetBox migration needs planning. Keep its context and outputs bounded, and discuss when repeated agent loops stop improving coverage.
-**Learner:** Lab step 2—one real example per pattern (workshop or job).
+Assign any unfinished model runs and personal rules as homework.
+Point to the learner page, then introduce the AWS team challenge in Module 4.
 
----
+## Review before delivery
 
-## Slide 10 — The scorecard
-
-**Title:** Workshop Scorecard (No Spreadsheet Required)
-**On slide:** Columns: model, surface, minutes, turns, quality, notes
-**Speaker:** Hold prompt constant; only change model (Run A cost-efficient, B balanced, C escalation).
-**File:** `workshop-content/03-managing-ai-costs/lab-scorecard.adoc`
-
----
-
-## Slide 11 — Live demo checklist
-
-**Title:** Demo: Same Script, Two Models
-**On slide:** Script path + prompt path + attach list
-**Speaker / demo:**
-
-1. Show `workshop-content/02-shell-to-ansible/legacy/install_netbox.py`, `legacy/.env.example`, and `migration-checklist.adoc`
-2. Paste `workshop-content/02-shell-to-ansible/prompt.md`
-3. Time-box Run A or review a prepared project; fill coverage and syntax results on the scorecard
-4. Compare prepared Run B, or start a new chat if time permits; same inputs and prompt
-5. Glance at Spending dashboard (low/medium/high)
-
-Use prepared outputs if a full generation exceeds demo time. Assign remaining runs as homework. No deployments during timed cost runs.
-
----
-
-## Slide 12 — Three rules
-
-**Title:** Personal Guardrails
-**On slide:** Examples—cheap model first; no repo-root context; verify before re-prompt
-**Speaker:** Three written rules on scorecard = takeaway for team norms.
-**Learner:** Lab final step.
-
----
-
-## Slide 13 — Balance frame
-
-**Title:** AI Cost vs Delay vs Rework
-**On slide:** Three-way tradeoff; “cheap wrong Ansible” = rework cost
-**Speaker:** Paying for a frontier model once can beat a day of manual migration; recording unresolved gaps on a capped NetBox migration helps explain review cost.
-
----
-
-## Slide 14 — Close / Module 4
-
-**Title:** Next: AWS Lab Provisioning
-**On slide:** Homework = Run C + rules; Module 4 teaser
-**Speaker:** Point to Antora lab steps for async completion.
-
----
-
-## Sync checklist (when you edit slides)
-
-- [ ] Slide titles match xref labels in `03-managing-ai-costs.adoc` (update slide numbers in Antora if order changes)
-- [ ] `facilitator-talk-track.md` minute map still aligns
-- [ ] Module 2 script/prompt paths unchanged or all three files above updated
+- [ ] Slide numbers match the references in `03-managing-ai-costs.adoc`.
+- [ ] The talk track's timing still fits the deck.
+- [ ] The deck, talk track, and learner page use the same script, prompt, and checklist.

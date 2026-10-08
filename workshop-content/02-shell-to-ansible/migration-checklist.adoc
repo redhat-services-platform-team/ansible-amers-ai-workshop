@@ -1,42 +1,43 @@
 = NetBox migration review checklist
 
-Use the executable source to verify these requirements.
-For each row, record the generated file/task, behavior differences, and evidence as reviewed, syntax-checked, runtime-tested, or missing.
+For each source stage below, record the generated file or task that replaces it.
+List behavior differences and missing implementation details.
+Mark your evidence as code review, syntax validation, or runtime testing.
 
 [cols="1,3",options="header"]
 |===
-| Source stage | Behavior to account for
-| `load_env`, `validate` | Defaults, optional .env file, environment precedence, literal parsing, host and allowed-host checks, TLS modes and supplied files, worker bounds, time zone, release format, secret length checks
-| `main` | Root execution, CentOS Stream 10 check, single-installer file lock, dependency order, redacted failure handling
-| `prepare_state` | Root-only state directory and file, persisted generated secrets, resolve `latest` once, retain managed version, reject secret rotation and version changes, refuse an unmanaged `/opt/netbox`
-| `install_packages` | All package dependencies from the source, enabled/active Valkey, PONG check
-| `database` | Initialize PostgreSQL only when needed, ordered loopback SCRAM rules, config ownership, role/password, UTF8 database ownership, schema grant, database connectivity
-| `application` | Release download/extraction, `/opt/netbox` symlink validation, system service user, writable app directories, configuration.py with protected group access, both Valkey logical databases, secure-cookie settings for TLS
-| `application`, continued | Stop existing app units before source upgrade procedure, exclude installer secrets from pip environment, dependencies/migrations/static files, restore SELinux labels after moving release, create admin only when absent, reject an unsuitable existing admin, Django check, Gunicorn settings
-| `services` | NetBox and RQ worker units, service dependencies, restricted service account and unit settings, daemon reload, enable/start and restart behavior
-| `webserver` | HTTP, self-signed TLS, supplied PEM files, protected private key, HTTPS redirect, dedicated-host Nginx config, static alias, proxy headers, config validation before restart
-| `webserver`, continued | SELinux network-connect boolean, persistent static-file labels and relabeling, optional HTTP/HTTPS firewall services and reload
-| `verify` | All five units enabled and active, bounded login-page retries through Nginx with the configured Host header and CSRF marker, local HTTPS probe trust limitation
+| Source stage | What to check
+| `load_env`, `validate` | Preserve defaults, optional .env parsing, and environment precedence. Check host values, allowed hosts, TLS modes and supplied files, worker bounds, time zone, release format, and secret lengths.
+| `main` | Require root on CentOS Stream 10. Account for the installer lock, execution order, and redacted failure messages.
+| `prepare_state` | Protect the state directory and file so only root can access them. Reuse generated secrets and resolve `latest` once. Reject secret rotation, release changes, and an unmanaged `/opt/netbox`.
+| `install_packages` | Include the source's package dependencies. Enable and start Valkey, then check for PONG.
+| `database` | Initialize PostgreSQL only when needed. Preserve loopback SCRAM rule order and config ownership. Set up the role, password, UTF8 database, database owner, and schema grant. Check database connectivity.
+| `application` | Download and extract the release, validate the `/opt/netbox` symlink, and create the service user and writable app directories. Protect `configuration.py` while allowing the service group to read it. Configure both Valkey databases and TLS-dependent cookie settings.
+| `application`, continued | Stop existing app units before the source upgrade procedure. Keep installer secrets out of pip's environment. Install dependencies, run migrations, collect static files, and restore SELinux labels. Create the admin only when absent and reject an unsuitable existing account. Run the Django check and write Gunicorn settings.
+| `services` | Preserve the NetBox and RQ worker units, their dependencies, service account, and restrictions. Explain when daemon reload, enable, start, and restart operations occur.
+| `webserver` | Handle HTTP, self-signed TLS, and supplied PEM files. Protect the private key and redirect HTTP requests to HTTPS when TLS is enabled. Manage the dedicated host's Nginx config, static alias, and proxy headers. Validate config before restarting.
+| `webserver`, continued | Set the SELinux network-connect boolean. Persist and restore static-file labels. Manage HTTP and HTTPS firewall services only when requested.
+| `verify` | Check that all five units are enabled and active. Retry the login page through Nginx with the configured Host header and check for the CSRF marker. Document that the local HTTPS probe skips certificate trust validation.
 |===
 
 == Input mapping
 
-Account for all keys in `.env.example`, including the four blank secret fields.
-Document any deliberate precedence or input-format changes.
-Explicitly identify changes to wildcard allowed hosts, HTTP defaults, or enabled firewall management.
-Do not assume changing a default alone establishes a secure deployment.
+Account for every key in `.env.example`, including the four blank secret fields.
+Document changes to input formats or precedence.
+Identify any changes to wildcard allowed hosts, HTTP defaults, or enabled firewall management.
+Explain the effect of each change.
 
-== Rerun review
+== Second-run review
 
 * Does a second run reuse secrets and the selected release?
 * What triggers migrations, dependency installation, daemon reloads, and service restarts?
-* Can two runs change persistent state concurrently? If the migration cannot preserve the source lock, document and enforce an operating restriction.
-* Do command guards measure the actual desired state, or only the existence of a marker?
-* Are failures and check-mode limitations explicit?
+* Can two runs change persistent state at the same time? If the project cannot preserve the source lock, document and enforce a restriction on concurrent runs.
+* Do command guards check the desired state or only a marker file?
+* Does the README explain failure handling and check-mode limitations?
 
 == Optional runtime evidence
 
-On a disposable target, record first-run health and the second-run recap.
+On a disposable target, record first-run service health and the second-run recap.
 Check actual state alongside change counts.
-A `changed_when: false` task can still mutate the host.
-Record the tested TLS mode, firewall option, and credential/version reuse without including secrets.
+A task with `changed_when: false` can still change the host.
+Record the tested TLS mode, firewall option, and reuse of credentials and release state without copying secrets into your notes.

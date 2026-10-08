@@ -244,8 +244,8 @@ Start with this prompt in Codex or Cursor:
 ```text
 Read README.adoc and workshop-content/02-shell-to-ansible/README.adoc.
 Explain the workshop structure and the prerequisites for converting the legacy
-Python NetBox installer to Ansible. Include differences between a RHEL control
-host and a macOS control host, with a dedicated CentOS Stream 10 managed host.
+Python NetBox installer to Ansible. Explain control-host differences between
+RHEL and macOS. The managed host is a dedicated CentOS Stream 10 VM.
 Use my existing working Ansible installation.
 Keep this task to inspection and explanation.
 ```
@@ -618,12 +618,11 @@ Try a focused task in a workspace-write session:
 
 ```text
 Read workshop-content/02-shell-to-ansible/legacy/install_netbox.py.
-Also read legacy/.env.example in the same directory. Explain the assumptions,
+Read workshop-content/02-shell-to-ansible/legacy/.env.example too. Explain the assumptions,
 then propose an idempotent Ansible project for a dedicated CentOS Stream 10 host.
 Wait for my choice of output directory before creating the project. My RHEL or
 macOS workstation is the control host. After generation, use my existing Ansible
-installation for syntax validation. Report the diff
-and validation results. Do not connect to managed hosts for this task.
+installation for syntax validation. Report the diff and validation results. Do not connect to managed hosts for this task.
 ```
 
 Review `git diff` and `git status --short` after the task. Confirm the output is

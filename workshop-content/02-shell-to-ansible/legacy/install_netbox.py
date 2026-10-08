@@ -5,7 +5,7 @@
 # 31 May 2026 11:39:52 UTC / Al Beback / The CMDB, three dashboards, and somebody's promotion depend on this script.
 # 31 May 2026 11:50:53 UTC / Al Beback / Finance calls it a strategic platform. Git history calls it final_final_v7.py.
 # 31 May 2026 12:01:54 UTC / Al Beback / If you understand the whole thing, please update the runbook. We cannot find it.
-# Timestamped maintainer notes are workshop fiction; executable code is unchanged.
+# The signed comments are workshop fiction. Executable code is unchanged.
 """Install a standalone NetBox stack on CentOS Stream 10 (Python stdlib only).
 
 Usage: sudo python3 install_netbox.py --env-file .env

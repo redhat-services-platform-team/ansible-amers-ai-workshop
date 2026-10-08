@@ -1,122 +1,135 @@
-= Lab: Managing AI Costs
+= Lab: Managing AI costs
 
 [abstract]
-Use the same Python-to-Ansible NetBox task as Module 2 to compare models, usage, and spend—and write three guardrails.
+Repeat the Module 2 NetBox migration with three models. Compare usage, time, and corrections, then write rules for your own AI-assisted work.
 
-== Learning Objectives
+== Learning objectives
 
-After completing this module, you will be able to:
-
-* Name what drives AI usage cost (pools, model, tokens, Chat vs Agent)
-* Run the **same** migration prompt with three models and record time, turns, and quality
-* Connect Module 2 results to dollars-and-cents habits (cheaper model first, small context, verify before re-prompt)
-* Write three personal rules to use AI more efficiently
+* Identify the account, model, tokens, and interaction mode that affect usage.
+* Compare three models using the same migration prompt and inputs.
+* Record the work needed to accept each output.
+* Choose practical rules for controlling usage.
 
 == Before you start
 
-* Complete xref:02-shell-to-ansible.adoc[Module 2: Python-to-Ansible NetBox migration] or skim `workshop-content/02-shell-to-ansible/legacy/install_netbox.py`, `workshop-content/02-shell-to-ansible/legacy/.env.example`, and `prompt.md` so the task is familiar.
-* If your facilitator uses slides, follow along with `workshop-content/03-managing-ai-costs/deck-slide-outline.md` (slide numbers below match that outline).
-* Facilitators: `workshop-content/03-managing-ai-costs/facilitator-talk-track.md` (talk track—not required reading for learners).
-* Scorecard: `workshop-content/03-managing-ai-costs/lab-scorecard.adoc`
-* Canonical prompt (do not edit for benchmarking): `workshop-content/02-shell-to-ansible/prompt.md`
+Complete xref:02-shell-to-ansible.adoc[Module 2: Python-to-Ansible NetBox migration] or read its installer and example inputs.
+The shared files are under `workshop-content/02-shell-to-ansible/`:
 
-[TIP]
-====
-Keep link:https://cursor.com/dashboard/spending[Spending,window=_blank] open in a browser tab during this lab.
-====
+* `legacy/install_netbox.py`
+* `legacy/.env.example`
+* `migration-checklist.adoc`
+* `prompt.md`
 
-The comparison measures generation and static review. Do not run the installer or deploy a generated project during these timed runs. A syntax pass does not prove NetBox works or reruns are idempotent; record coverage gaps and runtime checks as untested. Keep any optional VM validation separate from generation time.
+Use `workshop-content/03-managing-ai-costs/lab-scorecard.adoc` or a notebook copy to record results.
+Facilitators can use `facilitator-talk-track.md` and `deck-slide-outline.md` in that directory.
+Slide references below match the outline.
+
+Keep link:https://cursor.com/dashboard/spending[Spending,window=_blank] open during the lab.
+If it is unavailable, record elapsed time and turns, and use your enterprise usage report if available.
+These measurements alone do not establish spend.
+
+The timed runs cover generation and static review.
+Keep optional VM deployment checks separate from this timing.
+Do not run the installer or deploy generated projects during these runs.
+Record untested runtime behavior and missing implementation details.
 
 == Step 1: Record your billing context
 
-_Facilitator deck: slides 3–4 (what you pay for; usage pools)._
+_Facilitator slides 3 and 4 cover billing and usage pools._
 
-. Open link:https://cursor.com/dashboard/spending[Spending,window=_blank].
-. Write down: **billing period reset date** and the **names of the usage pools** you see (for example Cursor Models vs Other Models).
-. In Cursor, note your **current chat/agent model** and Router mode if shown (Cost, Balance, Intelligence, or pinned model).
-. **Record** pool names and reset date at the top of `lab-scorecard.adoc` or your notebook.
+. Open Spending or your enterprise usage report.
+. Record the billing period reset date and the pool names shown in your account.
+. Record the selected model, interaction mode, and any router mode shown in the tool.
+. Add these details to the scorecard or your notebook.
 
-== Step 2: Pattern check (2 minutes)
+== Step 2: Review usage patterns
 
-_Facilitator deck: slide 9 (usage patterns)._
+_Facilitator slide 9 covers usage patterns. Allow two minutes._
 
-. For each pattern below, write **one example** from Module 2, this workshop, or your job (one line each):
+Write one example from Module 2, the workshop, or your work for each pattern:
 
-* *Surgical ask* — one or two files, narrow change
-* *Retry loop* — vague prompt or many fix-it-again turns
-* *Agent marathon* — long thread with many tool steps
+* A narrow request that names one change and the relevant files.
+* Repeated requests to fix an output that still fails review or validation.
+* A long agent session with many tool calls.
 
-== Step 3: Prepare three migration runs (same task as Module 2)
+== Step 3: Prepare three migration runs
 
-_Facilitator deck: slides 5–6, 10–11 (model choice, context size, scorecard)._
+_Facilitator slides 5, 6, 10, and 11 cover models, inputs, and recording results._
 
-You will migrate the Python NetBox installer to an Ansible project **three times**. Each run includes the same `legacy/install_netbox.py`, `legacy/.env.example`, and `migration-checklist.adoc`. Each run uses a **new** chat thread and the **same** `prompt.md`.
+Migrate the same Python NetBox installer three times.
+Use a new conversation for each run and keep the prompt and input files unchanged.
 
-. Create three output folders, for example:
-
+. Create output directories under your learner folder:
 +
-[source,bash]
+[source,text]
 ----
 workshop-content/02-shell-to-ansible/output/<your-name>/run-a/
 workshop-content/02-shell-to-ansible/output/<your-name>/run-b/
 workshop-content/02-shell-to-ansible/output/<your-name>/run-c/
 ----
+. Keep the canonical `prompt.md` ready to copy for each run.
+. Choose the models your facilitator assigns. Use a cost-efficient model for Run A, a balanced model for Run B, and an approved escalation model for Run C.
 
-. Open `workshop-content/02-shell-to-ansible/prompt.md` and keep it ready to copy-paste verbatim each time.
-. Decide which model you will use for each run (facilitator may assign):
-
-* **Run A** — cost-efficient (for example Composer or Cost Router default)
-* **Run B** — balanced / mid-tier
-* **Run C** — frontier or team “escalation” model (or repeat B with Agent if your plan has no frontier)
+If no escalation model is available, repeat B using Agent and record the mode change.
+Changing the mode means the comparison includes that difference as well as model choice.
 
 == Step 4: Run A
 
-. New Cursor Chat or Agent thread; select **Run A** model.
-. Attach `workshop-content/02-shell-to-ansible/legacy/install_netbox.py`, its `.env.example`, and the Module 2 migration checklist. Do not attach prior generated projects.
-. Paste the full `prompt.md`; tell the model to write the Ansible project under your `run-a/` folder.
-. Review stage coverage and state handling. From the generated project directory, run `ansible-playbook -i inventory.ini.example --syntax-check site.yml`, following its README for declared collection dependencies and non-secret variable files. Stop when the canonical definition of done is met or the run reaches 15 user turns. Record remaining gaps if the limit is reached.
-. **Before** opening Spending, fill scorecard row **Run A**: model, Chat or Agent, minutes, user turns, quality (merge / edit / discard), notes (context size, rework).
-. Glance at Spending; note subjective usage **low / medium / high** for this run (optional column on scorecard).
+. Start a new conversation and select the Run A model.
+. Attach the legacy installer, `.env.example`, and migration checklist. Keep prior generated projects out of the conversation.
+. Paste `prompt.md` unchanged and name your `run-a/` output directory.
+. Review the generated project against the checklist.
+. Follow its README for collection dependencies and non-secret variable files. From the generated project directory, run `ansible-playbook -i inventory.ini.example --syntax-check site.yml`.
+. Stop when the definition of done in `prompt.md` is met or you reach 15 user turns, whichever comes first. Record any missing behavior at the limit.
+. Fill the Run A scorecard row with the actual model, tool and mode, elapsed minutes, user turns, review decision, and corrections.
+. Check Spending. If exact usage is unavailable, you may record a subjective low, medium, or high estimate in Notes.
+
+Count the initial prompt and every follow-up as user turns.
+A syntax pass does not prove that NetBox deploys correctly or that a second run leaves credentials and release state unchanged.
 
 == Step 5: Run B
 
-. **New thread.** Same attachments. **Same** `prompt.md` text. Save under `run-b/`.
-. Review coverage and syntax-check the project using the same rules and stopping limit as Run A.
-. Fill scorecard row **Run B** (same columns as Run A).
+. Start a new conversation and select Run B's model.
+. Use the same attachments and unchanged prompt. Save the project under `run-b/`.
+. Review coverage and check syntax using the same steps and stopping rule as Run A.
+. Fill the Run B scorecard row.
 
 == Step 6: Run C
 
-. **New thread.** Same rules as Run B. Save under `run-c/`.
-. Review coverage and syntax-check the project using the same rules and stopping limit as Run A. Fill scorecard row **Run C**.
+. Start a new conversation and select Run C's model or assigned mode.
+. Use the same attachments and unchanged prompt. Save the project under `run-c/`.
+. Review coverage and check syntax using the same steps and stopping rule as Run A.
+. Fill the Run C scorecard row.
 
-. Stop each run at definition of done in `prompt.md` or after **15 user turns**, whichever comes first.
+== Step 7: Compare the results
 
-== Step 7: Compare Module 2 and Runs A–C
+_Facilitator slides 2, 12, and 13 cover the Module 2 comparison and review costs._
 
-_Facilitator deck: slides 2, 12–13 (bridge from Module 2; cost vs delay vs rework)._
+Compare the Module 2 rows with Runs A, B, and C if you completed both labs.
+Answer in your scorecard notes or notebook:
 
-. If you completed Module 2, compare scorecard rows *Module 2 — Model A/B* to *Run A/B/C*.
-. Answer in writing (scorecard notes or notebook):
+* Which accepted result needed the fewest user turns?
+* Which run would you choose under a monthly usage limit, and why?
+* Did a more expensive model reduce corrections or missing behavior?
 
-* Which run had the **fewest user turns** for acceptable Ansible?
-* Which run would you **ship** under a tight monthly usage cap?
-* Did a **more expensive model** avoid rework, or did it only burn tokens?
+Include manual review and edits when comparing the work needed to accept a result.
+Mark incomplete or discarded outputs so they are not counted as successful migrations.
 
-== Step 8: Three personal rules
+== Step 8: Write personal rules
 
-_Facilitator deck: slide 12._
+_Facilitator slide 12 covers personal rules._
 
-. On `lab-scorecard.adoc`, complete **Personal optimization rules** (three sentences you will actually follow).
+Write three sentences in the scorecard's Personal rules section.
+Choose actions you can apply to your work, such as trying a cheaper model before escalating, attaching only relevant inputs, or reading validation errors before requesting a correction.
 
-Examples: try a cheaper model before escalating; attach only the shared installer inputs and checklist; read validation errors before another Agent message.
+== Step 9: Optional CLI comparison
 
-== Step 9 (optional): CLI agent
+_Facilitator slide 7 covers interaction modes._
 
-_Facilitator deck: slide 7._
+Repeat Run A with `cursor-agent` using the same prompt, legacy input files, and checklist.
+Record CLI mode and note any differences in turns or usage compared with the editor run.
 
-. Repeat **Run A** with `cursor-agent` using the same `prompt.md`, both legacy input files, and migration checklist; add a note on the scorecard if turns or usage differ from in-editor Agent.
-
-== Next Steps
+== Next steps
 
 Proceed to xref:04-aws-lab-provisioning.adoc[Module 4: Delivering with AI].
 
