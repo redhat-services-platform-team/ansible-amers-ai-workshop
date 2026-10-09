@@ -125,9 +125,25 @@ Answer in your notes:
 * Did higher effort improve the output enough to justify extra time or usage?
 * What remains untested in each project?
 
-Record actual usage or cost from your account's report if available.
+=== Check AI costs in Harness
+
+Use the Harness link and sign-in method supplied for the workshop.
+Your instructor must have connected the AI billing source and granted access to its cost view.
+
+. Open *Cloud & AI Cost Management* and select the workshop view in *Cost Explorer*. In the classic interface, select the workshop *Perspective*.
+. Set the date range to cover your runs. Record the report's time zone and latest data timestamp.
+. Apply the assigned account, project, or team filters that the view exposes. Confirm the report covers your usage.
+. Group AI spend by *Model* or *Provider*. Record the displayed cost, currency, and filters in your scorecard.
+. Use session or request details only if the workshop has trace attribution. Otherwise, record costs for the report's available period and scope.
+
+Provider billing totals do not identify individual runs or reasoning effort settings.
+If several runs share a model or account, do not assign the whole total to one run.
+Record `unavailable` when the report cannot isolate a run or has not ingested its usage yet.
+Recheck later and record when you checked.
+See link:https://developer.harness.io/docs/cloud-cost-management/cost-explorer/[Harness Cost Explorer] and link:https://developer.harness.io/docs/cloud-cost-management/ai-cost-management/overview/[AI cost attribution].
+
+If your tool's usage is not connected to Harness, use its account report.
 Cursor users can check link:https://cursor.com/dashboard/spending[Spending]. Codex users can use the usage view or their organization's report.
-If per-run usage is unavailable, record `unavailable`.
 Elapsed time and turn counts cannot tell you what a run cost.
 
 You may repeat a run to see whether the same settings produce similar results.

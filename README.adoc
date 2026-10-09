@@ -99,8 +99,10 @@ Download `workshop-main` or `workshop-preview` from the workflow run's Artifacts
 Hosted builds contain their published base URL; use the hosted preview to verify navigation.
 For a local preview with local links, use the build utilities above.
 
-== Instructor AWS Git servers
+== Instructor AWS Git environment
 
-Use link:instructor_automation/README.md[instructor_automation] to provision one Gitea server per AWS environment and create every student on every server.
-The role discovers each account's public Route 53 zone, deploys a `t3.medium`, and saves server URLs and initial passwords in a private access sheet.
-Start with discovery mode to check the account keys and DNS names before provisioning.
+Use link:instructor_automation/README.md[instructor_automation] to provision one RHEL 9 Gitea server in an AWS account.
+Supply a team dictionary to create private organizations, permission groups, and local student users.
+The playbook discovers the public Route 53 zone, deploys a `t3.medium`, and uses AWS EC2 dynamic inventory to find the host.
+It saves the Git URL, organization URLs, and initial passwords in a private access sheet.
+Start with discovery mode to check the account keys and DNS name before provisioning.

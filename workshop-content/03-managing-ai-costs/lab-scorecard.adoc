@@ -12,7 +12,13 @@ Interaction mode and speed setting:
 
 Initial prompt and source revision:
 
-Account usage report and billing period, if available:
+Harness view or account usage report URL:
+
+Report scope and filters, including whether usage is individual, team, or account-wide:
+
+Date range, time zone, currency, and latest data timestamp:
+
+Costs attributable to individual runs, or the reason they are unavailable:
 
 [cols="2,2,1,1,1,2,3",options="header"]
 |===
