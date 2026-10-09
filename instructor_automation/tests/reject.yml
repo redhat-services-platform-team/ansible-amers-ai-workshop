@@ -1,0 +1,21 @@
+---
+- name: Clear the rejection flag
+  ansible.builtin.set_fact:
+    test_rejected: false
+
+- name: Attempt invalid team inputs
+  block:
+    - name: Run role input validation
+      ansible.builtin.include_role:
+        name: workshop_git
+        tasks_from: validate
+      vars:
+        workshop_git_teams: "{{ rejected_teams }}"
+  rescue:
+    - name: Record the expected rejection
+      ansible.builtin.set_fact:
+        test_rejected: true
+
+- name: Require rejection of invalid input
+  ansible.builtin.assert:
+    that: test_rejected

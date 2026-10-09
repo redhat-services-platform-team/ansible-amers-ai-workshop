@@ -1,8 +1,9 @@
-= Module 2 lab assets: Python to Ansible
+= Lab 2 files: Python to Ansible
 
 Migrate a NetBox installer with fifty fictional maintainers and contradictory handover notes.
-Write your own first prompt, try follow-up requests, and inspect the generated output.
-This lab gives new users time to experiment with Codex or Cursor. A complete migration is not required.
+Write your own first prompt and use Composer in Cursor or Luna in Codex for one port.
+Inspect the output and use follow-up requests to improve the same project.
+You can finish this lab with a partial migration if you record what remains.
 
 == Files
 
@@ -15,21 +16,19 @@ This lab gives new users time to experiment with Codex or Cursor. A complete mig
 
 Follow `documentation/modules/ROOT/pages/02-shell-to-ansible.adoc` for the learner instructions.
 We kept the `02-shell-to-ansible` directory and page names so existing links work.
-The exercise now migrates Python rather than the previous shell-script example.
 
 == Output layout
 
 [source,text]
 ----
 output/<your-name>/attempt-1/
-output/<your-name>/attempt-2/
 ----
 
-Save prompts, notes, and generated files in the attempt folders. Create `attempt-2/` only if you want a separate experiment.
+Save prompts, notes, and generated files in `attempt-1/`.
 A full project may include `site.yml`, task or role files, templates, variable examples, an inventory, a README, and collection requirements.
-A plan or partial conversion is also useful if you record what you tried and what remains.
+For a plan or partial conversion, record what you tried and what remains.
 
-Change prompts, models, or interaction modes as you explore and record those changes.
+Keep the selected model for Lab 2 and record how your follow-ups change the port.
 Module 3 uses `run-a/`, `run-b/`, and `run-c/` under the same learner directory, with fixed inputs and the supplied prompt unchanged.
 
 == Control host and managed host

@@ -1,0 +1,28 @@
+---
+# Required single account dictionary. See README.md.
+# workshop_git_aws_account: {}
+# Required organization names mapped to their student usernames.
+# workshop_git_teams:
+#   comet: [student01, student02]
+#   nebula: [student03, student04]
+workshop_git_discover_only: false
+workshop_git_deployment_id: ai-workshop
+workshop_git_dns_label: git
+workshop_git_instance_type: t3.medium
+workshop_git_volume_size: 30
+workshop_git_vpc_cidr: 10.77.0.0/16
+workshop_git_subnet_cidr: 10.77.1.0/24
+workshop_git_admin_user: instructor
+workshop_git_team_permission: write
+workshop_git_repository_name: netbox-migration
+workshop_git_must_change_password: true
+workshop_git_private_dir: "{{ playbook_dir }}/private"
+workshop_git_password_file: "{{ workshop_git_private_dir }}/student-passwords.json"
+workshop_git_output_file: "{{ workshop_git_private_dir }}/git-access.json"
+workshop_git_timeout: 1200
+workshop_git_gitea_version: '28.1.0'
+workshop_git_ssh_private_key_file: "{{ workshop_git_private_dir }}/{{ workshop_git_deployment_id }}_ed25519"
+# Leave empty to discover the instructor's public IPv4 address and allow its /32.
+workshop_git_ssh_cidr: ''
+# Optional contact address for certificate renewal notices.
+workshop_git_acme_email: ''

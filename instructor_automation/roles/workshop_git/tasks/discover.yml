@@ -1,0 +1,122 @@
+---
+- name: discover | Read the account and deployment state
+  no_log: true
+  module_defaults:
+    group/amazon.aws.aws:
+      access_key: "{{ workshop_git_aws_account.access_key }}"
+      secret_key: "{{ workshop_git_aws_account.secret_key }}"
+      session_token: "{{ workshop_git_aws_account.session_token | default(omit, true) }}"
+      aws_region: "{{ workshop_git_aws_account.region }}"
+  block:
+    - name: discover | Read the AWS account identity
+      amazon.aws.aws_caller_info:
+      register: __workshop_git_identity
+
+    - name: discover | List hosted zones
+      amazon.aws.route53_info:
+        query: hosted_zone
+        hosted_zone_method: list
+      register: __workshop_git_zones
+
+    - name: discover | Select public hosted zones
+      ansible.builtin.set_fact:
+        __workshop_git_candidate_zones: "{{ __workshop_git_zones.hosted_zones | rejectattr('config.private_zone') | list }}"
+
+    - name: discover | Apply an explicit zone ID
+      ansible.builtin.set_fact:
+        __workshop_git_candidate_zones: >-
+          {{ __workshop_git_candidate_zones | selectattr('id', 'equalto',
+             '/hostedzone/' ~ workshop_git_aws_account.hosted_zone_id.split('/')[-1]) | list }}
+      when: workshop_git_aws_account.hosted_zone_id | default('') | length > 0
+
+    - name: discover | Apply an explicit zone name
+      ansible.builtin.set_fact:
+        __workshop_git_candidate_zones: >-
+          {{ __workshop_git_candidate_zones | selectattr('name', 'equalto',
+             (workshop_git_aws_account.hosted_zone_name | lower | regex_replace('[.]$', '')) ~ '.') | list }}
+      when: workshop_git_aws_account.hosted_zone_name | default('') | length > 0
+
+    - name: discover | Require exactly one public zone
+      ansible.builtin.assert:
+        that: __workshop_git_candidate_zones | length == 1
+        fail_msg: Select one public Route 53 zone with hosted_zone_id or hosted_zone_name when discovery is ambiguous.
+
+    - name: discover | Find Red Hat RHEL 9 images
+      amazon.aws.ec2_ami_info:
+        owners: ['309956199498']
+        filters:
+          name: RHEL-9.*_HVM-*-x86_64-*-Hourly2-GP*
+          state: available
+          architecture: x86_64
+          virtualization-type: hvm
+          root-device-type: ebs
+      register: __workshop_git_images
+
+    - name: discover | Require an available RHEL 9 image
+      ansible.builtin.assert:
+        that: __workshop_git_images.images | length > 0
+
+    - name: discover | Build the single deployment plan
+      ansible.builtin.set_fact:
+        __workshop_git_plan:
+          name: "{{ workshop_git_aws_account.name }}"
+          resource_name: "{{ workshop_git_deployment_id }}-{{ workshop_git_aws_account.name }}-git"
+          fqdn: "{{ workshop_git_dns_label }}.{{ __workshop_git_candidate_zones[0].name | regex_replace('[.]$', '') }}"
+          url: "https://{{ workshop_git_dns_label }}.{{ __workshop_git_candidate_zones[0].name | regex_replace('[.]$', '') }}"
+          zone_id: "{{ __workshop_git_candidate_zones[0].id.split('/')[-1] }}"
+          ami_id: "{{ (__workshop_git_images.images | sort(attribute='creation_date') | last).image_id }}"
+          root_device_name: "{{ (__workshop_git_images.images | sort(attribute='creation_date') | last).root_device_name }}"
+          account_id: "{{ __workshop_git_identity.account }}"
+
+    - name: discover | Read existing instance metadata
+      amazon.aws.ec2_instance_info:
+        filters:
+          tag:Name: "{{ __workshop_git_plan.resource_name }}"
+          tag:WorkshopDeployment: "{{ workshop_git_deployment_id }}"
+          instance-state-name: [pending, running, stopping, stopped]
+      register: __workshop_git_existing_instances
+
+    - name: discover | Reject duplicate instances
+      ansible.builtin.assert:
+        that: __workshop_git_existing_instances.instances | length <= 1
+        fail_msg: Multiple instances match this deployment. Resolve duplicate tags before rerunning.
+
+    - name: discover | Read the existing instance image
+      amazon.aws.ec2_ami_info:
+        image_ids: "{{ __workshop_git_existing_instances.instances | map(attribute='image_id') | list }}"
+      register: __workshop_git_existing_images
+      when: __workshop_git_existing_instances.instances | length > 0
+
+    - name: discover | Read existing DNS records
+      amazon.aws.route53_info:
+        query: record_sets
+        hosted_zone_id: "{{ __workshop_git_plan.zone_id }}"
+      register: __workshop_git_records
+
+    - name: discover | Identify the hostname and ownership marker
+      ansible.builtin.set_fact:
+        __workshop_git_dns_records: >-
+          {{ __workshop_git_records.resource_record_sets | selectattr('name', 'equalto', __workshop_git_plan.fqdn ~ '.') | list }}
+        __workshop_git_owner_records: >-
+          {{ __workshop_git_records.resource_record_sets |
+             selectattr('name', 'equalto', '_workshop-owner.' ~ __workshop_git_plan.fqdn ~ '.') | list }}
+
+    - name: discover | Refuse to overwrite another deployment's DNS
+      ansible.builtin.assert:
+        that:
+          - __workshop_git_dns_records | rejectattr('type', 'equalto', 'A') | list | length == 0
+          - >-
+            (__workshop_git_dns_records | length == 0 and __workshop_git_owner_records | length == 0) or
+            (__workshop_git_owner_records | selectattr('type', 'equalto', 'TXT') | map(attribute='resource_records') |
+             flatten | selectattr('value', 'equalto', (workshop_git_deployment_id ~ '/' ~ workshop_git_aws_account.name) | to_json) |
+             list | length > 0)
+        fail_msg: The hostname belongs to another deployment or has incompatible records. Choose another DNS label.
+
+- name: discover | Refuse to reuse an instance running another operating system
+  ansible.builtin.assert:
+    that:
+      - __workshop_git_existing_images.images | length == 1
+      - __workshop_git_existing_images.images[0].owner_id == '309956199498'
+      - __workshop_git_existing_images.images[0].name is match('^RHEL-9[.]')
+    fail_msg: Preserve the existing server. Use a new deployment ID and DNS label for a RHEL deployment.
+  when: __workshop_git_existing_instances.instances | length > 0

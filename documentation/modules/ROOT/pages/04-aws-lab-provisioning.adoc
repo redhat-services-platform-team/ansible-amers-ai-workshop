@@ -1,248 +1,198 @@
-= Lab: Delivering with AI
+= Lab: Customer NetBox delivery project
 
 [abstract]
-Work as a small delivery team to design, develop, and deploy a fault-tolerant web application that meets the requirements of the exercise.
+With your assigned team, migrate the Python installer to Ansible for a fictional customer. Deploy NetBox on AWS, add demo hosts in its UI, and query them with Ansible dynamic inventory.
 
-== Learning Objectives
+== The customer
 
-After completing this module, you will be able to:
+Switchboard Supply has depended on the Lab 2 installer for years.
+The people named in its comments have moved teams, the deployment instructions are incomplete, and nobody wants to be the next person to run it by hand.
+The company also manages AWS networks and keeps copying host addresses into static inventories.
 
-* Use Cursor AI to help develop and deploy a fault-tolerant web application
-* Use Cursor AI to help develop an Ansible project that deploys your web application on AWS
-* Collaborate with your group to deliver the best possible product in the given time frame
-* Present your design to a room of your peers
+The customer wants Ansible to deploy NetBox and use its host records as inventory.
+Your team must show a working deployment and a second run that preserves credentials and release state.
+Leave instructions another team can follow.
+Use `workshop-content/04-aws-lab-provisioning/customer-brief.adoc` as your project brief.
+
+Work with your assigned team.
+Choose your architecture and division of work together.
+Write your own prompts and choose models based on your Lab 3 results.
+Agree on what you will deliver and explain any unfinished work to the customer.
+
+== Deliverables
+
+* Ansible content that installs and configures NetBox and its dependencies, based on the Python installer from Lab 2.
+* AWS hosts running NetBox, with a documented network layout and deployment instructions.
+* Manually created NetBox host records and a working demo that queries them through `netbox.netbox.nb_inventory`.
+* A customer handover with validation evidence, operating instructions, known limitations, and cleanup steps.
+
+The final demo must execute an Ansible play against team-owned AWS hosts selected from NetBox.
+Show the host records in NetBox and the inventory returned by the plugin.
 
 == Before you start
 
-* Finish xref:01-cursor-workspace.adoc[Module 1] so your selected Codex or Cursor interface is working.
-* You need a Red Hat associate (or partner) login for link:https://catalog.demo.redhat.com/[catalog.demo.redhat.com,window=_blank].
-* Your facilitator assigns groups of *four* at random and gives your team a number (for example `1`, `2`, `3`).
-* Lab assets: `workshop-content/04-aws-lab-provisioning/` (start from a blank slate—no starter playbooks are provided)
+Complete Labs 1 through 3.
+Bring your own AWS environment that your team is authorized to use for testing and deployment.
+Confirm the account, region, allowed services, IAM permissions, budget, and cleanup owner together.
+Use your existing RHEL or macOS Ansible control workstation and an approved AI tool.
 
-== Challenge brief
+You need access to EC2 and the networking resources your design requires.
+Use the community NetBox installation based on the Lab 2 script.
+Your team will enter its demo hosts in the NetBox UI after deployment.
 
-This lab is a timed, independent team challenge—not a click-through tutorial for the application itself.
+== Step 1: Organize the team
 
-[cols="1,3"]
-|===
-| Item | Rule
+Create a team branch and a project directory. Replace `switchboard` with your team name:
 
-| Team size
-| 4 people, assigned randomly by the facilitator
-
-| Time to build
-| *1 hour* to design, build, and test
-
-| Time to present
-| *5 minutes* per team after time is called
-
-| Environment
-| One blank AWS account per team, ordered from RHDP (see below)
-
-| Independence
-| Teams must not share designs, playbooks, or credentials with other teams
-|===
-
-=== Requirements (mandatory)
-
-. The application must be *fault tolerant*.
-. The application *and all AWS infrastructure* must be deployed and updated using *Ansible*.
-. When time is called, *all demo code* must be committed and pushed to your team's branch: `group_<team_number>` (for example `group_1`).
-
-You have free range on architecture, instance types, load balancing, health checks, and how you prove fault tolerance—as long as those three requirements are met and the workload runs on *EC2*.
-
-=== Judging
-
-Every workshop attendee scores each presentation. Categories:
-
-* Creativity
-* Did the solution meet the requirements
-* Time taken to create the solution
-* Ansible best practices
-* AI usage cost management
-
-Score sheets: `workshop-content/04-aws-lab-provisioning/judging-scorecard.adoc`
-
-=== Prize
-
-The winning team receives *100 Reward Zone points*, split among the four members.
-
-== 1: Get your team and branch
-
-. Wait for the facilitator to announce groups and team numbers.
-. One person in the team clones (or already has) `{workshop_repo_url}` and opens it in Cursor.
-. Create or check out your team branch. Replace `N` with your team number:
-
-[source,sh]
+[source,bash]
 ----
-git fetch origin
-git checkout main
-git pull origin main
-git checkout -b group_N
-git push -u origin group_N
+# Create a branch for the team's delivery work.
+git switch -c team/switchboard-netbox
+# Create a directory for the project and its customer handover.
+mkdir -p workshop-content/04-aws-lab-provisioning/teams/switchboard
 ----
 
-. If the facilitator already created `group_N` on the remote:
+Agree on variable names and who will edit each file before working in parallel.
+Divide responsibilities such as the installer migration, AWS infrastructure, NetBox host records, inventory demo, and review.
+Pair or rotate tasks so each student can explain part of the project.
+Ask a teammate or another team to act as the customer during scope review and the final demo.
+Review each other's changes and resolve conflicting assumptions in the code and README.
 
-[source,sh]
-----
-git fetch origin
-git checkout group_N
-git pull origin group_N
-----
+Review your ports from Labs 2 and 3.
+Choose a port to finish, or start again if none meets your needs.
+Use your model comparison notes to decide which requests need more reasoning effort.
+Use the customer brief to decide what to ask the tool.
 
-. Create your Ansible project under `workshop-content/04-aws-lab-provisioning/` from a blank slate.
-. Do *not* commit AWS keys, secret keys, or `credentials.yml`.
+== Step 2: Agree on an architecture and acceptance plan
 
-== 2: Order the AWS Blank Open Environment
+Sketch the AWS hosts, subnets, access paths, and NetBox services.
+Decide whether to keep the installer's services on one host or split application, PostgreSQL, and Valkey roles.
+Choose a supported OS and compatible dependency versions. If you change the source's OS assumptions, document and test those changes.
 
-One person per team orders the catalog item. Share the resulting credentials only with your three teammates.
-
-. Open the catalog item:
-+
-link:{rhdp_aws_blank_catalog_url}[AWS Blank Open Environment on catalog.demo.redhat.com,window=_blank]
-. Sign in with *Log in with sso* (Red Hat associates) or the partner login if that is how you access RHDP.
-. Confirm the drawer title is *AWS Blank Open Environment* (category *Open Environments*, provided by RHDP).
-+
-image::04-aws-lab-provisioning/rhdp-catalog-item.png[AWS Blank Open Environment catalog item drawer with Order button,width=720]
-+
-You should see a blue *Order* button, share, and *Save as favorite*. Cost is shown on the item (about *$0.08/hr* plus whatever you run in AWS). The sandbox is *blank*: API and CLI access, *no* pre-provisioned nodes or services, listed provision time about *10 minutes*, default lifetime *7 days*, and *auto-stop after 10 hours* (disable later in *My Services* if instances stop during the hour).
-. Select *Order*.
-
-.Order form (use these settings, then submit)
+[TIP]
 ====
-The form title is *Order AWS Blank Open Environment*. Complete it as follows (leave any field not listed at its default):
-
-* *Activity* — *Practice / Enablement*
-* *Purpose* — *Practice for a workshop*
-* *Salesforce IDs* — check *I'll provide the Salesforce ID within 48 hours.*
-* *Region* — *us-east-2* (use this same region in your Ansible variables)
-* *Enable workshop user interface* — leave *off*
-* *Start Provisioning Date* — leave *now*
-* *Auto-stop* / *Auto-destroy* — leave the defaults (typically six hours and 48 hours)
-
-image::04-aws-lab-provisioning/rhdp-order-form-settings.png[Order form with Practice Enablement, Practice for a workshop, Salesforce 48-hour checkbox, and us-east-2,width=720]
-
-Scroll to *IMPORTANT PLEASE READ*, check *I confirm that I understand the above warnings.*, then select *Order*.
-
-image::04-aws-lab-provisioning/rhdp-order-form-confirm.png[Order form confirmation warnings checkbox and Order button,width=720]
+Consider `t3.small` instances for demo targets or separate services with low demand.
+They have 2 vCPUs and 2 GiB of memory. Measure memory use before choosing one for NetBox.
+For an all-in-one community NetBox host, consider a larger instance such as `t3.medium` and measure memory during installation and the demo.
+Check regional availability, CPU credit behavior, and storage before launching.
+See link:https://docs.aws.amazon.com/ec2/latest/instancetypes/gp.html[AWS instance specifications].
 ====
 
-[WARNING]
-====
-RHDP bills usage to your cost center. Prefer small instance types, tear down what you create, and delete the RHDP service when the workshop is over.
-====
+Use instance roles or your organization's approved temporary credentials.
+Restrict administrative access to the team's approved network or access service.
+Keep PostgreSQL and Valkey private. Decide how you will configure HTTPS and manage certificates for the NetBox endpoint.
+Tag team resources so you can identify ownership and clean them up without affecting shared infrastructure.
 
-. Wait until the service shows as ready (*My Services* in the left navigation). Provisioning is often a few minutes (the catalog lists about 10 minutes).
-. Open the service. Copy, for your team only:
+Choose how to create the AWS hosts. Try Ansible provisioning, or document the existing approved infrastructure you use.
+Use Ansible for the NetBox installation and configuration.
+Document which playbook deploys NetBox. Use a separate bootstrap inventory until the NetBox API is available.
 
-* AWS console URL (or federation link)
-* AWS account ID
-* Access key ID and secret access key
-* Default region (usually `us-east-2`)
-* Route 53 / sandbox domain if shown (for example `sandboxNNNN.opentlc.com`)
+Write your checks before generating more code.
+Test installation and a second run, including saved credentials, release state, service health, and web access.
+Also check manual host entry, dynamic inventory, and cleanup.
 
-A confirmation email from RHDP often contains the same values.
+== Step 3: Finish the Ansible migration
 
-[IMPORTANT]
-====
-Treat keys like passwords. Do not paste them into git, Slack channels shared with other teams, or Cursor prompts that might log secrets.
-====
+Compare your migration with the installer and `workshop-content/02-shell-to-ansible/migration-checklist.adoc`.
+Convert the installer stages to Ansible tasks. Running the original script from a playbook does not complete the migration.
 
-== 3: Configure AWS access for Ansible
+Group related tasks into roles or task files.
+Use fully qualified module names, variable defaults, templates, and handlers.
+Declare collection dependencies and supported versions.
+Use shell or command tasks only where a suitable module is unavailable. Document how they detect changes and behave on reruns.
+Protect secrets with approved secret storage or Ansible Vault, restrictive file permissions, and `no_log` where required.
+Keep secrets out of prompts, committed examples, and demo evidence.
 
-On your workstation, configure AWS access:
+Preserve generated secrets and the selected release across reruns.
+Explain any intentional changes to the installer's state file, refusal conditions, wildcard allowed-hosts default, TLS behavior, or unconditional restarts.
+Document the supported upgrade and recovery procedures, including what you have not tested.
 
-[source,sh]
+Review the generated changes before running them.
+Run syntax checks and your available lint tools, then deploy to the agreed AWS hosts.
+Save the results of your service, login, and API checks.
+Run the deployment again and investigate changes that should not repeat. Document necessary exceptions, such as explicit migration tasks.
+
+== Step 4: Manually add demo hosts to NetBox
+
+Choose team-owned AWS hosts for the inventory demo.
+Use their actual names and addresses. Confirm how your control workstation will reach them.
+
+Add the records through the NetBox UI:
+
+. Create any supporting records your chosen host type requires, such as a site or cluster.
+. Create a virtual-machine or device record for each demo host and set its status to active.
+. Add an interface to each host.
+. Create an IP address with its prefix length and assign it to that host's interface.
+. Set the address as the host's primary IPv4 or IPv6 address.
+. Add the same team-specific tag to each demo host so your inventory can select them.
+
+Check each host's name, primary IP, status, and tag in NetBox before querying the inventory.
+Document these manual steps in the customer handover so another operator can add a host.
+
+== Step 5: Query the NetBox dynamic inventory
+
+Use `netbox.netbox.nb_inventory` for the final inventory source.
+Read its link:https://docs.ansible.com/projects/ansible/latest/collections/netbox/netbox/nb_inventory_inventory.html[inventory plugin documentation] and install the required collection and Python dependencies.
+Keep the API endpoint and token in your environment or approved credential store.
+Use a read-only inventory token for the queries.
+Keep certificate validation enabled and document any private CA trust configuration.
+Filter the inventory to the team's demo tag and hosts with primary addresses.
+Choose addresses reachable from your control workstation, or configure an approved connection path.
+
+Document the inventory filename, group selection, connection user, and credentials required for the demo.
+You may use AWS discovery or a static inventory to deploy NetBox. Use NetBox to select hosts for the final customer demo.
+
+Adapt these commands to your project from its directory:
+
+[source,bash]
 ----
-export AWS_ACCESS_KEY_ID='<from RHDP>'
-export AWS_SECRET_ACCESS_KEY='<from RHDP>'
-export AWS_DEFAULT_REGION='us-east-2'
+# Query NetBox and display only the groups selected by your inventory configuration.
+ansible-inventory -i inventory/netbox.yml --graph
+# Test Ansible connectivity to the hosts selected from NetBox.
+ansible netbox_demo -i inventory/netbox.yml -m ansible.builtin.ping
+# Run the team's demo playbook against the same NetBox inventory.
+ansible-playbook -i inventory/netbox.yml demo.yml
 ----
 
-Or write `~/.aws/credentials` (this path is outside git):
+Create the inventory configuration, `netbox_demo` group, and playbook, or adapt the commands to your project layout.
 
-[source,ini]
-----
-[default]
-region = us-east-2
-aws_access_key_id = <from RHDP>
-aws_secret_access_key = <from RHDP>
-----
+Change a demo host's tag or another field your inventory filters use.
+Refresh the inventory and show that host selection changed without editing a static host list.
+Restore the record afterward. Account for inventory caching in your refresh procedure.
 
-Verify:
+== Step 6: Present the customer demo
 
-[source,sh]
-----
-ansible-galaxy collection list | grep amazon.aws || ansible-galaxy collection install amazon.aws community.aws
-----
+Present the original problem and explain what the customer can now do with Ansible.
+Use `workshop-content/04-aws-lab-provisioning/customer-demo-checklist.adoc` to prepare evidence.
 
-== 4: Design, build, and test (1 hour)
+Demonstrate the deployed NetBox service and explain the Ansible content that configured it.
+Show a second deployment run and describe any remaining changes.
+Show the hosts your team manually entered in NetBox, including their interfaces, primary IPs, and team tag.
+Query the NetBox inventory and run your demo playbook against the selected AWS hosts.
+Show the inventory membership change and explain how the customer would add another host in NetBox.
 
-The facilitator starts the clock when teams have credentials (or when they announce start).
+Explain what you tested and what remains incomplete. List the work needed before production use.
+Give the customer a README with dependency versions and required permissions.
+Include instructions for deployment, reruns, verification, manual host entry, inventory queries, recovery, and teardown.
+Include your architecture decisions and useful AI model comparison findings.
 
-Work only with your team. Suggested split (not required): architecture, Ansible roles/playbooks, application, test/failover demo.
+== Step 7: Handover and cleanup
 
-Prove fault tolerance before time is called (for example stop an instance or an AZ and show the app still answers). Record how you tested—you will present it.
+Review the staged files for credentials and private output before committing your team's work.
+Agree on how to share the branch or pull request with the customer.
+Keep the source, test results with secrets removed, and operating instructions together.
 
-Using Cursor can help speed up your code development, but you are still responsible for playbooks that actually run and for not leaking secrets into prompts or commits.
+Use your documented teardown process after the demo, unless the environment owner explicitly wants the resources retained.
+Remove only team-owned resources. Account for instances, volumes, public addresses, and network resources.
+Check AWS to confirm cleanup. Record any retained resources, their owner, and when they should be removed.
 
-== 5: Commit when time is called
+== Completion checklist
 
-Stop building. Commit *everything* needed to understand and redeploy your demo except secrets.
+* The team has reviewed Ansible content that installs and configures NetBox.
+* NetBox infrastructure is running on the team's AWS hosts, with installation and rerun evidence.
+* The team manually added demo host records, interfaces, primary addresses, and a team tag in NetBox.
+* The customer demo queries NetBox dynamic inventory and runs Ansible against the selected AWS hosts.
+* Inventory membership changes when the team changes a NetBox record.
+* The handover explains limitations, operating procedures, and cleanup, with no committed secrets.
 
-[source,sh]
-----
-git status
-git add workshop-content/04-aws-lab-provisioning/
-git commit -m "Group N fault-tolerant AWS demo"
-git push origin group_N
-----
-
-Confirm the remote branch is `group_<team_number>` on `{workshop_repo_url}`.
-
-== 6: Present (5 minutes)
-
-Cover, briefly:
-
-. What you built and why it is fault tolerant
-. How Ansible deploys and updates both the app and AWS
-. How you tested failure
-. How you planned to manage *AI usage costs* while creating and deploying the application (models, prompt strategy, spend awareness)
-. Anything you would change with more time
-
-== 7: After the lab
-
-. Vote using the judging scorecard if the facilitator asks attendees to score.
-. Delete AWS resources with Ansible if you wrote teardown playbooks.
-. In RHDP *My Services*, delete or expire the AWS Blank Open Environment so it does not keep billing.
-
-== Troubleshooting
-
-[cols="1,2"]
-|===
-| Symptom | What to try
-
-| Catalog login loop
-| Use associate SSO; confirm you can open other RHDP catalog items
-
-| Order button disabled
-| Complete required fields, Salesforce ID or 48-hour checkbox, and the cost warning checkbox
-
-| Service not ready after ~10 minutes
-| Refresh *My Services*; check email; ask the facilitator before ordering a second account
-
-| Ansible cannot authenticate to AWS
-| Confirm `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / region; do not mix accounts between teams
-
-| Instances auto-stopped mid-lab
-| In the RHDP service, disable auto-stop; start instances again and continue
-
-| Push to `group_N` rejected
-| Confirm you are on `group_N`, have write access, and are not trying to push secrets blocked by git hooks
-|===
-
-== Additional resources
-
-* Catalog item: link:{rhdp_aws_blank_catalog_url}[AWS Blank Open Environment,window=_blank]
-* link:https://docs.ansible.com/ansible/latest/collections/amazon/aws/index.html[amazon.aws collection,window=_blank]
+If you see an error in this lab, fork and submit a pull request against link:{workshop_repo_url}[{workshop_repo_url},window=_blank].

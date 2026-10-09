@@ -1,0 +1,2 @@
+---
+# The upstream Gitea role manages its systemd reload and restart handlers.

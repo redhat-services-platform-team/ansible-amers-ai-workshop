@@ -1,6 +1,6 @@
 = {lab_name}
 
-Use Codex or Cursor with Ansible to migrate a Python NetBox installer, compare AI model usage, and complete a team deployment challenge on AWS.
+Use Codex or Cursor with Ansible to migrate a Python NetBox installer, compare models and reasoning effort, and deliver a team NetBox project on AWS.
 
 == Prerequisites
 
@@ -10,15 +10,15 @@ Use Codex or Cursor with Ansible to migrate a Python NetBox installer, compare A
 * Optional Podman access to preview the documentation locally.
 
 Lab 2's generation and review steps run on your workstation.
-Lab 4 uses an AWS sandbox.
+Lab 4 requires an AWS environment your team can use for testing and deployment.
 The workshop does not require OpenShift, AAP, or Showroom services.
 
 == Labs
 
 . xref:01-cursor-workspace.adoc[Workspace setup]. Configure Codex or Cursor with your local Ansible tools, using the CLI or desktop interface.
-. xref:02-shell-to-ansible.adoc[Python-to-Ansible NetBox migration]. Write your own prompt, experiment with the tools, and review attempts to migrate the legacy installer.
-. xref:03-managing-ai-costs.adoc[Managing AI costs]. Repeat the migration with different models and record usage, time, and corrections.
-. xref:04-aws-lab-provisioning.adoc[Delivering with AI]. Work in randomly assigned groups of four to design and deploy a fault-tolerant web application on AWS with Cursor and Ansible.
+. xref:02-shell-to-ansible.adoc[Python-to-Ansible NetBox migration]. Write your own prompt and make one initial port with Composer in Cursor or Luna in Codex.
+. xref:03-managing-ai-costs.adoc[Comparing models and effort]. Repeat the migration with fixed inputs, change models and effort levels, and compare output, review work, time, and usage.
+. xref:04-aws-lab-provisioning.adoc[Customer NetBox delivery project]. Migrate the installer and deploy NetBox on AWS as a team. Add hosts in NetBox and query them through Ansible dynamic inventory.
 
 == Start the workshop
 

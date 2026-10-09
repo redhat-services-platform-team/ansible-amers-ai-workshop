@@ -1,25 +1,21 @@
-= Module 4 lab assets: Delivering with AI
+= Lab 4 files: Customer NetBox delivery project
 
-Teams of four have one hour to complete the challenge. Learner steps live in `documentation/modules/ROOT/pages/04-aws-lab-provisioning.adoc`.
+Work as a team to migrate the Lab 2 installer and deploy NetBox infrastructure in your AWS environment. Manually add demo hosts in NetBox and query them with Ansible's dynamic inventory plugin.
+Learner steps are in `documentation/modules/ROOT/pages/04-aws-lab-provisioning.adoc`.
 
-Create your Ansible project under this directory on your `group_<team_number>` branch.
-The lab provides no starter playbooks.
+== Files
 
-== Contents
+* `customer-brief.adoc` describes the company scenario and acceptance criteria.
+* `group-checklist.adoc` helps the team plan, review, and hand over the project.
+* `customer-demo-checklist.adoc` records demo evidence and customer questions.
 
-[cols="1,2"]
-|===
-| Path | Purpose
+Create your project under `teams/<team-name>/` on a branch such as `team/switchboard-netbox`.
+Review your Lab 2 and 3 output together, then choose a port to finish.
+Your team writes the deployment playbooks and chooses the AWS layout.
 
-| `judging-scorecard.adoc`
-| Attendee scoring sheet to print or copy
+Add demo hosts through the NetBox UI as VM or device records with interfaces, primary IPs, and a team-specific tag.
+Use `netbox.netbox.nb_inventory` to query those records and select hosts for the customer demo.
 
-| `group-checklist.adoc`
-| Team checklist before time is called
-|===
-
-== Git
-
-Work on branch `group_<team_number>`, such as `group_1`.
-
-Never commit AWS access keys, secret keys, or `credentials.yml`.
+Commit source, non-secret examples, and sanitized validation evidence.
+Keep AWS credentials, NetBox tokens, generated secret files, and private inventory exports out of Git.
+Document dependencies, deployment, reruns, manual host entry, dynamic inventory, recovery, and teardown.

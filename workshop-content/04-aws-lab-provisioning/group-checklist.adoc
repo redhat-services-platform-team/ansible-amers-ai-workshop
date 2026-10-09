@@ -1,17 +1,36 @@
-= Module 4 group checklist
+= Team project checklist
 
-Complete this before time is called.
+Team and members:
 
-* Team number: ______
-* Branch name: `group_` ______
-* RHDP service ready; region: ______
-* Application is fault tolerant (how you proved it):
-+
-________________________________
+Branch and project directory:
 
-* All AWS infrastructure created/updated with Ansible (playbook paths):
-+
-________________________________
+AWS account alias and region, without credentials:
 
-* All demo code committed and pushed to `group_<team_number>` (no secrets)
-* Five-minute presentation roles assigned
+Budget, cleanup owner, and resource expiry:
+
+Demo hosts and team-specific NetBox tag:
+
+== Plan and collaboration
+
+* [ ] We agreed on what to deliver and how to check it.
+* [ ] We divided the work and agreed on variable names and who edits each file.
+* [ ] We used Lab 3 findings to choose models and effort settings.
+* [ ] Teammates reviewed the generated changes and can explain the implementation.
+
+== Delivery
+
+* [ ] AWS hosts run the chosen NetBox infrastructure.
+* [ ] Ansible tasks install and configure NetBox.
+* [ ] We documented dependencies, supported versions, defaults, and intentional behavior changes.
+* [ ] Installation and rerun checks cover saved secrets, release state, services, and application health.
+* [ ] We manually added demo hosts in the NetBox UI with VM or device records, interfaces, reachable primary IPs, and a team tag.
+* [ ] NetBox dynamic inventory selects only the intended demo hosts.
+* [ ] An Ansible play runs successfully against those AWS hosts.
+* [ ] A NetBox record change updates inventory membership after refresh.
+
+== Handover
+
+* [ ] The customer demo explains the problem, automation, evidence, and remaining limitations.
+* [ ] A teammate can follow the README to operate the deployment, add hosts in NetBox, and query the inventory.
+* [ ] Source and sanitized evidence contain no credentials or private inventory exports.
+* [ ] Cleanup removes only team-owned resources, or retained resources have an owner and expiry.
