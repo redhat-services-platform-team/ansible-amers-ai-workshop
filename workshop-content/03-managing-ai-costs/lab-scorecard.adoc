@@ -1,24 +1,29 @@
-= Lab scorecard — Module 3 Managing AI Costs
+= Lab scorecard: Module 3 managing AI costs
 
-Record one row per model run on the *same* shell-to-Ansible task (`workshop-content/02-shell-to-ansible/prompt.md` + `legacy/configure-workshop-app.sh`).
-Hold prompts and attachments constant across runs unless the facilitator directs otherwise.
+Use the Module 2 rows for optional experiment notes. Record the prompt source and any changes to context, model, or mode; leave unused rows blank.
+Module 3 rows record model runs on the same NetBox migration with fixed inputs.
+Use `prompt.md`, `legacy/install_netbox.py`, `legacy/.env.example`, and `migration-checklist.adoc` under `workshop-content/02-shell-to-ansible/`.
+For Module 3, keep the supplied prompt and attachments constant across runs unless the facilitator directs a change.
+Module 2 experiments may differ and are not directly comparable to these timed runs.
+Record generation and static review time.
+In Notes, include missing behavior, syntax results, and which runtime checks you completed or left untested.
 
-**Billing period reset date:**
+Billing period reset date:
 
-**Usage pools observed:**
+Usage pools observed:
 
 [cols="2,2,1,1,1,2,3",options="header"]
 |===
-| Run | Model / Router mode | Surface (Chat / Agent / CLI) | Minutes | User turns | Quality (merge / edit / discard) | Notes (rework, context size, usage low/med/high)
+| Run | Model and router mode | Tool and mode | Minutes | User turns | Decision: merge, edit, or discard | Notes: corrections, context, usage, validation
 
-| Module 2 — Model A |
-| Module 2 — Model B |
-| Run A (cost-efficient) |
-| Run B (balanced) |
-| Run C (frontier / escalation) |
+| Module 2 first attempt | | | | | |
+| Module 2 optional experiment | | | | | |
+| Run A, cost-efficient | | | | | |
+| Run B, balanced | | | | | |
+| Run C, escalation | | | | | |
 |===
 
-== Personal optimization rules
+== Personal rules
 
 . Rule 1:
 . Rule 2:

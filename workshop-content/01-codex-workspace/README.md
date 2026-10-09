@@ -11,6 +11,13 @@ Commands and configuration were checked against official OpenAI documentation
 on **2026-10-07** and local **Codex CLI 0.160.1** help. Check `codex --help` after
 upgrading; available models and features depend on your account and workspace.
 
+## Editing configuration files is optional
+
+Install your chosen tool, sign in, and open the workshop repository to start working.
+The lab works without editing configuration files.
+The permissions settings and CLI options below are reference material if you want to explore them.
+You can skip the configuration examples and continue to local runtime verification.
+
 ## Choose one setup path
 
 Verify the Ansible prerequisite, then follow only one path below. Installing both
@@ -51,8 +58,11 @@ This lab assumes a working Ansible installation and does not install or replace
 it. Activate your existing Ansible environment if needed, then verify:
 
 ```bash
+# Locate the Ansible executable in this terminal's environment.
 command -v ansible-playbook
+# Show the Ansible version, configuration path, and Python runtime.
 ansible-playbook --version
+# Confirm Git is available and show its version.
 git --version
 ```
 
@@ -79,8 +89,11 @@ repositories and outbound HTTPS access.
 #### Codex CLI — standalone installer
 
 ```bash
+# Install the download tools, Git, and Linux sandbox dependency.
 sudo dnf install -y git curl tar gzip less bubblewrap
+# Show the machine architecture so you can choose the matching download.
 uname -m
+# Confirm bubblewrap is installed for the Linux sandbox.
 bwrap --version
 ```
 
@@ -88,11 +101,17 @@ The installer supports Linux `x86_64` and `aarch64`. Download and inspect it, th
 run it as your user:
 
 ```bash
+# Download the Codex installer to a temporary file for inspection.
 curl -fsSL https://chatgpt.com/codex/install.sh -o /tmp/codex-install.sh
+# Read the installer before running it; press q to exit less.
 less /tmp/codex-install.sh
+# Run the inspected Codex installer as your regular user.
 sh /tmp/codex-install.sh
+# Add the installer directory to the command path for this terminal.
 export PATH="$HOME/.local/bin:$PATH"
+# Show the installed Codex CLI version.
 codex --version
+# List the commands and flags supported by this installed version.
 codex --help
 ```
 
@@ -125,7 +144,9 @@ Check the architecture with `uname -m`, then download the matching RPM:
 Save the file in `~/Downloads`. For x64, install it with:
 
 ```bash
+# Enter the directory where you saved the downloaded RPM.
 cd "$HOME/Downloads"
+# Install the downloaded ChatGPT desktop RPM and its dependencies.
 sudo dnf install ./chatgpt.x86_64.rpm
 ```
 
@@ -142,6 +163,7 @@ The official RPM installation configures an OpenAI package repository. If that
 repository was configured successfully, update with:
 
 ```bash
+# Refresh package metadata and update the installed ChatGPT package.
 sudo dnf upgrade --refresh chatgpt
 ```
 
@@ -158,6 +180,7 @@ Open Terminal. If Git is unavailable, install Apple's Command Line Tools and
 finish the installer dialog:
 
 ```bash
+# Open the installer for Apple's command-line developer tools.
 xcode-select --install
 ```
 
@@ -168,8 +191,11 @@ Choose **one** CLI installation method below.
 If Homebrew is already installed:
 
 ```bash
+# Install Codex CLI through Homebrew.
 brew install --cask codex
+# Show the installed Codex CLI version.
 codex --version
+# List the commands and flags supported by this installed version.
 codex --help
 ```
 
@@ -180,10 +206,15 @@ Update that installation with `brew upgrade --cask codex`.
 Use the standalone installer without Homebrew:
 
 ```bash
+# Download the Codex installer to a temporary file for inspection.
 curl -fsSL https://chatgpt.com/codex/install.sh -o /tmp/codex-install.sh
+# Read the installer before running it; press q to exit less.
 less /tmp/codex-install.sh
+# Run the inspected Codex installer as your regular user.
 sh /tmp/codex-install.sh
+# Add the installer directory to the command path for this terminal.
 export PATH="$HOME/.local/bin:$PATH"
+# Show the installed Codex CLI version.
 codex --version
 ```
 
@@ -199,7 +230,9 @@ Confirm that your enterprise account has Codex access and membership in the
 workshop workspace. On a machine with a browser, start the OAuth sign-in flow:
 
 ```bash
+# Start Codex account sign-in in your browser.
 codex login
+# Check whether Codex is signed in.
 codex login status
 ```
 
@@ -210,6 +243,7 @@ workspace assigned for the workshop rather than a personal workspace.
 selection during sign-in. For a RHEL SSH session without a local browser:
 
 ```bash
+# Use a device code to sign in from a terminal without a local browser.
 codex login --device-auth
 ```
 
@@ -226,8 +260,11 @@ credential; keep it out of the repository. See
 If you have not cloned the workshop yet:
 
 ```bash
+# Download the workshop repository into a new local directory.
 git clone https://github.com/redhat-services-platform-team/ansible-amers-ai-workshop.git
+# Enter the cloned workshop repository.
 cd ansible-amers-ai-workshop
+# Show modified and untracked files before you begin.
 git status --short
 ```
 
@@ -235,7 +272,9 @@ From your checkout, create a learner branch and launch Codex with the host
 Ansible environment available:
 
 ```bash
+# Create and switch to a branch for your workshop changes.
 git switch -c workshop/codex-lab
+# Start a read-only session that can request approval for actions needing more access.
 codex --sandbox read-only --ask-for-approval on-request
 ```
 
@@ -244,8 +283,9 @@ Start with this prompt in Codex or Cursor:
 ```text
 Read README.adoc and workshop-content/02-shell-to-ansible/README.adoc.
 Explain the workshop structure and the prerequisites for converting the legacy
-shell script to Ansible. Include differences between a RHEL control host and a
-macOS control host. Use my existing working Ansible installation.
+Python NetBox installer to Ansible. Explain control-host differences between
+RHEL and macOS, and explain the installer's managed-host requirements.
+Use my existing working Ansible installation.
 Keep this task to inspection and explanation.
 ```
 
@@ -254,19 +294,25 @@ prerequisites before connecting to managed hosts.
 
 ### Permissions
 
+Editing configuration files is optional. These examples are for reference; you can continue with your installed tool and its current settings.
+
 Permissions determine where Codex can write files, whether generated commands can use the network, and when an action needs approval. In the CLI, use `/permissions` to inspect the active policy; in desktop Codex, use the permissions control beneath the composer. Routine commands allowed by the sandbox can run without asking every time. Enterprise requirements can restrict the options available to you.
 
-#### Recommended settings for this lab
+#### Optional configuration reference
 
-Use workspace editing with human review for requests that need more access. The default configuration file on RHEL and macOS is `~/.codex/config.toml`; if you already use `CODEX_HOME`, edit its `config.toml` instead.
+If you want to customize permissions, this example allows workspace editing with human review for requests that need more access. The default configuration file on RHEL and macOS is `~/.codex/config.toml`; if you already use `CODEX_HOME`, edit its `config.toml` instead.
 
 *This file may already contain settings*, including model choices, project entries, and enterprise defaults. Inspect it first and back it up. Merge the proposed keys into the existing file; do not replace the whole file or append duplicate keys or table headers. For a new file, the example below is a complete starting point. These are user defaults and cannot override managed requirements.
 
 ```bash
+# Create the Codex settings directory if you choose to edit the examples.
 mkdir -p "$HOME/.codex"
+# Check for an existing config before making a backup.
 if [ -f "$HOME/.codex/config.toml" ]; then
+  # Save a timestamped copy of the existing Codex configuration.
   cp "$HOME/.codex/config.toml" "$HOME/.codex/config.toml.backup-$(date +%Y%m%d-%H%M%S)"
 fi
+# Open the configuration in your chosen editor, or vi if EDITOR is unset.
 ${EDITOR:-vi} "$HOME/.codex/config.toml"
 ```
 
@@ -274,7 +320,6 @@ ${EDITOR:-vi} "$HOME/.codex/config.toml"
 approval_policy = "on-request"
 approvals_reviewer = "user"
 sandbox_mode = "workspace-write"
-web_search = "disabled"
 
 [sandbox_workspace_write]
 network_access = false
@@ -285,17 +330,20 @@ network_access = false
 | `approval_policy = "on-request"` | Codex can perform routine actions inside its permissions. When it requests an action requiring more access, it can ask you to approve it; this does not prompt for every command. |
 | `approvals_reviewer = "user"` | Approval requests go to you rather than an automatic reviewer, so you can read the proposed command and its purpose. |
 | `sandbox_mode = "workspace-write"` | Generated commands can edit the workspace and run local validation. Writes outside the permitted roots are restricted; this is not a promise that reads are limited to the workspace. |
-| `web_search = "disabled"` | Hosted web search is off for the local workshop exercises; supplied files provide the initial context. |
 | `network_access = false` | Commands inside the workspace sandbox cannot freely contact remote services. This is separate from web search and does not block Codex's own sign-in or model connection. |
 
-Place top-level keys before TOML table headers. If `[sandbox_workspace_write]` already exists, update `network_access` inside that table. Restart Codex and check the active permissions before your first prompt. The same sample is available at `samples/config.toml`.
+Place top-level keys before TOML table headers. If `[sandbox_workspace_write]` already exists, update `network_access` inside that table. If you edit the file, restart Codex and check the active permissions. The same sample is available at `samples/config.toml`.
 
-Common CLI examples, using your existing Ansible installation:
+Optional CLI examples, using your existing Ansible installation. Choose one command for the session you want:
 
 ```bash
+# Start a read-only session with approval requests for actions needing more access.
 codex -s read-only -a on-request
+# Allow workspace edits and ask for approval when more access is needed.
 codex -s workspace-write -a on-request
+# Start a session with the Lab 2 directory as its working directory.
 codex -C workshop-content/02-shell-to-ansible
+# Continue the most recent session for the current directory.
 codex resume --last
 ```
 
@@ -326,12 +374,19 @@ use current internal guidance for eligibility and regional availability.
 Run the installer as your regular user, then sign in with the approved account:
 
 ```bash
+# Download the Cursor CLI installer to a temporary file for inspection.
 curl -fsSL https://cursor.com/install -o /tmp/cursor-install.sh
+# Read the installer before running it; press q to exit less.
 less /tmp/cursor-install.sh
+# Run the inspected Cursor CLI installer as your regular user.
 bash /tmp/cursor-install.sh
+# Add the installer directory to the command path for this terminal.
 export PATH="$HOME/.local/bin:$PATH"
+# Show the installed Cursor CLI version.
 agent --version
+# Start Cursor CLI account sign-in.
 agent login
+# Check the Cursor CLI authentication status.
 agent status
 ```
 
@@ -339,7 +394,7 @@ From the workshop repository root, use your existing Ansible environment and run
 `agent` to start a session. Update with `agent update`. See
 [CLI installation](https://cursor.com/docs/cli/installation) and
 [CLI authentication](https://cursor.com/docs/cli/reference/authentication).
-CLI users can skip the desktop installation steps below and continue to Permissions and References.
+CLI users can skip the desktop installation steps below and continue to local runtime verification. Permissions and configuration examples are optional reference material.
 
 ### Desktop — RHEL RPM
 
@@ -348,7 +403,9 @@ Download the Linux RPM matching `uname -m` from
 replace the placeholder below with the exact downloaded filename:
 
 ```bash
+# Enter the directory where you saved the downloaded RPM.
 cd "$HOME/Downloads"
+# Install the Cursor RPM after replacing the placeholder with its filename.
 sudo dnf install './<downloaded-cursor-package>.rpm'
 ```
 
@@ -368,6 +425,7 @@ Choose **File → Open Folder…** and select `ansible-amers-ai-workshop`. Open
 **Terminal → New Terminal**, activate your existing Ansible environment if needed, and verify it:
 
 ```bash
+# Locate the Ansible executable in this terminal's environment.
 command -v ansible-playbook
 ```
 
@@ -378,9 +436,11 @@ Cursor settings.
 
 ### Permissions
 
+Editing configuration files is optional. These examples are for reference; you can continue with your installed tool and its current settings.
+
 Cursor desktop and Cursor CLI have different configuration files. Use only the instructions for your chosen interface. In desktop Cursor, open *Settings → Agents → Approvals & Execution*. In the CLI, permissions are configured in `~/.cursor/cli-config.json` or the project-specific `.cursor/cli.json`. A CLI configuration file does not configure the desktop Run Mode.
 
-#### Recommended settings for this lab — desktop
+#### Optional configuration reference for desktop
 
 Use *Auto-review* with sandboxing enabled. Routine allowlisted calls run immediately, supported shell commands run in the sandbox, and other calls are evaluated by an automatic reviewer. Some actions therefore run without a human prompt. For Cursor 3.23 or later, choose *Read Access → Workspace* so reads outside the workspace require approval unless included in the read allowlist. Keep the existing enterprise restrictions in place.
 
@@ -401,7 +461,7 @@ To steer Auto-review toward asking before publishing, installing software, or ch
 
 `allow_instructions` is empty because the lab adds no special automatic exceptions. `block_instructions` describes actions the reviewer should block so the agent can choose another approach or ask you to approve. These sentences guide a model-based reviewer; they are not deterministic command-deny rules. Team Auto-review policy can take precedence over these local files. If Auto-review is unavailable under your enterprise policy, use *Allowlist* with no added automatic allowances and follow the administrator's restrictions.
 
-#### Recommended settings for this lab — CLI
+#### Optional configuration reference for CLI
 
 Inspect and back up `~/.cursor/cli-config.json`, then merge these settings. The CLI may already have created this file when you signed in. If you use `CURSOR_CONFIG_DIR` or `XDG_CONFIG_HOME`, use the configured location instead. For a new file, this is a complete starting point:
 
@@ -432,11 +492,16 @@ Use an interactive `agent` session for this lab and inspect each command request
 *All of these files may already have contents.* Back up only the files you intend to edit, using commands such as:
 
 ```bash
+# Create the Cursor settings directory if you choose to edit the examples.
 mkdir -p "$HOME/.cursor"
+# Check whether a Cursor CLI config exists before backing it up.
 if [ -f "$HOME/.cursor/cli-config.json" ]; then
+  # Save a timestamped backup of the Cursor CLI configuration.
   cp "$HOME/.cursor/cli-config.json" "$HOME/.cursor/cli-config.json.backup-$(date +%Y%m%d-%H%M%S)"
 fi
+# Check whether desktop permission settings exist before backing them up.
 if [ -f "$HOME/.cursor/permissions.json" ]; then
+  # Save a timestamped backup of the Cursor desktop permission settings.
   cp "$HOME/.cursor/permissions.json" "$HOME/.cursor/permissions.json.backup-$(date +%Y%m%d-%H%M%S)"
 fi
 ```
@@ -459,8 +524,11 @@ From the repository root, in your OS terminal, Cursor terminal, or Codex desktop
 terminal:
 
 ```bash
+# Enter Lab 1 so Ansible uses its local configuration and inventory.
 cd workshop-content/01-codex-workspace
+# Check the sample playbook syntax without running its tasks.
 ansible-playbook --syntax-check playbooks/hello.yml
+# Run the sample checks on localhost using your existing Ansible installation.
 ansible-playbook playbooks/hello.yml
 ```
 
@@ -486,9 +554,9 @@ routine actions inside the sandbox without prompting for every command.
 does not grant full access. See
 [approvals and security](https://learn.chatgpt.com/docs/agent-approvals-security).
 
-The recommended user defaults and backup/merge instructions are in the Codex
-Permissions subsection above. The examples below cover optional changes after
-you have completed that first setup.
+The optional user settings and backup instructions are in the Codex
+Permissions subsection above. These examples are for reference; the lab does
+not require you to change configuration files.
 
 #### Change policy for one session
 
@@ -516,8 +584,10 @@ table and restart Codex. See [network access](https://learn.chatgpt.com/docs/age
 Create a review profile without replacing your base configuration:
 
 ```bash
+# Copy the example review profile without overwriting an existing file.
 cp -n workshop-content/01-codex-workspace/samples/review.config.toml \
   "$HOME/.codex/review.config.toml"
+# Start Codex with the review profile layered over your base settings.
 codex --profile review
 ```
 
@@ -539,11 +609,15 @@ forbids `sudo` when evaluating requests to run outside the sandbox. Install it
 alongside your user config:
 
 ```bash
+# Create a directory for optional command-policy rules.
 mkdir -p "$HOME/.codex/rules"
+# Copy the example rules without overwriting existing workshop rules.
 cp -n workshop-content/01-codex-workspace/samples/workshop.rules \
   "$HOME/.codex/rules/workshop.rules"
+# Check the rule decision for the command below without executing it.
 codex execpolicy check --pretty --rules "$HOME/.codex/rules/workshop.rules" \
   -- git push origin workshop/codex-lab
+# Check the rule decision for the command below without executing it.
 codex execpolicy check --pretty --rules "$HOME/.codex/rules/workshop.rules" \
   -- sudo dnf install git
 ```
@@ -581,7 +655,7 @@ policy conflicts with the administrator. See
 | `-C`, `--cd` | Set the working directory | `codex -C workshop-content/02-shell-to-ansible` |
 | `-s`, `--sandbox` | Select command access boundaries | `codex -s read-only` |
 | `-a`, `--ask-for-approval` | Select `on-request` or `never` | `codex -a on-request` |
-| `-c`, `--config` | Override a TOML key for this run | `codex -c 'web_search="disabled"'` |
+| `-c`, `--config` | Override a TOML key for this run | `codex -c 'approval_policy="on-request"'` |
 | `-p`, `--profile` | Select a named config file | `codex -p review` |
 | `-m`, `--model` | Select an available model | `codex --model <available-model-id>` |
 | `--search` | Enable live hosted web search | `codex --search` |
@@ -616,12 +690,12 @@ behavior and do not enforce sandbox permissions. See
 Try a focused task in a workspace-write session:
 
 ```text
-Read workshop-content/02-shell-to-ansible/legacy/configure-workshop-app.sh.
-Explain its assumptions, then propose an idempotent Ansible conversion.
-Wait for my choice of output filename before creating the playbook. Target RHEL
-managed nodes and account for macOS as a possible control host. After creating
-the playbook, use my existing Ansible installation and run syntax validation. Report the diff
-and validation results. Do not connect to managed hosts for this task.
+Read workshop-content/02-shell-to-ansible/legacy/install_netbox.py.
+Read workshop-content/02-shell-to-ansible/legacy/.env.example too. Explain the assumptions,
+then propose an idempotent Ansible project for a dedicated CentOS Stream 10 host.
+Wait for my choice of output directory before creating the project. My RHEL or
+macOS workstation is the control host. After generation, use my existing Ansible
+installation for syntax validation. Report the diff and validation results. Do not connect to managed hosts for this task.
 ```
 
 Review `git diff` and `git status --short` after the task. Confirm the output is

@@ -1,0 +1,36 @@
+= NetBox migration review checklist
+
+For each source stage below, record the generated file or task that replaces it.
+List behavior differences and missing implementation details.
+Mark your evidence as code review, syntax validation, or runtime testing.
+
+[cols="1,3",options="header"]
+|===
+| Source stage | What to check
+| `load_env`, `validate` | Preserve defaults, optional .env parsing, and environment precedence. Check host values, allowed hosts, TLS modes and supplied files, worker bounds, time zone, release format, and secret lengths.
+| `main` | Require root on CentOS Stream 10. Account for the installer lock, execution order, and redacted failure messages.
+| `prepare_state` | Protect the state directory and file so only root can access them. Reuse generated secrets and resolve `latest` once. Reject secret rotation, release changes, and an unmanaged `/opt/netbox`.
+| `install_packages` | Include the source's package dependencies. Enable and start Valkey, then check for PONG.
+| `database` | Initialize PostgreSQL only when needed. Preserve loopback SCRAM rule order and config ownership. Set up the role, password, UTF8 database, database owner, and schema grant. Check database connectivity.
+| `application` | Download and extract the release, validate the `/opt/netbox` symlink, and create the service user and writable app directories. Protect `configuration.py` while allowing the service group to read it. Configure both Valkey databases and TLS-dependent cookie settings.
+| `application`, continued | Stop existing app units before the source upgrade procedure. Keep installer secrets out of pip's environment. Install dependencies, run migrations, collect static files, and restore SELinux labels. Create the admin only when absent and reject an unsuitable existing account. Run the Django check and write Gunicorn settings.
+| `services` | Preserve the NetBox and RQ worker units, their dependencies, service account, and restrictions. Explain when daemon reload, enable, start, and restart operations occur.
+| `webserver` | Handle HTTP, self-signed TLS, and supplied PEM files. Protect the private key and redirect HTTP requests to HTTPS when TLS is enabled. Manage the dedicated host's Nginx config, static alias, and proxy headers. Validate config before restarting.
+| `webserver`, continued | Set the SELinux network-connect boolean. Persist and restore static-file labels. Manage HTTP and HTTPS firewall services only when requested.
+| `verify` | Check that all five units are enabled and active. Retry the login page through Nginx with the configured Host header and check for the CSRF marker. Document that the local HTTPS probe skips certificate trust validation.
+|===
+
+== Input mapping
+
+Account for every key in `.env.example`, including the four blank secret fields.
+Document changes to input formats or precedence.
+Identify any changes to wildcard allowed hosts, HTTP defaults, or enabled firewall management.
+Explain the effect of each change.
+
+== Second-run review
+
+* Does a second run reuse secrets and the selected release?
+* What triggers migrations, dependency installation, daemon reloads, and service restarts?
+* Can two runs change persistent state at the same time? If the project cannot preserve the source lock, document and enforce a restriction on concurrent runs.
+* Do command guards check the desired state or only a marker file?
+* Does the README explain failure handling and check-mode limitations?

@@ -1,0 +1,6 @@
+# Example inventory using a documentation-only address.
+[netbox_lab]
+netbox-demo ansible_host=192.0.2.10 ansible_user=CHANGE_ME
+
+# The deployment requires sudo on the managed host.
+# Supply SSH credentials through your usual SSH configuration, not this file.

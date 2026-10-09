@@ -51,3 +51,6 @@ workshop-content/02-shell-to-ansible/output/**
 workshop-content/04-aws-lab-provisioning/**/credentials.yml
 workshop-content/04-aws-lab-provisioning/**/secrets.yml
 workshop-content/04-aws-lab-provisioning/group_vars/all.yml
+
+# Track the Lab 2 NetBox example with blank secret values
+!workshop-content/02-shell-to-ansible/legacy/.env.example
