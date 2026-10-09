@@ -7,8 +7,8 @@ Repeat the NetBox migration with fixed inputs. Try different models and reasonin
 
 * Select models and reasoning effort settings in your tool.
 * Change one setting at a time and record what changed in the output.
-* Check migration coverage instead of judging a result by its length or confidence.
-* Use the evidence to decide when to change models or increase effort.
+* Check which installer behaviors each output implements.
+* Use your results to decide when to change models or increase effort.
 
 == Before you start
 
@@ -36,19 +36,19 @@ Start with Luna for the baseline. GPT-6.1 Sol is an option for the model compari
 See the link:https://learn.chatgpt.com/docs/models[official OpenAI model documentation] for current controls and availability.
 
 In Cursor, select Composer for the baseline, then choose another approved model for comparison.
-For the effort comparison, choose a model that exposes reasoning effort settings in your client.
-If a model has no effort selector, record `not exposed`; use another approved model for the effort pair.
+For the effort comparison, choose a model with reasoning effort settings in your client.
+If a model has no effort selector, record `not exposed`. Choose another approved model for runs B and C.
 See link:https://cursor.com/docs/models[Cursor's model documentation] and the options shown in your client.
 
 Record the exact model name or version, reasoning effort label, interaction mode, and any speed setting.
 A speed setting such as Fast is a separate control from reasoning effort.
 Avoid automatic model routing for this experiment if you can select a model directly.
-If access restrictions force a substitution, record it.
+Record any model substitutions required by your account.
 
 == Step 2: Plan the comparison
 
 Choose at least two models and two supported effort levels on one model.
-Use this plan when both models expose the same effort labels:
+Use this plan when both models offer the same effort labels:
 
 [cols="1,2,2,3",options="header"]
 |===
@@ -60,9 +60,9 @@ Use this plan when both models expose the same effort labels:
 
 For Cursor with no Composer effort selector, record A as `not exposed`.
 Use two explicit effort levels on the model chosen for B and C.
-The A-to-B comparison then includes different reasoning behavior as well as model choice.
-Even matching labels across models do not imply equal computation or cost.
-B-to-C is the cleaner comparison because only effort changes.
+Runs A and B then differ in both model and reasoning behavior.
+The same effort label on different models may use different amounts of computation and cost.
+Between B and C, only effort changes.
 
 Keep the tool, interaction mode, permissions, source files, initial prompt, and review criteria the same.
 Use a fresh conversation and separate output directory for each run:
@@ -74,7 +74,7 @@ workshop-content/02-shell-to-ansible/output/<your-name>/run-b/
 workshop-content/02-shell-to-ansible/output/<your-name>/run-c/
 ----
 
-If no available model exposes two effort levels, complete the model comparison and record the access limitation. Do not label a mode change as an effort comparison.
+If no available model offers two effort levels, complete the model comparison and record that limitation. Changing interaction mode does not compare reasoning effort.
 
 == Step 3: Run the migrations
 
@@ -86,12 +86,12 @@ Repeat these steps for A, B, and C:
 . Start a timer and review the generated project against the checklist.
 . Save the first response before requesting corrections. Record missing behavior, assumptions, and file structure.
 . Request corrections for issues you can identify. Save each follow-up so you can explain how the conversation changed.
-. Stop when the definition of done in `prompt.md` is met or after 15 user turns, whichever comes first. Keep incomplete output and record what remains.
+. Stop when the output meets the definition of done in `prompt.md` or after 15 user turns, whichever comes first. Keep incomplete output and record what remains.
 . Record total generation and review time, user turns, manual edits, and your review decision.
 
 Count the initial prompt and each follow-up as user turns.
 Follow-ups may differ because the outputs have different problems. Compare both the initial output and the final reviewed result.
-These runs are a small experiment, not a general model ranking.
+Use these results to choose settings for this migration. Other tasks may produce different results.
 
 If the project includes `requirements.yml`, review it and install the declared collections from its output directory:
 
@@ -115,29 +115,29 @@ Record the errors and any fixes. If the project cannot reach syntax validation, 
 
 Use the same migration checklist for each output.
 Check saved secrets and release state, database setup, service handlers, TLS behavior, and verification tasks.
-Distinguish implemented behavior from a README promise.
+Check that the code implements the behavior described in its README.
 
 Answer in your notes:
 
 * Which first output covered the source behavior most closely? What code supports that judgment?
 * What changed between B and C when effort increased?
 * Which output needed fewer corrections or less manual editing?
-* Did extra time or usage buy a result you would accept?
+* Did higher effort improve the output enough to justify extra time or usage?
 * What remains untested in each project?
 
 Record actual usage or cost from your account's report if available.
 Cursor users can check link:https://cursor.com/dashboard/spending[Spending]. Codex users can use the usage view or their organization's report.
 If per-run usage is unavailable, record `unavailable`.
-Elapsed time and turn counts describe work; they do not establish spend.
+Elapsed time and turn counts cannot tell you what a run cost.
 
 You may repeat a run to see whether the same settings produce similar results.
-Keep repeats separate in your notes. A single successful response does not establish reliability.
+Record repeats separately so you can compare how much the results vary.
 
 == Step 5: Decide what you would use next
 
 Write a few rules based on your results.
 Name a task where you would keep Composer or Luna, a task where you would try another model, and a reason to increase effort.
-Tie each choice to a concrete result from the comparison.
+Explain each choice with an example from your runs.
 
 == Completion checklist
 

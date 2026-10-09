@@ -3,8 +3,8 @@
 Use the Lab 2 row for your single port with Composer or Luna and your own prompt.
 For Lab 3, keep `prompt.md`, the installer, `.env.example`, and the migration checklist constant.
 Record exact model versions and the effort labels shown in your client. Use `not exposed` for unavailable controls.
-Record initial output coverage before follow-ups and final coverage after corrections.
-Generation and static review are timed; deployment is outside these comparison runs.
+Record which installer behaviors the first output implements and what corrections add.
+Time generation and static review. Deployments are outside these comparison runs.
 
 Tool and version:
 

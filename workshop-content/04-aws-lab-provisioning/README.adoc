@@ -10,8 +10,8 @@ Learner steps are in `documentation/modules/ROOT/pages/04-aws-lab-provisioning.a
 * `customer-demo-checklist.adoc` records demo evidence and customer questions.
 
 Create your project under `teams/<team-name>/` on a branch such as `team/switchboard-netbox`.
-Bring forward useful output from Labs 2 and 3, then review it together before deployment.
-The lab does not provide a completed port or deployment playbook. Your team chooses and implements the design.
+Review your Lab 2 and 3 output together, then choose a port to finish.
+Your team writes the deployment playbooks and chooses the AWS layout.
 
 Add demo hosts through the NetBox UI as VM or device records with interfaces, primary IPs, and a team-specific tag.
 Use `netbox.netbox.nb_inventory` to query those records and select hosts for the customer demo.

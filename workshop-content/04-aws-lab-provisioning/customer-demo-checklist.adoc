@@ -1,7 +1,7 @@
 = Customer demo checklist
 
 Use this to prepare the demonstration and record the customer's questions.
-Link to evidence in the team project rather than pasting credentials or private output here.
+Link to test results in the team project. Keep credentials and private output out of this checklist.
 
 [cols="2,3,2",options="header"]
 |===

@@ -2,7 +2,7 @@
 
 Switchboard Supply uses NetBox to record its networks and hosts.
 A Python installer has accumulated years of undocumented changes, and operators still copy AWS host addresses into static Ansible inventories.
-The customer wants your team to replace that process with maintainable automation and demonstrate how Ansible can use NetBox data.
+The customer wants Ansible to deploy NetBox and select hosts from its records.
 
 == What the customer needs
 
@@ -41,5 +41,5 @@ Document the manual host-entry steps so another operator can follow them.
 | Maintainable handover | README, architecture decisions, verification evidence, known limitations, recovery notes, and teardown instructions
 |===
 
-This is a workshop delivery, not proof of production readiness.
-Keep the demo small enough to understand and test. Record production work that remains rather than claiming it is complete.
+Keep the demo small enough to understand and test.
+List the changes and tests needed before production use.

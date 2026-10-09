@@ -20,8 +20,8 @@ Demo hosts and team-specific NetBox tag:
 == Delivery
 
 * [ ] AWS hosts run the chosen NetBox infrastructure.
-* [ ] Ansible installs and configures NetBox without delegating the migration to the original installer.
-* [ ] Dependencies, supported versions, defaults, and intentional behavior changes are documented.
+* [ ] Ansible tasks install and configure NetBox.
+* [ ] We documented dependencies, supported versions, defaults, and intentional behavior changes.
 * [ ] Installation and rerun checks cover saved secrets, release state, services, and application health.
 * [ ] We manually added demo hosts in the NetBox UI with VM or device records, interfaces, reachable primary IPs, and a team tag.
 * [ ] NetBox dynamic inventory selects only the intended demo hosts.
