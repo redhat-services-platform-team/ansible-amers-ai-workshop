@@ -137,14 +137,15 @@ The people named in its comments have moved teams, the deployment instructions a
 The company also manages AWS networks and keeps copying host addresses into static inventories.</p>
 </div>
 <div class="paragraph">
-<p>Your team has been asked to make the deployment repeatable and show how Ansible can use NetBox as a source of inventory.
-The customer wants working automation, evidence that it survives a second run, and instructions another team can follow.
+<p>The customer wants Ansible to deploy NetBox and use its host records as inventory.
+Your team must show a working deployment and a second run that preserves credentials and release state.
+Leave instructions another team can follow.
 Use <code>workshop-content/04-aws-lab-provisioning/customer-brief.adoc</code> as your project brief.</p>
 </div>
 <div class="paragraph">
-<p>This is an open-ended collaboration. Choose your architecture, division of work, prompts, models, and project layout.
-Agree on a scope your team can deliver. Explain any tradeoffs or unfinished work to the customer.
-There is no required team size or competition score.</p>
+<p>Choose your team size, architecture, and division of work.
+Write your own prompts and choose models based on your Lab 3 results.
+Agree on what you will deliver and explain any unfinished work to the customer.</p>
 </div>
 </div>
 </div>
@@ -154,7 +155,7 @@ There is no required team size or competition score.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Reviewed Ansible content that installs and configures NetBox and its dependencies, based on the Python installer from Lab 2.</p>
+<p>Ansible content that installs and configures NetBox and its dependencies, based on the Python installer from Lab 2.</p>
 </li>
 <li>
 <p>Running AWS hosts for the NetBox infrastructure, with a documented network layout and deployment procedure.</p>
@@ -211,10 +212,10 @@ Ask a teammate or another team to act as the customer during scope review and th
 Review each other&#8217;s changes and resolve conflicting assumptions in the code and README.</p>
 </div>
 <div class="paragraph">
-<p>Bring forward useful work from Labs 2 and 3.
-Choose the port you want to continue, or start a new one if the review evidence supports that decision.
+<p>Review your ports from Labs 2 and 3.
+Choose one to continue, or start again if none provides a useful base.
 Use your model comparison notes to decide which requests need more reasoning effort.
-Write your own prompts; this lab provides a customer brief rather than a prescribed conversation.</p>
+Use the customer brief to decide what to ask the tool.</p>
 </div>
 </div>
 </div>
@@ -234,8 +235,8 @@ Choose a supported OS and compatible dependency versions. If you change the sour
 </td>
 <td class="content">
 <div class="paragraph">
-<p>Start by considering <code>t3.small</code> instances for lightweight demo targets or separated low-load components.
-They have 2 vCPUs and 2 GiB of memory. That is not a sizing guarantee for a complete NetBox stack.
+<p>Consider <code>t3.small</code> instances for demo targets or separate services with low demand.
+They have 2 vCPUs and 2 GiB of memory. Measure memory use before choosing one for NetBox.
 For an all-in-one community NetBox host, consider a larger instance such as <code>t3.medium</code> and measure memory during installation and the demo.
 Check regional availability, CPU credit behavior, storage, and current costs before launching.
 See <a href="https://docs.aws.amazon.com/ec2/latest/instancetypes/gp.html">AWS instance specifications</a>.</p>
@@ -247,17 +248,18 @@ See <a href="https://docs.aws.amazon.com/ec2/latest/instancetypes/gp.html">AWS i
 <div class="paragraph">
 <p>Use instance roles or your organization&#8217;s approved temporary credentials.
 Restrict administrative access to the team&#8217;s approved network or access service.
-Keep PostgreSQL and Valkey private. Choose appropriate HTTPS and certificate handling for the customer-facing endpoint.
+Keep PostgreSQL and Valkey private. Decide how you will configure HTTPS and manage certificates for the NetBox endpoint.
 Tag team resources so you can identify ownership and clean them up without affecting shared infrastructure.</p>
 </div>
 <div class="paragraph">
-<p>Choose how to create the AWS hosts. Ansible provisioning is encouraged; existing approved infrastructure is acceptable if you document it.
+<p>Choose how to create the AWS hosts. Try Ansible provisioning, or document the existing approved infrastructure you use.
 Use Ansible for the NetBox installation and configuration.
-Define the deployment entry point and a separate bootstrap inventory so you can deploy NetBox before its inventory API is available.</p>
+Document which playbook deploys NetBox. Use a separate bootstrap inventory until the NetBox API is available.</p>
 </div>
 <div class="paragraph">
-<p>Write acceptance checks before generating more code.
-Include fresh installation, a second run, saved credentials, release persistence, HTTP or HTTPS access, service health, manually entered host records, dynamic inventory, and cleanup.</p>
+<p>Write your checks before generating more code.
+Test installation and a second run, including saved credentials, release state, service health, and web access.
+Also check manual host entry, dynamic inventory, and cleanup.</p>
 </div>
 </div>
 </div>
@@ -266,19 +268,20 @@ Include fresh installation, a second run, saved credentials, release persistence
 <div class="sectionbody">
 <div class="paragraph">
 <p>Use the source installer and <code>workshop-content/02-shell-to-ansible/migration-checklist.adoc</code> to account for its behavior.
-A wrapper that runs the original Python installer is not a completed migration.</p>
+Convert the installer stages to Ansible tasks. Running the original script from a playbook does not complete the migration.</p>
 </div>
 <div class="paragraph">
-<p>Use roles or task files with clear responsibilities, fully qualified module names, variable defaults, templates, and handlers.
+<p>Group related tasks into roles or task files.
+Use fully qualified module names, variable defaults, templates, and handlers.
 Declare collection dependencies and supported versions.
-Use shell or command tasks only where a suitable module is unavailable; document their change detection and rerun behavior.
+Use shell or command tasks only where a suitable module is unavailable. Document how they detect changes and behave on reruns.
 Protect secrets with approved secret storage or Ansible Vault, restrictive file permissions, and <code>no_log</code> where required.
 Keep secrets out of prompts, committed examples, and demo evidence.</p>
 </div>
 <div class="paragraph">
 <p>Preserve generated secrets and the selected release across reruns.
 Explain any intentional changes to the installer&#8217;s state file, refusal conditions, wildcard allowed-hosts default, TLS behavior, or unconditional restarts.
-Define what the playbook supports for upgrades and recovery. Do not claim production readiness from a workshop deployment.</p>
+Document the supported upgrade and recovery procedures, including what you have not tested.</p>
 </div>
 <div class="paragraph">
 <p>Read the generated changes before running them.
@@ -340,7 +343,7 @@ Choose addresses reachable from your control workstation, or configure an approv
 </div>
 <div class="paragraph">
 <p>Document the inventory filename, group selection, connection user, and credentials required for the demo.
-You may use AWS discovery or a static inventory to bootstrap NetBox; the final customer demo must read host selection from NetBox.</p>
+You may use AWS discovery or a static inventory to deploy NetBox. Use NetBox to select hosts for the final customer demo.</p>
 </div>
 <div class="paragraph">
 <p>Adapt these commands to your project from its directory:</p>
@@ -349,18 +352,18 @@ You may use AWS discovery or a static inventory to bootstrap NetBox; the final c
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Query NetBox and display only the groups selected by your inventory configuration.
 ansible-inventory -i inventory/netbox.yml --graph
-# Test Ansible connectivity to hosts selected from NetBox, not a static host list.
+# Test Ansible connectivity to the hosts selected from NetBox.
 ansible netbox_demo -i inventory/netbox.yml -m ansible.builtin.ping
 # Run the team's demo playbook against the same NetBox inventory.
 ansible-playbook -i inventory/netbox.yml demo.yml</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>These filenames and <code>netbox_demo</code> group are a suggested interface, not supplied working files.
-Your team implements and documents them.</p>
+<p>Create the inventory configuration, <code>netbox_demo</code> group, and playbook, or adapt the commands to your project layout.</p>
 </div>
 <div class="paragraph">
-<p>Change a demo host&#8217;s tag or another inventory filter field in NetBox, refresh the inventory, and show that host selection changes without editing a static host list.
+<p>Change a demo host&#8217;s tag or another field your inventory filters use.
+Refresh the inventory and show that host selection changed without editing a static host list.
 Restore the record afterward. Account for inventory caching in your refresh procedure.</p>
 </div>
 </div>
@@ -381,7 +384,8 @@ Show the inventory membership change and explain how the customer would add anot
 </div>
 <div class="paragraph">
 <p>Describe what you tested, what remains incomplete, and what would need more work before production use.
-Give the customer a README with setup, dependency versions, required permissions, deployment, rerun, verification, manual host entry, dynamic inventory, recovery, and teardown instructions.
+Give the customer a README with dependency versions and required permissions.
+Include instructions for deployment, reruns, verification, manual host entry, inventory queries, recovery, and teardown.
 Include your architecture decisions and useful AI model comparison findings.</p>
 </div>
 </div>
@@ -397,7 +401,7 @@ Keep the source, sanitized evidence, and operating instructions together.</p>
 <div class="paragraph">
 <p>Use your documented teardown process after the demo, unless the environment owner explicitly wants the resources retained.
 Remove only team-owned resources. Account for instances, volumes, public addresses, and network resources.
-Verify the result in AWS and record any retained resources, their owner, and expiry.</p>
+Check AWS to confirm cleanup. Record any retained resources, their owner, and when they should be removed.</p>
 </div>
 </div>
 </div>
