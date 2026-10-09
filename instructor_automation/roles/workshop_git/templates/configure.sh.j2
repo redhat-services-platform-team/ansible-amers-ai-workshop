@@ -1,0 +1,20 @@
+#!/bin/bash
+set -euo pipefail
+umask 077
+# Keep package installation output out of the SSM command response.
+if ! rpm -q docker python3-pip >/dev/null 2>&1; then
+    dnf -q -y install docker python3-pip >/dev/null
+fi
+systemctl enable --now docker >/dev/null 2>&1
+install -d -m 0700 /opt/workshop-git
+if [ ! -x /opt/workshop-git/venv/bin/python ]; then
+    python3 -m venv /opt/workshop-git/venv
+fi
+if ! /opt/workshop-git/venv/bin/python -c 'import boto3' 2>/dev/null; then
+    /opt/workshop-git/venv/bin/pip -q install 'boto3>=1.35,<2' >/dev/null
+fi
+# This script contains parameter names, never the student passwords.
+cat > /opt/workshop-git/configure.py <<'WORKSHOP_PYTHON'
+{{ lookup('ansible.builtin.file', role_path ~ '/files/configure_git.py') }}
+WORKSHOP_PYTHON
+/opt/workshop-git/venv/bin/python /opt/workshop-git/configure.py {{ {'fqdn': git_plan.fqdn, 'region': git_plan.environment.region, 'parameter_prefix': workshop_git_parameter_prefix, 'student_ids': workshop_git_student_ids, 'gitea_image': workshop_git_gitea_image, 'caddy_image': workshop_git_caddy_image} | to_json | quote }}

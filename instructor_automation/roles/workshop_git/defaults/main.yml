@@ -1,0 +1,18 @@
+---
+workshop_git_aws_environments: []
+workshop_git_student_ids: []
+workshop_git_discover_only: false
+workshop_git_deployment_id: ai-workshop
+workshop_git_dns_label: git
+workshop_git_instance_type: t3.medium
+workshop_git_volume_size: 30
+workshop_git_vpc_cidr: 10.77.0.0/16
+workshop_git_subnet_cidr: 10.77.1.0/24
+workshop_git_students_are_admins: true
+workshop_git_must_change_password: true
+workshop_git_gitea_image: docker.gitea.com/gitea:28.1.0
+workshop_git_caddy_image: docker.io/library/caddy:2.11.7
+workshop_git_private_dir: "{{ playbook_dir }}/private"
+workshop_git_password_file: "{{ workshop_git_private_dir }}/student-passwords.json"
+workshop_git_output_file: "{{ workshop_git_private_dir }}/git-access.json"
+workshop_git_timeout: 1200

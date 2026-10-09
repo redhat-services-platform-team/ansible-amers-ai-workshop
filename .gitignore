@@ -42,7 +42,7 @@ yarn.lock
 .lock
 
 .ansible
-
+.env
 # Learner-generated playbooks (Module 2 / 3)
 workshop-content/02-shell-to-ansible/output/**
 !workshop-content/02-shell-to-ansible/output/.gitkeep
@@ -58,3 +58,8 @@ workshop-content/04-aws-lab-provisioning/group_vars/all.yml
 workshop-content/04-aws-lab-provisioning/**/state.json
 workshop-content/04-aws-lab-provisioning/**/inventory-export.json
 workshop-content/04-aws-lab-provisioning/**/private/
+
+# Instructor credentials, password sheets, and local test caches
+instructor_automation/private/
+instructor_automation/**/__pycache__/
+instructor_automation/.venv/

@@ -1,0 +1,6 @@
+---
+- name: Build participant Git servers
+  hosts: local
+  gather_facts: false
+  roles:
+    - role: workshop_git

@@ -98,3 +98,9 @@ See https://docs.github.com/en/pages/getting-started-with-github-pages/using-cus
 Download `workshop-main` or `workshop-preview` from the workflow run's Artifacts section to inspect a generated build.
 Hosted builds contain their published base URL; use the hosted preview to verify navigation.
 For a local preview with local links, use the build utilities above.
+
+== Instructor AWS Git servers
+
+Use link:instructor_automation/README.md[instructor_automation] to provision one Gitea server per AWS environment and create every student on every server.
+The role discovers each account's public Route 53 zone, deploys a `t3.medium`, and saves server URLs and initial passwords in a private access sheet.
+Start with discovery mode to check the account keys and DNS names before provisioning.

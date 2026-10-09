@@ -1,0 +1,217 @@
+---
+- name: Manage this account with its own credentials
+  no_log: true
+  module_defaults:
+    group/amazon.aws:
+      access_key: "{{ git_plan.environment.access_key }}"
+      secret_key: "{{ git_plan.environment.secret_key }}"
+      session_token: "{{ git_plan.environment.session_token | default(omit, true) }}"
+      region: "{{ git_plan.environment.region }}"
+    group/community.aws:
+      access_key: "{{ git_plan.environment.access_key }}"
+      secret_key: "{{ git_plan.environment.secret_key }}"
+      session_token: "{{ git_plan.environment.session_token | default(omit, true) }}"
+      region: "{{ git_plan.environment.region }}"
+  block:
+    - name: Set resource ownership and parameter path
+      ansible.builtin.set_fact:
+        workshop_git_tags:
+          WorkshopDeployment: "{{ workshop_git_deployment_id }}"
+          WorkshopEnvironment: "{{ git_plan.name }}"
+          ManagedBy: ansible-workshop-git
+        workshop_git_parameter_prefix: "/{{ workshop_git_deployment_id }}/{{ git_plan.name }}/students"
+
+    - name: Create a dedicated VPC
+      amazon.aws.ec2_vpc_net:
+        name: "{{ git_plan.resource_name }}"
+        cidr_block: "{{ workshop_git_vpc_cidr }}"
+        dns_hostnames: true
+        dns_support: true
+        tags: "{{ workshop_git_tags }}"
+      register: workshop_git_vpc
+
+    - name: Create a public subnet
+      amazon.aws.ec2_vpc_subnet:
+        vpc_id: "{{ workshop_git_vpc.vpc.id }}"
+        cidr: "{{ workshop_git_subnet_cidr }}"
+        map_public: true
+        tags: "{{ workshop_git_tags | combine({'Name': git_plan.resource_name}) }}"
+      register: workshop_git_subnet
+
+    - name: Attach an internet gateway
+      amazon.aws.ec2_vpc_igw:
+        vpc_id: "{{ workshop_git_vpc.vpc.id }}"
+        tags: "{{ workshop_git_tags }}"
+      register: workshop_git_gateway
+
+    - name: Route the public subnet to the internet
+      amazon.aws.ec2_vpc_route_table:
+        vpc_id: "{{ workshop_git_vpc.vpc.id }}"
+        tags: "{{ workshop_git_tags | combine({'Name': git_plan.resource_name}) }}"
+        subnets:
+          - "{{ workshop_git_subnet.subnet.id }}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{ workshop_git_gateway.gateway_id }}"
+
+    - name: Allow HTTPS and ACME HTTP validation
+      amazon.aws.ec2_security_group:
+        name: "{{ git_plan.resource_name }}"
+        description: Workshop Git web access
+        vpc_id: "{{ workshop_git_vpc.vpc.id }}"
+        tags: "{{ workshop_git_tags }}"
+        rules:
+          - proto: tcp
+            ports: [80, 443]
+            cidr_ip: 0.0.0.0/0
+        rules_egress:
+          - proto: all
+            cidr_ip: 0.0.0.0/0
+      register: workshop_git_security_group
+
+    - name: Create the instance role for Systems Manager
+      amazon.aws.iam_role:
+        name: "{{ git_plan.resource_name }}"
+        assume_role_policy_document:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: ec2.amazonaws.com
+              Action: sts:AssumeRole
+        managed_policies:
+          - "arn:{{ git_plan.partition }}:iam::aws:policy/AmazonSSMManagedInstanceCore"
+        tags: "{{ workshop_git_tags }}"
+        wait: true
+
+    - name: Allow the instance to read its student credentials
+      amazon.aws.iam_policy:
+        iam_type: role
+        iam_name: "{{ git_plan.resource_name }}"
+        policy_name: workshop-student-credentials
+        policy_json:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action: ssm:GetParameters
+              Resource: >-
+                arn:{{ git_plan.partition }}:ssm:{{ git_plan.environment.region }}:{{ git_plan.account_id }}:parameter{{ workshop_git_parameter_prefix }}/*
+
+            - Effect: Deny
+              Action:
+                - ssm:GetParameter
+                - ssm:GetParameters
+                - ssm:GetParametersByPath
+              NotResource: >-
+                arn:{{ git_plan.partition }}:ssm:{{ git_plan.environment.region }}:{{ git_plan.account_id }}:parameter{{ workshop_git_parameter_prefix }}/*
+
+    - name: Create the EC2 instance profile
+      amazon.aws.iam_instance_profile:
+        name: "{{ git_plan.resource_name }}"
+        role: "{{ git_plan.resource_name }}"
+        tags: "{{ workshop_git_tags }}"
+
+    - name: Store each student's credentials as a SecureString
+      community.aws.ssm_parameter:
+        name: "{{ workshop_git_parameter_prefix }}/{{ student_id }}"
+        string_type: SecureString
+        overwrite_value: changed
+        value: >-
+          {{ {'username': student_id,
+              'password': workshop_git_passwords_result.passwords[student_id],
+              'email': student_id ~ '@' ~ git_plan.fqdn,
+              'admin': workshop_git_students_are_admins | bool,
+              'must_change_password': workshop_git_must_change_password | bool} | to_json }}
+        tags: "{{ workshop_git_tags }}"
+      loop: "{{ workshop_git_student_ids }}"
+      loop_control:
+        loop_var: student_id
+
+    - name: Create or start the workshop Git instance
+      amazon.aws.ec2_instance:
+        name: "{{ git_plan.resource_name }}"
+        image_id: "{{ git_plan.ami_id }}"
+        instance_type: "{{ workshop_git_instance_type }}"
+        vpc_subnet_id: "{{ workshop_git_subnet.subnet.id }}"
+        security_groups:
+          - "{{ workshop_git_security_group.group_id }}"
+        iam_instance_profile: "{{ git_plan.resource_name }}"
+        exact_count: 1
+        filters:
+          tag:Name: "{{ git_plan.resource_name }}"
+          tag:WorkshopDeployment: "{{ workshop_git_deployment_id }}"
+          instance-state-name: [pending, running, stopping, stopped]
+        state: started
+        wait: true
+        cpu_credit_specification: standard
+        metadata_options:
+          http_tokens: required
+          http_endpoint: enabled
+        network:
+          assign_public_ip: true
+        volumes:
+          - device_name: /dev/xvda
+            ebs:
+              volume_size: "{{ workshop_git_volume_size }}"
+              volume_type: gp3
+              encrypted: true
+              delete_on_termination: true
+        tags: "{{ workshop_git_tags }}"
+        user_data: |
+          #!/bin/bash
+          set -euo pipefail
+          systemctl enable --now amazon-ssm-agent
+      register: workshop_git_instance
+      retries: 6
+      delay: 10
+      until: workshop_git_instance is succeeded
+
+    - name: Mark ownership of the Git DNS name
+      amazon.aws.route53:
+        hosted_zone_id: "{{ git_plan.zone_id }}"
+        record: "_workshop-owner.{{ git_plan.fqdn }}"
+        type: TXT
+        value: '{{ (workshop_git_deployment_id ~ "/" ~ git_plan.name) | to_json }}'
+        ttl: 60
+        state: present
+        overwrite: false
+
+    - name: Point the Git hostname to the instance
+      amazon.aws.route53:
+        hosted_zone_id: "{{ git_plan.zone_id }}"
+        record: "{{ git_plan.fqdn }}"
+        type: A
+        value: "{{ workshop_git_instance.instances[0].public_ip_address }}"
+        ttl: 60
+        state: present
+        overwrite: true
+        wait: true
+
+    - name: Configure Gitea and its student accounts over SSM
+      workshop_ssm_command:
+        access_key: "{{ git_plan.environment.access_key }}"
+        secret_key: "{{ git_plan.environment.secret_key }}"
+        session_token: "{{ git_plan.environment.session_token | default('') }}"
+        region: "{{ git_plan.environment.region }}"
+        instance_id: "{{ workshop_git_instance.instances[0].instance_id }}"
+        timeout: "{{ workshop_git_timeout }}"
+        script: "{{ lookup('ansible.builtin.template', 'configure.sh.j2') }}"
+      register: workshop_git_setup
+
+    - name: Check the public HTTPS endpoint
+      ansible.builtin.uri:
+        url: "{{ git_plan.url }}/api/healthz"
+        status_code: 200
+        validate_certs: true
+      register: workshop_git_https
+      retries: 30
+      delay: 10
+      until: workshop_git_https is succeeded
+
+    - name: Save server details without AWS credentials
+      ansible.builtin.set_fact:
+        workshop_git_servers: >-
+          {{ workshop_git_servers + [{'environment': git_plan.name, 'url': git_plan.url,
+             'region': git_plan.environment.region, 'account_id': git_plan.account_id,
+             'instance_id': workshop_git_instance.instances[0].instance_id,
+             'students': workshop_git_student_ids, 'new_users': workshop_git_setup.created_users}] }}
