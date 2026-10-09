@@ -14,6 +14,7 @@
         __workshop_git_tags:
           WorkshopDeployment: "{{ workshop_git_deployment_id }}"
           WorkshopEnvironment: "{{ __workshop_git_plan.name }}"
+          WorkshopGitFQDN: "{{ __workshop_git_plan.fqdn }}"
           ManagedBy: "{{ __workshop_git_managed_by }}"
 
     - name: environment | Create a dedicated VPC
@@ -129,25 +130,3 @@
         state: present
         overwrite: true
         wait: true
-
-    - name: environment | Add this server to the SSH inventory
-      ansible.builtin.add_host:
-        name: "{{ __workshop_git_plan.resource_name }}"
-        groups: workshop_git_servers
-        ansible_host: "{{ __workshop_git_instance.instances[0].public_ip_address }}"
-        ansible_user: ubuntu
-        ansible_connection: ssh
-        ansible_python_interpreter: /usr/bin/python3
-        ansible_ssh_private_key_file: "{{ workshop_git_ssh_private_key_file }}"
-        ansible_ssh_common_args: >-
-          -o StrictHostKeyChecking=accept-new -o IdentitiesOnly=yes
-          -o UserKnownHostsFile={{ (workshop_git_private_dir ~ '/known_hosts') | quote }}
-        workshop_git_server:
-          environment: "{{ __workshop_git_plan.name }}"
-          url: "{{ __workshop_git_plan.url }}"
-          fqdn: "{{ __workshop_git_plan.fqdn }}"
-          region: "{{ workshop_git_aws_account.region }}"
-          account_id: "{{ __workshop_git_plan.account_id }}"
-          instance_id: "{{ __workshop_git_instance.instances[0].instance_id }}"
-          ip_address: "{{ __workshop_git_instance.instances[0].public_ip_address }}"
-        workshop_git_controller: "{{ inventory_hostname }}"

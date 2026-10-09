@@ -74,6 +74,44 @@
           ansible.builtin.assert:
             that:
               - __workshop_git_passwords == {'alice':'Aa1!saved-password-long-enough'}
+
+        - name: Render an isolated EC2 inventory configuration
+          ansible.builtin.template:
+            src: "{{ playbook_dir }}/../roles/workshop_git/templates/workshop.aws_ec2.yml.j2"
+            dest: "{{ test_private.path }}/workshop.aws_ec2.yml"
+            mode: '0600'
+          vars:
+            __workshop_git_plan:
+              resource_name: ai-workshop-test-git
+              account_id: '123456789012'
+            __workshop_git_managed_by: ansible-workshop-git
+            workshop_git_deployment_id: ai-workshop
+            workshop_git_private_dir: "{{ test_private.path }}"
+            workshop_git_ssh_private_key_file: "{{ test_private.path }}/test-key"
+          no_log: true
+
+        - name: Read the rendered inventory configuration
+          ansible.builtin.slurp:
+            src: "{{ test_private.path }}/workshop.aws_ec2.yml"
+          register: test_inventory_content
+          no_log: true
+
+        - name: Decode the inventory source
+          ansible.builtin.set_fact:
+            test_inventory: "{{ test_inventory_content.content | b64decode | from_yaml }}"
+          no_log: true
+
+        - name: Require scoped EC2 discovery and the RHEL SSH account
+          ansible.builtin.assert:
+            that:
+              - test_inventory.plugin == 'amazon.aws.aws_ec2'
+              - test_inventory.filters['tag:Name'] == 'ai-workshop-test-git'
+              - test_inventory.filters['tag:WorkshopDeployment'] == 'ai-workshop'
+              - test_inventory.filters['tag:ManagedBy'] == 'ansible-workshop-git'
+              - test_inventory.filters['instance-state-name'] == 'running'
+              - test_inventory.hostnames == ['instance-id']
+              - test_inventory.compose.ansible_user == "'ec2-user'"
+              - test_inventory.strict and not test_inventory.cache
       always:
         - name: Delete isolated test state
           ansible.builtin.file:

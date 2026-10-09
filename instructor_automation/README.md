@@ -2,7 +2,7 @@
 
 The playbook deploys one Gitea instance in one AWS account. Students get a Git URL and local login. A team dictionary creates private organizations and permission groups, with one starter repository per organization.
 
-The example has four teams. Use as many teams as your class needs.
+The example has five teams, named `teams-1` through `teams-5`. Use as many teams as your class needs.
 
 ## Install
 
@@ -25,7 +25,7 @@ mkdir -p private && chmod 700 private
 cp environments.example.yml private/environment.yml
 ```
 
-The deployment uses [roles-ansible.gitea](https://github.com/roles-ansible/ansible_role_gitea) for installation and its `local_git_users` tasks for local accounts. AWS discovery, password storage, and Gitea organization management use Ansible modules and filters. The role has no embedded Python or custom modules.
+The playbook calls [roles-ansible.gitea](https://github.com/roles-ansible/ansible_role_gitea) directly for installation and calls its `local_git_users` tasks directly for local accounts. Both calls are in `site.yml`. AWS discovery, password storage, and Gitea organization management use Ansible modules and filters. The role has no embedded Python or custom modules.
 
 ## Inputs
 
@@ -38,9 +38,11 @@ workshop_git_aws_account:
   session_token: "{{ lookup('ansible.builtin.env', 'AWS_SESSION_TOKEN') }}"
 
 workshop_git_teams:
-  platform: [student01, student02]
-  application: [student03, student04]
-  networking: [student05]
+  teams-1: [student01]
+  teams-2: [student02]
+  teams-3: [student03]
+  teams-4: [student04]
+  teams-5: [student05]
 ```
 
 Each dictionary key becomes both an organization name and a Gitea permission group name. Values are lists of usernames. Student IDs must be unique across teams. Usernames and organization names must differ, including case. `Owners` is reserved for Gitea's built-in ownership group. Empty member lists are allowed; an empty team dictionary is rejected.
@@ -60,6 +62,19 @@ ansible-playbook site.yml -e @private/environment.yml --ask-vault-pass
 
 Omit `--ask-vault-pass` when the input file is not encrypted.
 
+## AWS dynamic inventory
+
+Ansible loads `inventory/localhost.ini` to start provisioning. The role then writes `inventory/workshop.aws_ec2.yml` and the playbook refreshes inventory. The `amazon.aws.aws_ec2` plugin discovers the running instance by its deployment, account name, ownership, and resource-name tags. It supplies the public IP, instance ID, Git hostname, and `ec2-user` SSH login. The playbook requires exactly the instance it provisioned before configuring Gitea.
+
+The generated inventory source contains AWS credentials. The role sets its mode to `0600`, restricts the inventory directory to `0700`, and Git ignores the generated file. It disables inventory caching. Discovery-only and check mode skip all server configuration, including when an existing inventory source already contains a host.
+
+```sh
+# Inspect the discovered hosts without printing host variables or credentials.
+ansible-inventory --graph
+```
+
+Existing Ubuntu deployments need a separate migration. This playbook stops before reusing an instance whose image is not an official RHEL 9 image. Use a new `workshop_git_deployment_id` and `workshop_git_dns_label` to create a separate RHEL deployment while preserving the old server and its data.
+
 ## Student permissions
 
 Students are regular local Gitea users. Their named group gets `write` permission on every repository in their own organization, and they can create repositories there. `workshop_git_team_permission` can be `read`, `write`, or `admin`. Organization repository admin permission does not grant site administrator access. A separate `instructor` account owns the organizations and has site administrator access.
@@ -76,7 +91,7 @@ Preserve the private directory. Existing instances require the original generate
 
 ## Infrastructure and HTTPS
 
-The default instance is an Ubuntu 24.04 `t3.medium` with a 30 GiB encrypted gp3 root volume and IMDSv2 required. The role creates a dedicated VPC, public subnet, internet gateway, route table, and security group. Instructor SSH access defaults to the controller's public IPv4 address with a `/32` rule. Set `workshop_git_ssh_cidr` to use another source network. Students use HTTPS; Git SSH access is disabled.
+The default instance is a RHEL 9 `t3.medium` with a 30 GiB encrypted gp3 root volume and IMDSv2 required. The role creates a dedicated VPC, public subnet, internet gateway, route table, and security group. Instructor SSH access defaults to the controller's public IPv4 address with a `/32` rule. Set `workshop_git_ssh_cidr` to use another source network. Students use HTTPS; Git SSH access is disabled.
 
 Gitea uses SQLite and its built-in ACME client to obtain a Let's Encrypt certificate. Public DNS must resolve to the instance. Ports 80 and 443 are public for ACME validation and HTTPS. Set `workshop_git_acme_email` for renewal notices. The playbook checks trusted HTTPS before configuring users and organizations.
 
@@ -92,11 +107,11 @@ ansible-playbook site.yml --syntax-check -e @environments.example.yml
 # Lint the instructor role.
 ansible-lint --offline site.yml roles/workshop_git tests
 # Check team inputs and saved password handling without AWS access.
-ansible-playbook tests/validate.yml
+ansible-playbook -i localhost, tests/validate.yml
 # Check organization membership and repository permissions on a deployed server.
-ansible-playbook tests/live.yml
+ansible-playbook -i localhost, tests/live.yml
 ```
 
-The live check creates a temporary regular user and repository, verifies access and writes, then deletes both. It leaves student passwords unchanged.
+To test another deployment, pass `-e test_access_file=/absolute/path/to/git-access.json`. The live check creates a temporary regular user and repository, verifies access and writes, then deletes both. It leaves student passwords unchanged.
 
 See the [role reference](roles/workshop_git/README.md) for all configuration variables.

@@ -66,3 +66,6 @@ instructor_automation/.venv/
 
 # Pinned third-party instructor roles installed from requirements.yml
 instructor_automation/external_roles/
+
+# Generated AWS inventory source contains account credentials.
+instructor_automation/inventory/workshop.aws_ec2.yml

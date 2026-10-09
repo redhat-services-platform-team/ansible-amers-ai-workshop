@@ -6,7 +6,7 @@
   tasks:
     - name: Load the private access sheet
       ansible.builtin.slurp:
-        src: "{{ playbook_dir }}/../private/git-access.json"
+        src: "{{ test_access_file | default(playbook_dir ~ '/../private/git-access.json') }}"
       register: access_sheet
       no_log: true
 

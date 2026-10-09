@@ -42,4 +42,4 @@ jobs:
       - name: Lint the role
         run: ansible-lint --offline site.yml roles/workshop_git tests
       - name: Test discovery and credential handling
-        run: ansible-playbook tests/validate.yml
+        run: ansible-playbook -i localhost, tests/validate.yml

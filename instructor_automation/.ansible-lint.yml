@@ -1,0 +1,6 @@
+---
+# Validate workshop code; the pinned upstream role is maintained in its own repository.
+exclude_paths:
+  - external_roles/
+  - private/
+  - inventory/workshop.aws_ec2.yml

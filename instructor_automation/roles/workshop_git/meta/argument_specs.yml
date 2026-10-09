@@ -17,7 +17,7 @@ argument_specs:
         default: git
       workshop_git_instance_type:
         type: str
-        description: An x86_64 EC2 instance type compatible with Ubuntu 24.04.
+        description: An x86_64 EC2 instance type compatible with RHEL 9.
         default: t3.medium
       workshop_git_volume_size:
         type: int

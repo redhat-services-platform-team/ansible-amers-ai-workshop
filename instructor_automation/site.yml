@@ -4,13 +4,84 @@
   gather_facts: false
   roles:
     - role: workshop_git
+  tasks:
+    - name: Discover the provisioned host through AWS dynamic inventory
+      ansible.builtin.meta: refresh_inventory
+      when: not ansible_check_mode and not (workshop_git_discover_only | bool)
+
+    - name: Require exactly the provisioned instance in dynamic inventory
+      ansible.builtin.assert:
+        that:
+          - groups['workshop_git_servers'] | default([]) | length == 1
+          - >-
+            hostvars[groups['workshop_git_servers'][0]].instance_id ==
+            __workshop_git_instance.instances[0].instance_id
+      when: not ansible_check_mode and not (workshop_git_discover_only | bool)
 
 - name: Configure Gitea and student accounts over SSH
   hosts: workshop_git_servers
   gather_facts: false
   any_errors_fatal: true
+  pre_tasks:
+    - name: Skip server configuration during discovery or check mode
+      ansible.builtin.meta: end_play
+      when: ansible_check_mode or (workshop_git_discover_only | default(false) | bool)
   tasks:
-    - name: Configure the SSH server
+    - name: Prepare the RHEL server and saved credentials
+      ansible.builtin.include_role:
+        name: workshop_git
+        tasks_from: prepare
+        public: true
+
+    - name: Install Gitea with the pinned upstream role
+      ansible.builtin.include_role:
+        name: roles-ansible.gitea
+        apply:
+          no_log: true
+      vars:
+        # Define optional fork defaults for the upstream role's vars lookup on Ansible 2.19+.
+        gitea_theme_default: gitea-auto
+        gitea_themes: gitea-auto,gitea-light,gitea-dark
+        gitea_gpg_local_key: ''
+        gitea_version: "{{ workshop_git_gitea_version }}"
+        gitea_fqdn: "{{ workshop_git_server.fqdn }}"
+        gitea_root_url: "{{ workshop_git_server.url }}/"
+        gitea_protocol: https
+        gitea_http_listen: 0.0.0.0
+        gitea_http_port: '443'
+        gitea_start_ssh: false
+        gitea_server_extra_config: 'DISABLE_SSH = true'
+        gitea_redirect_other_port: true
+        gitea_port_to_redirect: '80'
+        gitea_enable_acme: true
+        gitea_acme_accepttos: true
+        gitea_acme_email: "{{ workshop_git_acme_email }}"
+        gitea_acme_directory: /var/lib/gitea/custom/https
+        gitea_systemd_cap_net_bind_service: true
+        gitea_disable_registration: true
+        gitea_show_registration_button: false
+        gitea_require_signin: true
+        gitea_db_type: sqlite3
+        gitea_users: []
+
+    - name: Apply Gitea service changes before creating users
+      ansible.builtin.meta: flush_handlers
+
+    - name: Check HTTPS and prepare missing local accounts
+      ansible.builtin.include_role:
+        name: workshop_git
+        tasks_from: users
+
+    - name: Create local accounts with the Gitea role
+      ansible.builtin.include_role:
+        name: roles-ansible.gitea
+        tasks_from: local_git_users
+        apply:
+          no_log: true
+      vars:
+        gitea_users: "{{ __workshop_git_users | default([]) }}"
+
+    - name: Configure organization membership and permissions
       ansible.builtin.include_role:
         name: workshop_git
         tasks_from: configure

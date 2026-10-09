@@ -11,7 +11,7 @@ See [the instructor guide](../../README.md) for installation, credentials, examp
 | `workshop_git_discover_only` | `False` | Read AWS state and validate inputs without provisioning or writing files. |
 | `workshop_git_deployment_id` | `ai-workshop` | Stable identifier used in resource names and tags. |
 | `workshop_git_dns_label` | `git` | Default Git subdomain label in the selected hosted zone. |
-| `workshop_git_instance_type` | `t3.medium` | An x86_64 EC2 instance type compatible with Ubuntu 24.04. |
+| `workshop_git_instance_type` | `t3.medium` | An x86_64 EC2 instance type compatible with RHEL 9. |
 | `workshop_git_volume_size` | `30` | Encrypted gp3 root volume size in GiB, from 8 to 16384. |
 | `workshop_git_vpc_cidr` | `10.77.0.0/16` | IPv4 VPC network with a prefix length from 16 to 28. |
 | `workshop_git_subnet_cidr` | `10.77.1.0/24` | IPv4 subnet inside the VPC with a prefix length from 16 to 28. |
@@ -32,6 +32,8 @@ See [the instructor guide](../../README.md) for installation, credentials, examp
 
 ## Role entry points
 
-`main` validates inputs, reads saved passwords, discovers AWS state, and provisions the instance. `configure` installs Gitea over SSH, calls the upstream role's local-user tasks, and manages organization permissions through the Gitea API. `report` writes the instructor access sheet on the controller. The supplied `site.yml` runs these in order.
+`main` validates inputs, discovers AWS state, provisions RHEL 9, and writes the EC2 inventory source. `prepare` checks the RHEL server and saves credentials. `users` checks HTTPS and prepares missing local accounts. `configure` verifies users and manages organization permissions. `report` writes the access sheet.
+
+The supplied `site.yml` calls `roles-ansible.gitea` directly for installation and calls its `local_git_users` tasks directly for user creation. It refreshes `amazon.aws.aws_ec2` inventory between provisioning and server configuration.
 
 The role uses native Ansible modules, filters, and lookups. Upstream Gitea handlers manage the service. The role treats named organization memberships as authoritative and leaves organizations omitted from the dictionary untouched.

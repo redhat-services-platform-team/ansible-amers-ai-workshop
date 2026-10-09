@@ -57,3 +57,6 @@
 
     - name: Provision the single instance
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/environment.yml"
+
+    - name: Write the account-specific EC2 inventory source
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/inventory.yml"
