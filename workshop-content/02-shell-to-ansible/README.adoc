@@ -1,4 +1,4 @@
-= Module 2 lab assets: Python to Ansible
+= Lab 2 files: Python to Ansible
 
 Migrate a NetBox installer with fifty fictional maintainers and contradictory handover notes.
 Write your own first prompt and use Composer in Cursor or Luna in Codex for one port.

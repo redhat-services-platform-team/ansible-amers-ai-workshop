@@ -1,4 +1,4 @@
-= Lab 4 assets: Customer NetBox delivery project
+= Lab 4 files: Customer NetBox delivery project
 
 Work as a team to migrate the Lab 2 installer and deploy NetBox infrastructure in your AWS environment. Manually add demo hosts in NetBox and query them with Ansible's dynamic inventory plugin.
 Learner steps are in `documentation/modules/ROOT/pages/04-aws-lab-provisioning.adoc`.

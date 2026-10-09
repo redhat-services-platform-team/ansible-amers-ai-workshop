@@ -12,8 +12,8 @@ Demo hosts and team-specific NetBox tag:
 
 == Plan and collaboration
 
-* [ ] We agreed on customer scope, architecture, and acceptance checks.
-* [ ] We divided work and agreed on shared variables and file ownership.
+* [ ] We agreed on what to deliver and how to check it.
+* [ ] We divided the work and agreed on variable names and who edits each file.
 * [ ] We used Lab 3 findings to choose models and effort settings.
 * [ ] Teammates reviewed the generated changes and can explain the implementation.
 
@@ -31,6 +31,6 @@ Demo hosts and team-specific NetBox tag:
 == Handover
 
 * [ ] The customer demo explains the problem, automation, evidence, and remaining limitations.
-* [ ] Another teammate can follow the README to operate the deployment, add hosts in NetBox, and query the inventory.
+* [ ] A teammate can follow the README to operate the deployment, add hosts in NetBox, and query the inventory.
 * [ ] Source and sanitized evidence contain no credentials or private inventory exports.
 * [ ] Cleanup removes only team-owned resources, or retained resources have an owner and expiry.

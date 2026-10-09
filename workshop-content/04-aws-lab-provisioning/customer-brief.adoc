@@ -33,12 +33,12 @@ Document the manual host-entry steps so another operator can follow them.
 [cols="2,3",options="header"]
 |===
 | Customer request | Evidence to bring to the demo
-| Repeatable NetBox installation | Reviewed Ansible project, declared dependencies, AWS host details, and healthy application and services
+| Repeatable NetBox installation | Ansible source, dependency versions, AWS host details, and passing application and service checks
 | Safe reruns | A second deployment run, preserved credentials and release, and explanations for remaining changes
 | Manual host entry | Demo AWS hosts entered through the NetBox UI with interfaces, primary IPs, and a team tag
 | NetBox dynamic inventory | A filtered query using `netbox.netbox.nb_inventory` and a successful Ansible play against the selected AWS hosts
 | Dynamic host selection | A NetBox record change that changes inventory membership without editing a static list
-| Maintainable handover | README, architecture decisions, verification evidence, known limitations, recovery notes, and teardown instructions
+| Operating instructions | README, architecture decisions, verification evidence, known limitations, recovery notes, and teardown instructions
 |===
 
 Keep the demo small enough to understand and test.

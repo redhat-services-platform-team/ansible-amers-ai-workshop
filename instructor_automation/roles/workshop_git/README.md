@@ -1,6 +1,6 @@
 # workshop_git
 
-Deploy one AWS Gitea instance with local users, private organizations, and named permission groups. Supply one AWS account dictionary and a team dictionary whose keys name organizations and whose values list their students.
+Deploy one Gitea server on AWS with local users and private team organizations. Supply an AWS account dictionary and a team dictionary. Team names become organizations and permission groups; each team's value lists its student usernames.
 
 See [the instructor guide](../../README.md) for installation, credentials, examples, and rerun behavior.
 
@@ -16,13 +16,13 @@ See [the instructor guide](../../README.md) for installation, credentials, examp
 | `workshop_git_vpc_cidr` | `10.77.0.0/16` | IPv4 VPC network with a prefix length from 16 to 28. |
 | `workshop_git_subnet_cidr` | `10.77.1.0/24` | IPv4 subnet inside the VPC with a prefix length from 16 to 28. |
 | `workshop_git_must_change_password` | `True` | Require newly created users to change their password at first login. |
-| `workshop_git_private_dir` | `{{ playbook_dir }}/private` | Dedicated controller directory whose permissions the role manages as 0700. |
+| `workshop_git_private_dir` | `{{ playbook_dir }}/private` | Controller directory for generated credentials and keys, with mode 0700. |
 | `workshop_git_password_file` | `{{ workshop_git_private_dir }}/student-passwords.json` | Controller file that retains initial student passwords with mode 0600. |
-| `workshop_git_output_file` | `{{ workshop_git_private_dir }}/git-access.json` | Controller access sheet containing server details and initial passwords. |
+| `workshop_git_output_file` | `{{ workshop_git_private_dir }}/git-access.json` | Controller access sheet with server URLs and initial passwords. |
 | `workshop_git_timeout` | `1200` | SSH connection timeout in seconds. |
 | `workshop_git_gitea_version` | `28.1.0` | Pinned Gitea binary release installed by the upstream role. |
 | `workshop_git_ssh_private_key_file` | `{{ workshop_git_private_dir }}/{{ workshop_git_deployment_id }}_ed25519` | Generated instructor SSH key on the controller. Preserve it across reruns. |
-| `workshop_git_ssh_cidr` | `` | SSH source network. Empty discovers the instructor public IPv4 address and uses its /32. |
+| `workshop_git_ssh_cidr` | `` | SSH source network. Leave empty to discover the instructor's public IPv4 address and allow its /32. |
 | `workshop_git_acme_email` | `` | Optional contact address for Let's Encrypt renewal notices. |
 | `workshop_git_aws_account` | `Required` | Single AWS account and region for the Gitea instance. |
 | `workshop_git_teams` | `Required` | Organization and permission group names mapped to lists of student usernames. Any nonempty number of teams is supported. |
@@ -32,8 +32,14 @@ See [the instructor guide](../../README.md) for installation, credentials, examp
 
 ## Role entry points
 
-`main` validates inputs, discovers AWS state, provisions RHEL 9, and writes the EC2 inventory source. `prepare` checks the RHEL server and saves credentials. `users` checks HTTPS and prepares missing local accounts. `configure` verifies users and manages organization permissions. `report` writes the access sheet.
+| Entry point | What it does |
+| --- | --- |
+| `main` | Validate inputs, discover AWS resources, provision RHEL 9, and write the EC2 inventory. |
+| `prepare` | Check the RHEL server and save credentials. |
+| `users` | Check HTTPS and prepare missing local accounts. |
+| `configure` | Verify users and set organization permissions. |
+| `report` | Write the access sheet. |
 
 The supplied `site.yml` calls `roles-ansible.gitea` directly for installation and calls its `local_git_users` tasks directly for user creation. It refreshes `amazon.aws.aws_ec2` inventory between provisioning and server configuration.
 
-The role uses native Ansible modules, filters, and lookups. Upstream Gitea handlers manage the service. The role treats named organization memberships as authoritative and leaves organizations omitted from the dictionary untouched.
+The role uses native Ansible modules, filters, and lookups. Upstream Gitea handlers manage the service. On reruns, each named organization's membership must match its roster. The role leaves organizations outside the dictionary unchanged.

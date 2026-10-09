@@ -3,8 +3,8 @@
 Use the Lab 2 row for your single port with Composer or Luna and your own prompt.
 For Lab 3, keep `prompt.md`, the installer, `.env.example`, and the migration checklist constant.
 Record exact model versions and the effort labels shown in your client. Use `not exposed` for unavailable controls.
-Record which installer behaviors the first output implements and what corrections add.
-Time generation and static review. Deployments are outside these comparison runs.
+Record which installer behaviors the first output implements. Note which behaviors your corrections add.
+Time generation and code review. Do not include deployment time in the comparison.
 
 Tool and version:
 
@@ -18,7 +18,7 @@ Report scope, including whether usage is individual, team, or account-wide:
 
 For each run, record the check times, usage before and after, and allowance reset times:
 
-Included usage, credits consumed, and any reported cost with currency. Keep on-demand charges separate:
+Included usage, credits consumed, and reported cost with currency. Record on-demand charges separately:
 
 Costs attributable to individual runs, or the reason they are unavailable:
 

@@ -1,7 +1,7 @@
 = Lab: Comparing models and effort
 
 [abstract]
-Repeat the NetBox migration with fixed inputs. Try different models and reasoning effort levels, then compare the output, review work, time, and reported usage.
+Repeat the NetBox migration with the same source files and prompt. Compare models and reasoning effort levels. Record the output, corrections, elapsed time, and reported usage.
 
 == Learning objectives
 
@@ -23,7 +23,7 @@ The shared inputs are under `workshop-content/02-shell-to-ansible/`:
 
 Lab 2 started with your own prompt. This lab uses the supplied `prompt.md` unchanged so the initial request stays the same across runs.
 Only the output directory changes.
-Keep prior generated projects and conversations out of each run's context.
+Do not include earlier generated projects or conversations in a new run.
 Use `workshop-content/03-managing-ai-costs/lab-scorecard.adoc` or your own notebook.
 
 Generate and review locally during the comparison. Do not run the installer or deploy the generated projects during these runs.
@@ -111,7 +111,7 @@ ansible-playbook -i inventory.ini.example --syntax-check site.yml
 
 Record the errors and any fixes. If the project cannot reach syntax validation, record why.
 
-== Step 4: Compare evidence
+== Step 4: Compare the results
 
 Use the same migration checklist for each output.
 Check saved secrets and release state, database setup, service handlers, TLS behavior, and verification tasks.
@@ -155,7 +155,7 @@ Other activity and allowance resets can affect the difference between readings.
 If the report cannot isolate a run or show its cost, record `unavailable` and explain why.
 Elapsed time and turn counts cannot tell you what a run cost.
 
-You may repeat a run to see whether the same settings produce similar results.
+Repeat a run if you want to check whether the same settings produce similar results.
 Record repeats separately so you can compare how much the results vary.
 
 == Step 5: Decide what you would use next

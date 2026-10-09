@@ -1,6 +1,6 @@
 # Instructor AWS Git environment
 
-The playbook deploys one Gitea instance in one AWS account. Students get a Git URL and local login. A team dictionary creates private organizations and permission groups, with one starter repository per organization.
+Deploy one Gitea server in one AWS account. Give each student a Git URL and local login. The playbook creates a private organization, permission group, and starter repository for each team.
 
 The example has five teams: `comet`, `nebula`, `orbit`, `pulsar`, and `quasar`. Use as many teams as your class needs.
 
@@ -25,7 +25,7 @@ mkdir -p private && chmod 700 private
 cp environments.example.yml private/environment.yml
 ```
 
-The playbook calls [roles-ansible.gitea](https://github.com/roles-ansible/ansible_role_gitea) directly for installation and calls its `local_git_users` tasks directly for local accounts. Both calls are in `site.yml`. AWS discovery, password storage, and Gitea organization management use Ansible modules and filters. The role has no embedded Python or custom modules.
+`site.yml` calls [roles-ansible.gitea](https://github.com/roles-ansible/ansible_role_gitea) to install Gitea and its `local_git_users` tasks to create local accounts. The workshop role uses Ansible modules and filters to discover AWS resources, save passwords, and manage organizations.
 
 ## Inputs
 
@@ -44,11 +44,15 @@ workshop_git_teams:
   quasar: [student05]
 ```
 
-Each dictionary key becomes both an organization name and a Gitea permission group name. Values are lists of usernames. Student IDs must be unique across teams. Usernames and organization names must differ, including case. `Owners` is reserved for Gitea's built-in ownership group. Empty member lists are allowed; an empty team dictionary is rejected.
+Each team name becomes an organization and permission group. Its value lists the student usernames.
 
-The role discovers public Route 53 zones and selects the only public zone. If several exist, add `hosted_zone_id` or `hosted_zone_name` to the account dictionary. The Git hostname defaults to `git.<zone>`. `workshop_git_dns_label` changes the prefix. A DNS ownership record prevents this deployment from taking over an existing hostname.
+Use each student ID in only one team. Usernames and organization names must differ even when compared without case. Gitea reserves `Owners` for its ownership group. A team can have no members, but the dictionary must contain at least one team.
 
-Export your AWS credentials before running, or use Ansible Vault for inputs containing keys. An access key and secret key are sufficient for this setup. A session token is only needed for temporary AWS credentials. The account needs permission to manage EC2 networking, instances, key pairs, and Route 53 records.
+The role discovers the account's public Route 53 zone. The server hostname is `git.<zone>` by default. Set `workshop_git_dns_label` to change `git` to another prefix. If the account has multiple public zones, select one with `hosted_zone_id` or `hosted_zone_name` in the account dictionary.
+
+The role checks a DNS ownership record before using an existing hostname.
+
+Export the access key and secret key before running, or store them in an Ansible Vault-encrypted input file. Temporary AWS credentials also require `session_token`. The account needs permission to manage EC2 networking, instances, key pairs, and Route 53 records.
 
 ```sh
 # Encrypt inputs if they contain credentials.
@@ -63,9 +67,11 @@ Omit `--ask-vault-pass` when the input file is not encrypted.
 
 ## AWS dynamic inventory
 
-Ansible loads `inventory/localhost.ini` to start provisioning. The role then writes `inventory/workshop.aws_ec2.yml` and the playbook refreshes inventory. The `amazon.aws.aws_ec2` plugin discovers the running instance by its deployment, account name, ownership, and resource-name tags. It supplies the public IP, instance ID, Git hostname, and `ec2-user` SSH login. The playbook requires exactly the instance it provisioned before configuring Gitea.
+Ansible starts with `inventory/localhost.ini`. After provisioning, the role writes `inventory/workshop.aws_ec2.yml` and the playbook refreshes inventory.
 
-The generated inventory source contains AWS credentials. The role sets its mode to `0600`, restricts the inventory directory to `0700`, and Git ignores the generated file. It disables inventory caching. Discovery-only and check mode skip all server configuration, including when an existing inventory source already contains a host.
+The `amazon.aws.aws_ec2` plugin finds the instance by its deployment, account name, ownership, and resource-name tags. It provides the public IP, instance ID, Git hostname, and `ec2-user` SSH login. The playbook checks that inventory found exactly the provisioned instance before configuring Gitea.
+
+The generated inventory contains AWS credentials. The role sets the file mode to `0600` and directory mode to `0700`. Git ignores the file, and inventory caching is disabled. Discovery-only and check mode skip server configuration even if inventory already contains a host.
 
 ```sh
 # Inspect the discovered hosts without printing host variables or credentials.
@@ -76,21 +82,29 @@ Existing Ubuntu deployments need a separate migration. This playbook stops befor
 
 ## Student permissions
 
-Students are regular local Gitea users. Their named group gets `write` permission on every repository in their own organization, and they can create repositories there. `workshop_git_team_permission` can be `read`, `write`, or `admin`. Organization repository admin permission does not grant site administrator access. A separate `instructor` account owns the organizations and has site administrator access.
+Students are local Gitea users. Each team group has `write` access to its organization's repositories, and students can create repositories there. Set `workshop_git_team_permission` to `read`, `write`, or `admin`. Repository admin access does not make a student a site administrator. The separate `instructor` account owns the organizations and administers the site.
 
-The role manages membership of every organization named in the dictionary. Reruns remove members outside that organization's roster, keep students out of the Owners group, and revoke global administrator privileges from requested students. Membership changes move students between teams without resetting passwords. Organizations removed from the dictionary and user accounts removed from all teams remain on the server; remove or archive them separately. Do not use existing organizations whose memberships you want to preserve.
+On reruns, the role makes each named organization's membership match its roster. It removes extra members, keeps students out of Owners, and revokes site administrator access from students in the input. Moving a student between teams does not reset their password.
+
+Removing a team or student from the input does not delete the organization or account. Remove or archive those separately. Use organizations whose memberships this automation can manage.
 
 ## Access sheet and reruns
 
 `private/git-access.json` contains the server URL, organization and repository URLs, team rosters, initial passwords, and the instructor username. Give each student their own credentials and organization's URL. Keep the instructor credentials private.
 
-The playbook generates random passwords and saves them in `private/student-passwords.json` before creating users. Students must change their password at first login by default. The instructor account does not require that change so the playbook can authenticate API requests on reruns. If you change the instructor password, update its saved value too. Initial student passwords in the sheet no longer work after students change them.
+The playbook saves generated passwords in `private/student-passwords.json` before creating users. By default, students must change their password at first login. The access sheet keeps the initial password; it stops working once the student changes it.
 
-Preserve the private directory. Existing instances require the original generated SSH key. Existing requested users require saved passwords; the role stops if that state is missing. Reruns do not reset existing passwords. Password tasks suppress output, and credential files have mode `0600` inside a `0700` directory. The directory is ignored by Git.
+The instructor account has no required first-login password change because the playbook uses it for API requests on reruns. If you change that password, update its saved value too.
+
+Keep the private directory across runs. The playbook needs the original SSH key and saved passwords for existing accounts. It stops if required password state is missing and does not reset existing passwords.
+
+Password tasks suppress output. Credential files use mode `0600` inside a `0700` directory that Git ignores.
 
 ## Infrastructure and HTTPS
 
-The default instance is a RHEL 9 `t3.medium` with a 30 GiB encrypted gp3 root volume and IMDSv2 required. The role creates a dedicated VPC, public subnet, internet gateway, route table, and security group. Instructor SSH access defaults to the controller's public IPv4 address with a `/32` rule. Set `workshop_git_ssh_cidr` to use another source network. Students use HTTPS; Git SSH access is disabled.
+The default server is a RHEL 9 `t3.medium` with a 30 GiB encrypted gp3 root volume. It requires IMDSv2. The role creates a VPC, public subnet, internet gateway, route table, and security group.
+
+SSH allows the controller's public IPv4 address as a `/32` by default. Set `workshop_git_ssh_cidr` to allow another source network. Students use HTTPS. Git over SSH is disabled.
 
 Gitea uses SQLite and its built-in ACME client to obtain a Let's Encrypt certificate. Public DNS must resolve to the instance. Ports 80 and 443 are public for ACME validation and HTTPS. Set `workshop_git_acme_email` for renewal notices. The playbook checks trusted HTTPS before configuring users and organizations.
 
@@ -111,6 +125,6 @@ ansible-playbook -i localhost, tests/validate.yml
 ansible-playbook -i localhost, tests/live.yml
 ```
 
-To test another deployment, pass `-e test_access_file=/absolute/path/to/git-access.json`. The live check creates a temporary regular user and repository, verifies access and writes, then deletes both. It leaves student passwords unchanged.
+To test another deployment, pass `-e test_access_file=/absolute/path/to/git-access.json`. The live check creates a temporary user and repository, checks access and writes, then deletes both. It does not change student passwords.
 
 See the [role reference](roles/workshop_git/README.md) for all configuration variables.

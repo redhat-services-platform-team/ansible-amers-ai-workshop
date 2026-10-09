@@ -1,7 +1,6 @@
 = Customer demo checklist
 
-Use this to prepare the demonstration and record the customer's questions.
-Link to test results in the team project. Keep credentials and private output out of this checklist.
+Use this checklist to prepare the demo. Record the customer's questions and link to test results in your project. Remove credentials and private output before sharing it.
 
 [cols="2,3,2",options="header"]
 |===
