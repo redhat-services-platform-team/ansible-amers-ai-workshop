@@ -366,45 +366,64 @@ Check that the code implements the behavior described in its README.</p>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="_check_ai_costs_in_harness"><a class="anchor" href="#_check_ai_costs_in_harness"></a>Check AI costs in Harness</h3>
+<h3 id="_check_usage_in_codex_or_cursor"><a class="anchor" href="#_check_usage_in_codex_or_cursor"></a>Check usage in Codex or Cursor</h3>
 <div class="paragraph">
-<p>Use the Harness link and sign-in method supplied for the workshop.
-Your instructor must have connected the AI billing source and granted access to its cost view.</p>
+<p>Check your tool&#8217;s usage before and after each comparison run.
+Record the time and the values shown in your scorecard.</p>
 </div>
+<div class="sect3">
+<h4 id="_codex"><a class="anchor" href="#_codex"></a>Codex</h4>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Open <strong>Cloud &amp; AI Cost Management</strong> and select the workshop view in <strong>Cost Explorer</strong>. In the classic interface, select the workshop <strong>Perspective</strong>.</p>
+<p>Open the <a href="https://chatgpt.com/codex/settings/usage">Codex usage dashboard</a> with the account you use for the workshop.</p>
 </li>
 <li>
-<p>Set the date range to cover your runs. Record the report&#8217;s time zone and latest data timestamp.</p>
+<p>Record your remaining allowance, reset times, and any credit usage shown before the run.</p>
 </li>
 <li>
-<p>Apply the assigned account, project, or team filters that the view exposes. Confirm the report covers your usage.</p>
+<p>In an active Codex CLI session, enter <code>/status</code> to check remaining limits. This is an interactive command, not a shell command.</p>
 </li>
 <li>
-<p>Group AI spend by <strong>Model</strong> or <strong>Provider</strong>. Record the displayed cost, currency, and filters in your scorecard.</p>
-</li>
-<li>
-<p>Use session or request details only if the workshop has trace attribution. Otherwise, record costs for the report&#8217;s available period and scope.</p>
+<p>After the run, check the dashboard again and record the change.</p>
 </li>
 </ol>
 </div>
 <div class="paragraph">
-<p>Provider billing totals do not identify individual runs or reasoning effort settings.
-If several runs share a model or account, do not assign the whole total to one run.
-Record <code>unavailable</code> when the report cannot isolate a run or has not ingested its usage yet.
-Recheck later and record when you checked.
-See <a href="https://developer.harness.io/docs/cloud-cost-management/cost-explorer/">Harness Cost Explorer</a> and <a href="https://developer.harness.io/docs/cloud-cost-management/ai-cost-management/overview/">AI cost attribution</a>.</p>
+<p>Remaining allowance is not a dollar amount.
+If you use an API key, check the <a href="https://platform.openai.com/usage">API usage dashboard</a> for the project that owns the key instead.
+See <a href="https://developers.openai.com/codex/pricing/">Codex usage and pricing</a> for details about your plan.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_cursor"><a class="anchor" href="#_cursor"></a>Cursor</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open <a href="https://cursor.com/dashboard/spending">Spending</a> in the Cursor dashboard with your workshop account.</p>
+</li>
+<li>
+<p>Record included usage, remaining allowance, any on-demand charges, and the reset date before the run.</p>
+</li>
+<li>
+<p>After the run, refresh the page and record the change. Use request details if the dashboard exposes them.</p>
+</li>
+</ol>
 </div>
 <div class="paragraph">
-<p>If your tool&#8217;s usage is not connected to Harness, use its account report.
-Cursor users can check <a href="https://cursor.com/dashboard/spending">Spending</a>. Codex users can use the usage view or their organization&#8217;s report.
+<p>Keep included usage separate from on-demand charges in your notes.
+See <a href="https://cursor.com/help/models-and-usage/usage-limits">Cursor usage and limits</a> for details.</p>
+</div>
+<div class="paragraph">
+<p>For either tool, note whether the report covers your account or a shared team.
+Other activity and allowance resets can affect the difference between readings.
+If the report cannot isolate a run or show its cost, record <code>unavailable</code> and explain why.
 Elapsed time and turn counts cannot tell you what a run cost.</p>
 </div>
 <div class="paragraph">
 <p>You may repeat a run to see whether the same settings produce similar results.
 Record repeats separately so you can compare how much the results vary.</p>
+</div>
 </div>
 </div>
 </div>
