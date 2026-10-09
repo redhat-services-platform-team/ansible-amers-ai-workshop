@@ -1,5 +1,5 @@
 ---
-- name: Provision participant Git servers
+- name: Provision the participant Git server
   hosts: local
   gather_facts: false
   roles:
@@ -19,7 +19,7 @@
   hosts: local
   gather_facts: false
   tasks:
-    - name: Report successful Git servers
+    - name: Report the verified Git server
       ansible.builtin.include_role:
         name: workshop_git
         tasks_from: report

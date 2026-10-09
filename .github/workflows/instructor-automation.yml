@@ -40,6 +40,6 @@ jobs:
       - name: Check playbook syntax
         run: ansible-playbook site.yml --syntax-check -e @environments.example.yml
       - name: Lint the role
-        run: ansible-lint --offline site.yml roles/workshop_git
+        run: ansible-lint --offline site.yml roles/workshop_git tests
       - name: Test discovery and credential handling
-        run: python -m unittest discover -s tests -v
+        run: ansible-playbook tests/validate.yml

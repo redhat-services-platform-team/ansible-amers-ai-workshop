@@ -1,0 +1,158 @@
+---
+- name: team | Read the organization
+  ansible.builtin.uri:
+    url: "{{ workshop_git_server.url }}/api/v1/orgs/{{ __workshop_git_team.name }}"
+    status_code: [200, 404]
+  register: __workshop_git_org
+
+- name: team | Create a private organization
+  ansible.builtin.uri:
+    url: "{{ workshop_git_server.url }}/api/v1/orgs"
+    method: POST
+    status_code: 201
+    body:
+      username: "{{ __workshop_git_team.name }}"
+      visibility: private
+      repo_admin_change_team_access: false
+  when: __workshop_git_org.status == 404
+  changed_when: true
+
+- name: team | Keep the organization private
+  ansible.builtin.uri:
+    url: "{{ workshop_git_server.url }}/api/v1/orgs/{{ __workshop_git_team.name }}"
+    method: PATCH
+    body:
+      visibility: private
+      repo_admin_change_team_access: false
+  when: >-
+    __workshop_git_org.status == 200 and
+    (__workshop_git_org.json.visibility != 'private' or __workshop_git_org.json.repo_admin_change_team_access)
+  changed_when: true
+
+- name: team | Read organization permission groups
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/api_list.yml"
+  vars:
+    __workshop_git_list_path: "orgs/{{ __workshop_git_team.name }}/teams"
+
+- name: team | Find the named group and Owners group
+  ansible.builtin.set_fact:
+    __workshop_git_group_matches: "{{ __workshop_git_api_items | selectattr('name', 'equalto', __workshop_git_team.name) | list }}"
+    __workshop_git_owners: "{{ (__workshop_git_api_items | selectattr('name', 'equalto', 'Owners') | first).id }}"
+    __workshop_git_group_settings:
+      name: "{{ __workshop_git_team.name }}"
+      permission: "{{ workshop_git_team_permission }}"
+      includes_all_repositories: true
+      can_create_org_repo: "{{ workshop_git_team_permission != 'read' }}"
+      units_map:
+        repo.code: "{{ workshop_git_team_permission }}"
+        repo.issues: "{{ workshop_git_team_permission }}"
+        repo.pulls: "{{ workshop_git_team_permission }}"
+        repo.wiki: "{{ workshop_git_team_permission }}"
+        repo.releases: "{{ workshop_git_team_permission }}"
+        repo.projects: "{{ workshop_git_team_permission }}"
+        repo.actions: "{{ workshop_git_team_permission }}"
+        repo.packages: "{{ workshop_git_team_permission }}"
+
+- name: team | Create the named permission group
+  ansible.builtin.uri:
+    url: "{{ workshop_git_server.url }}/api/v1/orgs/{{ __workshop_git_team.name }}/teams"
+    method: POST
+    status_code: 201
+    body: "{{ __workshop_git_group_settings }}"
+  when: __workshop_git_group_matches | length == 0
+  register: __workshop_git_created_group
+  changed_when: true
+
+- name: team | Select the permission group
+  ansible.builtin.set_fact:
+    __workshop_git_group: >-
+      {{ __workshop_git_group_matches[0] if __workshop_git_group_matches | length > 0
+      else __workshop_git_created_group.json }}
+
+# Gitea reports read/write groups as permission=none and stores access in units_map.
+- name: team | Update repository permissions when they differ
+  ansible.builtin.uri:
+    url: "{{ workshop_git_server.url }}/api/v1/teams/{{ __workshop_git_group.id }}"
+    method: PATCH
+    body: "{{ __workshop_git_group_settings }}"
+  when: >-
+    __workshop_git_group.permission != ('admin' if workshop_git_team_permission == 'admin' else 'none') or
+    not __workshop_git_group.includes_all_repositories or
+    __workshop_git_group.can_create_org_repo != (workshop_git_team_permission != 'read') or
+    (workshop_git_team_permission != 'admin' and __workshop_git_group.units_map != __workshop_git_group_settings.units_map)
+  changed_when: true
+
+- name: team | Read organization members
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/api_list.yml"
+  vars:
+    __workshop_git_list_path: "orgs/{{ __workshop_git_team.name }}/members"
+
+- name: team | Remove members outside this team's roster
+  ansible.builtin.uri:
+    url: "{{ workshop_git_server.url }}/api/v1/orgs/{{ __workshop_git_team.name }}/members/{{ __workshop_git_member }}"
+    method: DELETE
+    status_code: 204
+  loop: >-
+    {{ __workshop_git_api_items | map(attribute='login') | map('lower')
+    | difference((__workshop_git_team.members + [workshop_git_admin_user]) | map('lower') | list) }}
+  loop_control:
+    loop_var: __workshop_git_member
+  changed_when: true
+
+- name: team | Read Owners group members
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/api_list.yml"
+  vars:
+    __workshop_git_list_path: "teams/{{ __workshop_git_owners }}/members"
+
+- name: team | Reserve organization ownership for the instructor
+  ansible.builtin.uri:
+    url: "{{ workshop_git_server.url }}/api/v1/teams/{{ __workshop_git_owners }}/members/{{ __workshop_git_member }}"
+    method: DELETE
+    status_code: 204
+  loop: "{{ __workshop_git_api_items | map(attribute='login') | map('lower') | difference([workshop_git_admin_user | lower]) }}"
+  loop_control:
+    loop_var: __workshop_git_member
+  changed_when: true
+
+- name: team | Read named group members
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/api_list.yml"
+  vars:
+    __workshop_git_list_path: "teams/{{ __workshop_git_group.id }}/members"
+
+- name: team | Add students to their permission group
+  ansible.builtin.uri:
+    url: "{{ workshop_git_server.url }}/api/v1/teams/{{ __workshop_git_group.id }}/members/{{ __workshop_git_member }}"
+    method: PUT
+    status_code: 204
+  loop: >-
+    {{ __workshop_git_team.members | map('lower') | difference(__workshop_git_api_items | map(attribute='login') | map('lower') | list) }}
+  loop_control:
+    loop_var: __workshop_git_member
+  changed_when: true
+
+- name: team | Read the starter repository
+  ansible.builtin.uri:
+    url: "{{ workshop_git_server.url }}/api/v1/repos/{{ __workshop_git_team.name }}/{{ workshop_git_repository_name }}"
+    status_code: [200, 404]
+  register: __workshop_git_repository
+
+- name: team | Create the private starter repository
+  ansible.builtin.uri:
+    url: "{{ workshop_git_server.url }}/api/v1/orgs/{{ __workshop_git_team.name }}/repos"
+    method: POST
+    status_code: 201
+    body:
+      name: "{{ workshop_git_repository_name }}"
+      private: true
+      auto_init: true
+  when: __workshop_git_repository.status == 404
+  changed_when: true
+
+- name: team | Keep the starter repository private
+  ansible.builtin.uri:
+    url: "{{ workshop_git_server.url }}/api/v1/repos/{{ __workshop_git_team.name }}/{{ workshop_git_repository_name }}"
+    method: PATCH
+    body:
+      private: true
+  when: __workshop_git_repository.status == 200 and not __workshop_git_repository.json.private
+  changed_when: true

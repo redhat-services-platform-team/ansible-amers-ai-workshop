@@ -1,66 +1,18 @@
 ---
 - name: Validate deployment inputs
-  ansible.builtin.assert:
-    that:
-      - workshop_git_aws_environments is sequence and workshop_git_aws_environments is not string
-      - workshop_git_aws_environments | length > 0
-      - workshop_git_student_ids is sequence and workshop_git_student_ids is not string
-      - workshop_git_student_ids | length > 0
-      - workshop_git_student_ids | select('string') | list | length == workshop_git_student_ids | length
-      - workshop_git_aws_environments | map(attribute='name') | unique | length == workshop_git_aws_environments | length
-      - workshop_git_deployment_id is match('^[a-z][a-z0-9-]{0,23}$')
-      - workshop_git_dns_label is match('^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$')
-      - workshop_git_volume_size | int >= 8 and workshop_git_volume_size | int <= 16384
-      - workshop_git_timeout | int > 0
-      - workshop_git_instance_type is match('^[a-z][a-z0-9]*[.][a-z0-9]+$')
-      - workshop_git_gitea_version is match('^[0-9]+[.][0-9]+[.][0-9]+$')
-      - workshop_git_ssh_private_key_file | length > 0
-      - workshop_git_password_file != workshop_git_output_file
-      - workshop_git_private_dir | length > 0
-      - workshop_git_password_file | length > 0
-      - workshop_git_output_file | length > 0
-    fail_msg: Supply named AWS environment dictionaries and a nonempty list of student IDs.
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate.yml"
 
-- name: Validate each AWS environment
-  ansible.builtin.assert:
-    that:
-      - __workshop_git_git_env is mapping
-      - __workshop_git_git_env.name is match('^[a-z][a-z0-9-]{0,23}$')
-      - __workshop_git_git_env.region is match('^[a-z]{2}(?:-[a-z]+)+-[0-9]+$')
-      - __workshop_git_git_env.access_key | length > 0
-      - __workshop_git_git_env.secret_key | length > 0
-      - __workshop_git_git_env.dns_label | default(workshop_git_dns_label) is match('^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$')
-  loop: "{{ workshop_git_aws_environments }}"
-  loop_control:
-    loop_var: __workshop_git_git_env
-    label: "{{ __workshop_git_git_env.name | default('unnamed') }}"
-  no_log: true
+- name: Read saved passwords without generating credentials
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/password_state.yml"
 
-- name: Validate student IDs without writing password state
-  workshop_git_passwords:
-    path: "{{ workshop_git_password_file }}"
-    students: "{{ workshop_git_student_ids }}"
-  check_mode: true
-  changed_when: false
-  no_log: true
-
-- name: Start a fresh discovery plan
-  ansible.builtin.set_fact:
-    __workshop_git_plan: []
-    __workshop_git_servers: []
-
-- name: Discover every environment before provisioning
+- name: Discover the single AWS deployment
   ansible.builtin.include_tasks: "{{ role_path }}/tasks/discover.yml"
-  loop: "{{ workshop_git_aws_environments }}"
-  loop_control:
-    loop_var: __workshop_git_git_env
-    label: "{{ __workshop_git_git_env.name }}"
 
-- name: Show discovered server names
+- name: Show the discovered Git URL
   ansible.builtin.debug:
-    msg: "{{ __workshop_git_plan | map(attribute='url') | list }}"
+    msg: "{{ __workshop_git_plan.url }}"
 
-- name: Provision Git servers
+- name: Provision the Git server
   when: not (workshop_git_discover_only | bool) and not ansible_check_mode
   block:
     - name: Restrict the dedicated private directory
@@ -74,11 +26,11 @@
         path: "{{ workshop_git_ssh_private_key_file }}"
       register: __workshop_git_key_state
 
-    - name: Refuse to replace a lost key for existing instances
+    - name: Refuse to replace a lost key for the existing instance
       ansible.builtin.assert:
         that:
-          - __workshop_git_key_state.stat.exists or __workshop_git_plan | map(attribute='instance_ids') | flatten | length == 0
-        fail_msg: Restore the original instructor SSH key before configuring existing instances.
+          - __workshop_git_key_state.stat.exists or __workshop_git_existing_instances.instances | length == 0
+        fail_msg: Restore the original instructor SSH key before configuring an existing instance.
 
     - name: Generate or reuse the instructor SSH key
       community.crypto.openssh_keypair:
@@ -103,9 +55,5 @@
           {{ workshop_git_ssh_cidr if workshop_git_ssh_cidr | length > 0
              else (__workshop_git_public_ip.content | trim) ~ '/32' }}
 
-    - name: Provision and configure each environment
+    - name: Provision the single instance
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/environment.yml"
-      loop: "{{ __workshop_git_plan }}"
-      loop_control:
-        loop_var: __workshop_git_git_plan
-        label: "{{ __workshop_git_git_plan.name }}"

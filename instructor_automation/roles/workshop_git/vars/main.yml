@@ -1,2 +1,30 @@
 ---
 __workshop_git_managed_by: ansible-workshop-git
+__workshop_git_reserved_users:
+  - api
+  - metrics
+  - v2
+  - assets
+  - attachments
+  - avatar
+  - avatars
+  - repo-avatars
+  - captcha
+  - login
+  - org
+  - repo
+  - user
+  - explore
+  - issues
+  - pulls
+  - milestones
+  - notifications
+  - favicon.ico
+  - manifest.json
+  - robots.txt
+  - sitemap.xml
+  - ssh_info
+  - swagger.v1.json
+  - openapi3.v1.json
+  - ghost
+  - gitea-actions

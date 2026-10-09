@@ -3,7 +3,7 @@ galaxy_info:
   role_name: workshop_git
   namespace: redhat_services_platform_team
   author: Red Hat Services Platform Team
-  description: Deploy Gitea workshop servers on AWS and create student accounts.
+  description: Deploy one AWS Gitea server with student organizations.
   license: Proprietary
   min_ansible_version: '2.19'
   platforms:

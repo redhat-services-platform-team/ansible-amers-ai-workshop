@@ -1,0 +1,81 @@
+---
+- name: Test team inputs and saved credential handling without AWS
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    workshop_git_aws_account:
+      name: test
+      region: us-east-2
+      access_key: test-access
+      secret_key: test-secret
+    workshop_git_teams:
+      platform: [Alice, Bob]
+      application: [Carol]
+      network: []
+      operations: [Dave]
+      database: [Eve]
+  tasks:
+    - name: Validate five teams including an empty roster
+      ansible.builtin.include_role:
+        name: workshop_git
+        tasks_from: validate
+
+    - name: Check organization names and derived student IDs
+      ansible.builtin.assert:
+        that:
+          - __workshop_git_teams | length == 5
+          - __workshop_git_student_ids | sort == ['Alice', 'Bob', 'Carol', 'Dave', 'Eve']
+
+    - name: Validate one team
+      ansible.builtin.include_role:
+        name: workshop_git
+        tasks_from: validate
+      vars:
+        workshop_git_teams:
+          solo: [onlystudent]
+
+    - name: Reject invalid rosters and name collisions
+      ansible.builtin.include_tasks: reject.yml
+      loop:
+        - {}
+        - platform: [Alice]
+          application: [alice]
+        - platform: Alice
+        - platform: {Alice: Bob}
+        - platform: [platform]
+        - Owners: [Alice]
+        - platform: [instructor]
+        - platform: [123]
+      loop_control:
+        loop_var: rejected_teams
+
+    - name: Create an isolated password state directory
+      ansible.builtin.tempfile:
+        state: directory
+      register: test_private
+
+    - name: Check password state preservation
+      block:
+        - name: Write saved mixed-case account state
+          ansible.builtin.copy:
+            dest: "{{ test_private.path }}/passwords.json"
+            content: '{"Alice": "Aa1!saved-password-long-enough"}'
+            mode: '0600'
+
+        - name: Read and validate saved credentials
+          ansible.builtin.include_role:
+            name: workshop_git
+            tasks_from: password_state
+          vars:
+            workshop_git_password_file: "{{ test_private.path }}/passwords.json"
+
+        - name: Require case-insensitive matching without password changes
+          ansible.builtin.assert:
+            that:
+              - __workshop_git_passwords == {'alice':'Aa1!saved-password-long-enough'}
+      always:
+        - name: Delete isolated test state
+          ansible.builtin.file:
+            path: "{{ test_private.path }}"
+            state: absent

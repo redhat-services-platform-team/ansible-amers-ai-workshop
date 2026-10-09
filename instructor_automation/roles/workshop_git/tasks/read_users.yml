@@ -1,0 +1,14 @@
+---
+- name: read_users | List Gitea local accounts
+  ansible.builtin.command:
+    argv: [/usr/local/bin/gitea, -c, /etc/gitea/gitea.ini, admin, user, list]
+  become: true
+  become_user: gitea
+  changed_when: false
+  register: __workshop_git_user_list
+
+- name: read_users | Extract exact usernames from the CLI table
+  ansible.builtin.set_fact:
+    __workshop_git_existing_usernames: >-
+      {{ __workshop_git_user_list.stdout_lines | select('match', '^\s*[0-9]+\s+')
+      | map('regex_replace', '^\s*[0-9]+\s+(\S+).*$', '\1') | map('lower') | list }}

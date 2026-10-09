@@ -1,25 +1,19 @@
 ---
-# Copy this file into private/ and add one dictionary per AWS environment.
-# Use Ansible Vault for files that contain access keys and secret keys.
-workshop_git_aws_environments:
-  - name: demo-a
-    region: us-east-2
-    access_key: "{{ lookup('ansible.builtin.env', 'AWS_ACCESS_KEY_ID') }}"
-    secret_key: "{{ lookup('ansible.builtin.env', 'AWS_SECRET_ACCESS_KEY') }}"
-    session_token: "{{ lookup('ansible.builtin.env', 'AWS_SESSION_TOKEN') }}"
-    # Normally discovered. Set one of these only if multiple public zones exist.
-    # hosted_zone_id: Z0123456789EXAMPLE
-    # hosted_zone_name: demo.example.com
-    # dns_label: git
-  # - name: demo-b
-  #   region: us-east-2
-  #   access_key: REPLACE_WITH_SECOND_ACCOUNT_ACCESS_KEY
-  #   secret_key: REPLACE_WITH_SECOND_ACCOUNT_SECRET_KEY
+# Copy into private/ and use Ansible Vault if you store credentials in this file.
+workshop_git_aws_account:
+  name: demo-a
+  region: us-east-2
+  access_key: "{{ lookup('ansible.builtin.env', 'AWS_ACCESS_KEY_ID') }}"
+  secret_key: "{{ lookup('ansible.builtin.env', 'AWS_SECRET_ACCESS_KEY') }}"
+  session_token: "{{ lookup('ansible.builtin.env', 'AWS_SESSION_TOKEN') }}"
+  # Set one of these if the account has multiple public Route 53 zones.
+  # hosted_zone_id: Z0123456789EXAMPLE
+  # hosted_zone_name: demo.example.com
 
-# Every student gets an account on every Git server.
-workshop_git_student_ids:
-  - student01
-  - student02
-
-# Students are Gitea administrators by default. This grants no AWS permissions.
-workshop_git_students_are_admins: true
+# Each key creates an organization and a permission group with the same name.
+# Add or remove entries to match your class. Each student belongs to one team.
+workshop_git_teams:
+  platform: [student01]
+  application: [student02]
+  network: [student03]
+  operations: [student04]

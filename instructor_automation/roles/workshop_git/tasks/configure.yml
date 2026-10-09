@@ -25,32 +25,44 @@
     loop_var: __workshop_git_installation_path
   register: __workshop_git_installation
 
-- name: configure | Read existing student usernames
-  workshop_git_users:
-  become: true
-  become_user: gitea
-  register: __workshop_git_existing_users
+- name: configure | Read existing local users before generating passwords
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/read_users.yml"
   when: __workshop_git_installation.results | map(attribute='stat.exists') | select('equalto', true) | list | length == 3
 
-- name: configure | Refuse to replace missing saved passwords
-  workshop_git_passwords:
-    path: "{{ workshop_git_password_file }}"
-    students: "{{ workshop_git_student_ids }}"
-    required_students: >-
-      {{ (__workshop_git_existing_users.usernames | default([])) |
-         intersect(workshop_git_student_ids | map('lower') | list) }}
-  delegate_to: "{{ workshop_git_controller }}"
-  check_mode: true
-  changed_when: false
+- name: configure | Load controller account state
+  ansible.builtin.set_fact:
+    __workshop_git_student_ids: "{{ hostvars[workshop_git_controller].__workshop_git_student_ids }}"
+    __workshop_git_passwords: "{{ hostvars[workshop_git_controller].__workshop_git_passwords }}"
+    __workshop_git_teams: "{{ hostvars[workshop_git_controller].__workshop_git_teams }}"
   no_log: true
 
-- name: configure | Create or reuse initial student passwords
-  workshop_git_passwords:
-    path: "{{ workshop_git_password_file }}"
-    students: "{{ workshop_git_student_ids }}"
+- name: configure | Refuse to replace missing saved passwords
+  ansible.builtin.assert:
+    that:
+      - >-
+        (__workshop_git_existing_usernames | default([])) | intersect(
+        (__workshop_git_student_ids + [workshop_git_admin_user]) | map('lower') | list)
+        | difference(__workshop_git_passwords.keys() | map('lower') | list) | length == 0
+    fail_msg: Restore the saved password file before configuring existing workshop users.
+  no_log: true
+
+- name: configure | Generate passwords only for new accounts
+  ansible.builtin.set_fact:
+    __workshop_git_passwords: >-
+      {{ __workshop_git_passwords | combine({__workshop_git_username | lower:
+      'Aa1!' ~ lookup('ansible.builtin.password', '/dev/null', length=32, chars=['ascii_letters', 'digits'])}) }}
+  loop: "{{ __workshop_git_student_ids + [workshop_git_admin_user] }}"
+  loop_control:
+    loop_var: __workshop_git_username
+  when: __workshop_git_username | lower not in __workshop_git_passwords.keys() | map('lower') | list
+  no_log: true
+
+- name: configure | Save passwords before creating accounts
+  ansible.builtin.copy:
+    dest: "{{ workshop_git_password_file }}"
+    content: "{{ __workshop_git_passwords | to_nice_json }}"
+    mode: '0600'
   delegate_to: "{{ workshop_git_controller }}"
-  run_once: true
-  register: __workshop_git_passwords_result
   no_log: true
 
 - name: configure | Install Gitea with the pinned upstream role
@@ -98,30 +110,67 @@
   delay: 15
   until: __workshop_git_https is succeeded
 
-- name: configure | Prepare student accounts
+- name: configure | Read local users after installing Gitea
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/read_users.yml"
+
+- name: configure | Prepare missing local accounts for the upstream role
   ansible.builtin.set_fact:
     __workshop_git_users: >-
-      {{ (__workshop_git_users | default([])) +
-         [{'username': __workshop_git_student_id,
-           'email': __workshop_git_student_id ~ '@' ~ workshop_git_server.fqdn,
-           'password': __workshop_git_passwords_result.passwords[__workshop_git_student_id],
-           'admin': workshop_git_students_are_admins | bool,
-           'must_change_password': workshop_git_must_change_password | bool}] }}
-  loop: "{{ workshop_git_student_ids }}"
+      {{ (__workshop_git_users | default([])) + [{'name': __workshop_git_username,
+      'email': __workshop_git_username ~ '@' ~ workshop_git_server.fqdn,
+      'password': __workshop_git_passwords[__workshop_git_username | lower],
+      'admin': __workshop_git_username == workshop_git_admin_user,
+      'must_change_password': workshop_git_must_change_password | bool
+      if __workshop_git_username != workshop_git_admin_user else false}] }}
+  loop: "{{ __workshop_git_student_ids + [workshop_git_admin_user] }}"
   loop_control:
-    loop_var: __workshop_git_student_id
+    loop_var: __workshop_git_username
+  when: __workshop_git_username | lower not in __workshop_git_existing_usernames
   no_log: true
 
-- name: configure | Create missing students without changing existing passwords
-  workshop_git_users:
-    users: "{{ __workshop_git_users }}"
-  become: true
-  become_user: gitea
-  register: __workshop_git_created_users
+- name: configure | Create local accounts with the Gitea role
+  ansible.builtin.include_role:
+    name: roles-ansible.gitea
+    tasks_from: local_git_users
+    apply:
+      no_log: true
+  vars:
+    gitea_users: "{{ __workshop_git_users | default([]) }}"
+
+- name: configure | Verify the upstream role created every requested user
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/read_users.yml"
+
+- name: configure | Require exact local usernames
+  ansible.builtin.assert:
+    that:
+      - >-
+        (__workshop_git_student_ids + [workshop_git_admin_user]) | map('lower')
+        | difference(__workshop_git_existing_usernames) | length == 0
+    fail_msg: The upstream role skipped a username. Check for a substring collision with an existing account.
+
+- name: configure | Manage organization permissions through the Gitea API
+  delegate_to: "{{ workshop_git_controller }}"
+  module_defaults:
+    ansible.builtin.uri:
+      url_username: "{{ workshop_git_admin_user }}"
+      url_password: "{{ __workshop_git_passwords[workshop_git_admin_user | lower] }}"
+      force_basic_auth: true
+      validate_certs: true
+      body_format: json
   no_log: true
+  block:
+    - name: configure | Revoke student site administrator access
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/student_permissions.yml"
+      loop: "{{ __workshop_git_student_ids }}"
+      loop_control:
+        loop_var: __workshop_git_student
+
+    - name: configure | Configure each named organization and group
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/team.yml"
+      loop: "{{ __workshop_git_teams }}"
+      loop_control:
+        loop_var: __workshop_git_team
 
 - name: configure | Save verified server details
   ansible.builtin.set_fact:
-    __workshop_git_server_result: >-
-      {{ workshop_git_server | combine({'students': workshop_git_student_ids,
-         'new_users': __workshop_git_created_users.created_users}) }}
+    __workshop_git_server_result: "{{ workshop_git_server }}"

@@ -1,61 +1,19 @@
 ---
 argument_specs:
   main:
-    short_description: Deploy instructor-managed AWS Gitea servers for workshop students.
+    short_description: Deploy one AWS Gitea instance with student organizations.
     options:
-      workshop_git_aws_environments:
-        type: list
-        description: AWS accounts and regions in which to deploy Git servers.
-        required: true
-        elements: dict
-        options:
-          name:
-            type: str
-            required: true
-            description: Unique environment name used in AWS resource names.
-          region:
-            type: str
-            required: true
-            description: AWS region in which to create resources.
-          access_key:
-            type: str
-            required: true
-            no_log: true
-            description: Instructor AWS access key.
-          secret_key:
-            type: str
-            required: true
-            no_log: true
-            description: Instructor AWS secret key.
-          session_token:
-            type: str
-            no_log: true
-            description: Session token for temporary AWS credentials.
-          hosted_zone_id:
-            type: str
-            description: Public Route 53 zone ID when discovery is ambiguous.
-          hosted_zone_name:
-            type: str
-            description: Public Route 53 zone name when discovery is ambiguous.
-          dns_label:
-            type: str
-            description: Override the default Git subdomain label for this environment.
-      workshop_git_student_ids:
-        type: list
-        description: Student usernames to create on every server.
-        required: true
-        elements: str
       workshop_git_discover_only:
         type: bool
         description: Read AWS state and validate inputs without provisioning or writing files.
         default: false
       workshop_git_deployment_id:
         type: str
-        description: Stable identifier used in resource names, tags, and parameter paths.
+        description: Stable identifier used in resource names and tags.
         default: ai-workshop
       workshop_git_dns_label:
         type: str
-        description: Default Git subdomain label in each selected hosted zone.
+        description: Default Git subdomain label in the selected hosted zone.
         default: git
       workshop_git_instance_type:
         type: str
@@ -73,10 +31,6 @@ argument_specs:
         type: str
         description: IPv4 subnet inside the VPC with a prefix length from 16 to 28.
         default: 10.77.1.0/24
-      workshop_git_students_are_admins:
-        type: bool
-        description: Grant administrator privileges to newly created Gitea users.
-        default: true
       workshop_git_must_change_password:
         type: bool
         description: Require newly created users to change their password at first login.
@@ -113,3 +67,54 @@ argument_specs:
         type: str
         default: ''
         description: Optional contact address for Let's Encrypt renewal notices.
+      workshop_git_aws_account:
+        type: dict
+        description: Single AWS account and region for the Gitea instance.
+        required: true
+        options:
+          name:
+            type: str
+            required: true
+            description: Unique environment name used in AWS resource names.
+          region:
+            type: str
+            required: true
+            description: AWS region in which to create resources.
+          access_key:
+            type: str
+            required: true
+            no_log: true
+            description: Instructor AWS access key.
+          secret_key:
+            type: str
+            required: true
+            no_log: true
+            description: Instructor AWS secret key.
+          session_token:
+            type: str
+            no_log: true
+            description: Session token for temporary AWS credentials.
+          hosted_zone_id:
+            type: str
+            description: Public Route 53 zone ID when discovery is ambiguous.
+          hosted_zone_name:
+            type: str
+            description: Public Route 53 zone name when discovery is ambiguous.
+      workshop_git_teams:
+        type: dict
+        required: true
+        description: Organization and permission group names mapped to lists of student usernames. Any nonempty
+          number of teams is supported.
+      workshop_git_admin_user:
+        type: str
+        default: instructor
+        description: Separate instructor site administrator, excluded from student teams.
+      workshop_git_team_permission:
+        type: str
+        default: write
+        choices: [read, write, admin]
+        description: Repository permission granted to each organization group.
+      workshop_git_repository_name:
+        type: str
+        default: netbox-migration
+        description: Private starter repository created in each organization.
