@@ -244,15 +244,9 @@ If Ansible needs environment activation, tell Codex your actual activation comma
 
 == 4: Cursor Setup (Choose CLI or Desktop)
 
-Follow this section only if you chose Cursor. Request access, then install either CLI or desktop.
-
-=== Request Access
-
-. Review link:{cursor_source_url}[Cursor — AI Tools on The Source,window=_blank] for current eligibility and regional availability.
-. Submit link:{cursor_access_request_url}[the Cursor access request,window=_blank] using your Red Hat identity (VPN required).
-. Complete the account setup in the confirmation email. If access is missing, check spam and contact the facilitator or `pge-cloudops@redhat.com`.
-
-Use the current internal guidance for availability rather than relying on a fixed country list in this workshop.
+Follow this section only if you chose Cursor. Install either CLI or desktop.
+Sign in with the account approved for the workshop.
+If your organization provides a license, complete its account setup before continuing.
 
 === CLI Installation — RHEL and macOS
 

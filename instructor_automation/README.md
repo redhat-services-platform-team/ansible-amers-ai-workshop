@@ -2,7 +2,7 @@
 
 The playbook deploys one Gitea instance in one AWS account. Students get a Git URL and local login. A team dictionary creates private organizations and permission groups, with one starter repository per organization.
 
-The example has five teams, named `teams-1` through `teams-5`. Use as many teams as your class needs.
+The example has five teams: `comet`, `nebula`, `orbit`, `pulsar`, and `quasar`. Use as many teams as your class needs.
 
 ## Install
 
@@ -35,21 +35,20 @@ workshop_git_aws_account:
   region: us-east-2
   access_key: "{{ lookup('ansible.builtin.env', 'AWS_ACCESS_KEY_ID') }}"
   secret_key: "{{ lookup('ansible.builtin.env', 'AWS_SECRET_ACCESS_KEY') }}"
-  session_token: "{{ lookup('ansible.builtin.env', 'AWS_SESSION_TOKEN') }}"
 
 workshop_git_teams:
-  teams-1: [student01]
-  teams-2: [student02]
-  teams-3: [student03]
-  teams-4: [student04]
-  teams-5: [student05]
+  comet: [student01]
+  nebula: [student02]
+  orbit: [student03]
+  pulsar: [student04]
+  quasar: [student05]
 ```
 
 Each dictionary key becomes both an organization name and a Gitea permission group name. Values are lists of usernames. Student IDs must be unique across teams. Usernames and organization names must differ, including case. `Owners` is reserved for Gitea's built-in ownership group. Empty member lists are allowed; an empty team dictionary is rejected.
 
 The role discovers public Route 53 zones and selects the only public zone. If several exist, add `hosted_zone_id` or `hosted_zone_name` to the account dictionary. The Git hostname defaults to `git.<zone>`. `workshop_git_dns_label` changes the prefix. A DNS ownership record prevents this deployment from taking over an existing hostname.
 
-Export your AWS credentials before running, or use Ansible Vault for inputs containing keys. Optional `session_token` supports temporary credentials. The account needs permission to manage EC2 networking, instances, key pairs, and Route 53 records.
+Export your AWS credentials before running, or use Ansible Vault for inputs containing keys. An access key and secret key are sufficient for this setup. A session token is only needed for temporary AWS credentials. The account needs permission to manage EC2 networking, instances, key pairs, and Route 53 records.
 
 ```sh
 # Encrypt inputs if they contain credentials.

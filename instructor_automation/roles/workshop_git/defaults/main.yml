@@ -3,8 +3,8 @@
 # workshop_git_aws_account: {}
 # Required organization names mapped to their student usernames.
 # workshop_git_teams:
-#   teams-1: [student01, student02]
-#   teams-2: [student03, student04]
+#   comet: [student01, student02]
+#   nebula: [student03, student04]
 workshop_git_discover_only: false
 workshop_git_deployment_id: ai-workshop
 workshop_git_dns_label: git

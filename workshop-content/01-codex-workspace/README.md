@@ -361,13 +361,9 @@ If Ansible needs environment activation, tell Codex your actual activation comma
 
 ## Cursor setup (choose CLI or desktop)
 
-Request access, then choose CLI or desktop. Skip the other interface.
-
-Red Hat associates should review the current
-[Cursor access guidance](https://source.redhat.com/projects_and_programs/ai/ai_tools/cursor)
-and submit the [license request](https://devservices.dpp.openshift.com/support/cursor_license_request/)
-(VPN required). Complete the confirmation-email setup with the assigned account;
-use current internal guidance for eligibility and regional availability.
+Choose CLI or desktop. Skip the other interface.
+Sign in with the account approved for the workshop.
+If your organization provides a license, complete its account setup before continuing.
 
 ### CLI — RHEL and macOS
 
