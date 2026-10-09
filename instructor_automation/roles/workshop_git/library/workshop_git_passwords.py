@@ -25,7 +25,7 @@ def validate_students(students):
             raise ValueError('Student ID is reserved by Gitea: ' + student)
 
 
-def reconcile_passwords(path, students, check_mode=False):
+def reconcile_passwords(path, students, check_mode=False, required_students=()):
     validate_students(students)
     path = Path(path)
     if path.is_symlink():
@@ -36,6 +36,9 @@ def reconcile_passwords(path, students, check_mode=False):
     by_name = {name.lower(): name for name in existing}
     if len(by_name) != len(existing):
         raise ValueError('Password state contains duplicate student IDs ignoring case.')
+    missing = {student.lower() for student in required_students} - set(by_name)
+    if missing:
+        raise ValueError('Saved passwords are missing for previously provisioned students. Restore the original password file.')
     changed = not path.exists() or (path.stat().st_mode & 0o777) != 0o600
     current = {}
     for student in students:
@@ -47,7 +50,6 @@ def reconcile_passwords(path, students, check_mode=False):
         current[student] = existing[saved_name]
     if not check_mode:
         path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-        os.chmod(path.parent, 0o700)
         if changed:
             fd, temporary = tempfile.mkstemp(dir=path.parent)
             try:
@@ -66,9 +68,10 @@ def main():
     module = AnsibleModule(argument_spec={
         'path': {'type': 'path', 'required': True},
         'students': {'type': 'list', 'elements': 'str', 'required': True},
+        'required_students': {'type': 'list', 'elements': 'str', 'default': []},
     }, supports_check_mode=True)
     try:
-        changed, passwords = reconcile_passwords(module.params['path'], module.params['students'], module.check_mode)
+        changed, passwords = reconcile_passwords(module.params['path'], module.params['students'], module.check_mode, module.params['required_students'])
         module.exit_json(changed=changed, passwords=passwords)
     except (ValueError, OSError) as exc:
         module.fail_json(msg=str(exc))

@@ -1,6 +1,8 @@
 ---
-workshop_git_aws_environments: []
-workshop_git_student_ids: []
+# Required AWS account dictionaries. See README.md.
+# workshop_git_aws_environments: []
+# Required student usernames to create on every server.
+# workshop_git_student_ids: []
 workshop_git_discover_only: false
 workshop_git_deployment_id: ai-workshop
 workshop_git_dns_label: git

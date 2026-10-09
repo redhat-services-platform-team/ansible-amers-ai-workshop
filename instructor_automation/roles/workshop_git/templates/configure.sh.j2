@@ -1,4 +1,5 @@
 #!/bin/bash
+{{ ansible_managed | comment }}
 set -euo pipefail
 umask 077
 # Keep package installation output out of the SSM command response.
@@ -17,4 +18,4 @@ fi
 cat > /opt/workshop-git/configure.py <<'WORKSHOP_PYTHON'
 {{ lookup('ansible.builtin.file', role_path ~ '/files/configure_git.py') }}
 WORKSHOP_PYTHON
-/opt/workshop-git/venv/bin/python /opt/workshop-git/configure.py {{ {'fqdn': git_plan.fqdn, 'region': git_plan.environment.region, 'parameter_prefix': workshop_git_parameter_prefix, 'student_ids': workshop_git_student_ids, 'gitea_image': workshop_git_gitea_image, 'caddy_image': workshop_git_caddy_image} | to_json | quote }}
+/opt/workshop-git/venv/bin/python /opt/workshop-git/configure.py {{ {'fqdn': __workshop_git_git_plan.fqdn, 'region': __workshop_git_git_plan.environment.region, 'parameter_prefix': __workshop_git_parameter_prefix, 'student_ids': workshop_git_student_ids, 'gitea_image': workshop_git_gitea_image, 'caddy_image': workshop_git_caddy_image} | to_json | quote }}

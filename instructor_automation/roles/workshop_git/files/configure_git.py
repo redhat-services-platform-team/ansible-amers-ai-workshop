@@ -19,8 +19,11 @@ def command(args):
     return result.stdout
 
 
-def ensure_container(name, image, args, force=False):
-    digest = hashlib.sha256(json.dumps([image, args], sort_keys=True).encode()).hexdigest()
+def ensure_container(name, image, args, force=False, config_content=None):
+    desired = [image, args]
+    if config_content is not None:
+        desired.append(config_content)
+    digest = hashlib.sha256(json.dumps(desired, sort_keys=True).encode()).hexdigest()
     result = subprocess.run(['docker', 'inspect', name], text=True, capture_output=True, check=False)
     current = json.loads(result.stdout)[0] if result.returncode == 0 else None
     if current and current['Config']['Labels'].get('workshop.config') == digest and not force:
@@ -118,7 +121,7 @@ def configure(config):
         os.chmod(caddyfile, 0o644)
     caddy_changed = ensure_container('workshop-caddy', config['caddy_image'], [
         '--network', 'host', '-v', str(caddyfile) + ':/etc/caddy/Caddyfile:ro',
-        '-v', 'workshop-caddy-data:/data', '-v', 'workshop-caddy-config:/config'], force=config_changed)
+        '-v', 'workshop-caddy-data:/data', '-v', 'workshop-caddy-config:/config'], config_content=content)
     return {'changed': bool(changed or created or caddy_changed), 'created_users': created}
 
 

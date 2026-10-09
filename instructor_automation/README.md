@@ -108,7 +108,7 @@ cat private/git-access.json
 
 Each student receives a different random password. Their initial password works on every newly created server account, so you can give each student the same credentials for all servers. The default requires a password change at first login. After that, the password can differ per server; the access sheet still records the initial password.
 
-Reruns create missing accounts and leave existing passwords unchanged. Keep `student-passwords.json` with the deployment inputs. If the file is missing and discovery finds an existing server, the role stops. Restore a backup before rerunning. Removing a student from the input list does not delete their accounts. Gitea administrators can remove accounts through the UI.
+Reruns create missing accounts and leave existing passwords unchanged. Keep `student-passwords.json` with the deployment inputs. If the file is missing and discovery finds an existing server, the role stops. If the file exists but lacks a requested student whose credential parameter already exists, the role also stops before provisioning. Restore a backup before rerunning. Removing a student from the input list does not delete their accounts. Gitea administrators can remove accounts through the UI.
 
 Set `workshop_git_students_are_admins: false` to create regular users. Set `workshop_git_must_change_password: false` to keep the generated password after first login. These settings apply when an account is created; reruns do not change existing account privileges or password settings. See [Gitea's user commands](https://docs.gitea.com/administration/command-line/).
 
@@ -116,7 +116,7 @@ Student credentials use encrypted SSM SecureString parameters, one per student a
 
 ## Settings and resource ownership
 
-Defaults are in `roles/workshop_git/defaults/main.yml`. You can override the instance type, volume size, DNS label, deployment ID, images, or output paths in your input file. Use x86_64 instance types with the default AMI. Gitea and Caddy image versions are pinned. Changing an image recreates that container while retaining its data.
+All inputs and their defaults are documented in the [role README](roles/workshop_git/README.md). Defaults are in `roles/workshop_git/defaults/main.yml`. You can override the instance type, volume size, DNS label, deployment ID, images, or output paths in your input file. Use x86_64 instance types with the default AMI. Gitea and Caddy image versions are pinned. Changing an image recreates that container while retaining its data.
 
 Keep environment names and `workshop_git_deployment_id` stable across reruns. They identify the EC2 instance, VPC, IAM role, and SSM parameters. A different deployment ID creates a separate deployment. Run one instructor process at a time for a deployment.
 

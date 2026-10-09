@@ -1,34 +1,38 @@
 ---
-- name: Discover the public DNS zone and Amazon Linux image
+- name: discover | Discover the public DNS zone and Amazon Linux image
   workshop_git_discovery:
-    access_key: "{{ git_env.access_key }}"
-    secret_key: "{{ git_env.secret_key }}"
-    session_token: "{{ git_env.session_token | default('') }}"
-    region: "{{ git_env.region }}"
-    hosted_zone_id: "{{ git_env.hosted_zone_id | default('') }}"
-    hosted_zone_name: "{{ git_env.hosted_zone_name | default('') }}"
-    dns_label: "{{ git_env.dns_label | default(workshop_git_dns_label) }}"
-    environment_name: "{{ git_env.name }}"
+    access_key: "{{ __workshop_git_git_env.access_key }}"
+    secret_key: "{{ __workshop_git_git_env.secret_key }}"
+    session_token: "{{ __workshop_git_git_env.session_token | default('') }}"
+    region: "{{ __workshop_git_git_env.region }}"
+    hosted_zone_id: "{{ __workshop_git_git_env.hosted_zone_id | default('') }}"
+    hosted_zone_name: "{{ __workshop_git_git_env.hosted_zone_name | default('') }}"
+    dns_label: "{{ __workshop_git_git_env.dns_label | default(workshop_git_dns_label) }}"
+    environment_name: "{{ __workshop_git_git_env.name }}"
     deployment_id: "{{ workshop_git_deployment_id }}"
-    resource_name: "{{ workshop_git_deployment_id }}-{{ git_env.name }}-git"
-  register: workshop_git_discovery
+    resource_name: "{{ workshop_git_deployment_id }}-{{ __workshop_git_git_env.name }}-git"
+    students: "{{ workshop_git_student_ids }}"
+    vpc_cidr: "{{ workshop_git_vpc_cidr }}"
+    subnet_cidr: "{{ workshop_git_subnet_cidr }}"
+  register: __workshop_git_discovery
 
-- name: Add this environment to the plan
+- name: discover | Add this environment to the plan
   ansible.builtin.set_fact:
-    workshop_git_plan: >-
-      {{ workshop_git_plan + [
-        {'name': git_env.name, 'environment': git_env,
-         'resource_name': workshop_git_deployment_id ~ '-' ~ git_env.name ~ '-git',
-         'fqdn': (git_env.dns_label | default(workshop_git_dns_label)) ~ '.' ~ workshop_git_discovery.zone_name,
-         'url': 'https://' ~ (git_env.dns_label | default(workshop_git_dns_label)) ~ '.' ~ workshop_git_discovery.zone_name,
-         'zone_id': workshop_git_discovery.zone_id, 'ami_id': workshop_git_discovery.ami_id,
-         'account_id': workshop_git_discovery.account_id, 'partition': workshop_git_discovery.partition,
-         'instance_ids': workshop_git_discovery.instance_ids}
+    __workshop_git_plan: >-
+      {{ __workshop_git_plan + [
+        {'name': __workshop_git_git_env.name, 'environment': __workshop_git_git_env,
+         'resource_name': workshop_git_deployment_id ~ '-' ~ __workshop_git_git_env.name ~ '-git',
+         'fqdn': (__workshop_git_git_env.dns_label | default(workshop_git_dns_label)) ~ '.' ~ __workshop_git_discovery.zone_name,
+         'url': 'https://' ~ (__workshop_git_git_env.dns_label | default(workshop_git_dns_label)) ~ '.' ~ __workshop_git_discovery.zone_name,
+         'zone_id': __workshop_git_discovery.zone_id, 'ami_id': __workshop_git_discovery.ami_id,
+         'account_id': __workshop_git_discovery.account_id, 'partition': __workshop_git_discovery.partition,
+         'instance_ids': __workshop_git_discovery.instance_ids,
+         'credential_student_ids': __workshop_git_discovery.credential_student_ids}
       ] }}
   no_log: true
 
-- name: Reject two environments targeting the same Git hostname
+- name: discover | Reject two environments targeting the same Git hostname
   ansible.builtin.assert:
     that:
-      - workshop_git_plan | map(attribute='fqdn') | unique | length == workshop_git_plan | length
+      - __workshop_git_plan | map(attribute='fqdn') | unique | length == __workshop_git_plan | length
     fail_msg: Each environment needs its own DNS name. Use different dns_label values when sharing a zone.

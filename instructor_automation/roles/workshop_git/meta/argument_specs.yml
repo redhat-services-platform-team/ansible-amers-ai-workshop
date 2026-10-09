@@ -1,0 +1,107 @@
+---
+argument_specs:
+  main:
+    short_description: Deploy instructor-managed AWS Gitea servers for workshop students.
+    options:
+      workshop_git_aws_environments:
+        type: list
+        description: AWS accounts and regions in which to deploy Git servers.
+        required: true
+        elements: dict
+        options:
+          name:
+            type: str
+            required: true
+            description: Unique environment name used in AWS resource names.
+          region:
+            type: str
+            required: true
+            description: AWS region in which to create resources.
+          access_key:
+            type: str
+            required: true
+            no_log: true
+            description: Instructor AWS access key.
+          secret_key:
+            type: str
+            required: true
+            no_log: true
+            description: Instructor AWS secret key.
+          session_token:
+            type: str
+            no_log: true
+            description: Session token for temporary AWS credentials.
+          hosted_zone_id:
+            type: str
+            description: Public Route 53 zone ID when discovery is ambiguous.
+          hosted_zone_name:
+            type: str
+            description: Public Route 53 zone name when discovery is ambiguous.
+          dns_label:
+            type: str
+            description: Override the default Git subdomain label for this environment.
+      workshop_git_student_ids:
+        type: list
+        description: Student usernames to create on every server.
+        required: true
+        elements: str
+      workshop_git_discover_only:
+        type: bool
+        description: Read AWS state and validate inputs without provisioning or writing files.
+        default: false
+      workshop_git_deployment_id:
+        type: str
+        description: Stable identifier used in resource names, tags, and parameter paths.
+        default: ai-workshop
+      workshop_git_dns_label:
+        type: str
+        description: Default Git subdomain label in each selected hosted zone.
+        default: git
+      workshop_git_instance_type:
+        type: str
+        description: An x86_64 EC2 instance type compatible with Amazon Linux 2023.
+        default: t3.medium
+      workshop_git_volume_size:
+        type: int
+        description: Encrypted gp3 root volume size in GiB, from 8 to 16384.
+        default: 30
+      workshop_git_vpc_cidr:
+        type: str
+        description: IPv4 VPC network with a prefix length from 16 to 28.
+        default: 10.77.0.0/16
+      workshop_git_subnet_cidr:
+        type: str
+        description: IPv4 subnet inside the VPC with a prefix length from 16 to 28.
+        default: 10.77.1.0/24
+      workshop_git_students_are_admins:
+        type: bool
+        description: Grant administrator privileges to newly created Gitea users.
+        default: true
+      workshop_git_must_change_password:
+        type: bool
+        description: Require newly created users to change their password at first login.
+        default: true
+      workshop_git_gitea_image:
+        type: str
+        description: Pinned Gitea container image to deploy.
+        default: docker.gitea.com/gitea:28.1.0
+      workshop_git_caddy_image:
+        type: str
+        description: Pinned Caddy container image to deploy.
+        default: docker.io/library/caddy:2.11.7
+      workshop_git_private_dir:
+        type: path
+        description: Dedicated controller directory whose permissions the role manages as 0700.
+        default: '{{ playbook_dir }}/private'
+      workshop_git_password_file:
+        type: path
+        description: Controller file that retains initial student passwords with mode 0600.
+        default: '{{ workshop_git_private_dir }}/student-passwords.json'
+      workshop_git_output_file:
+        type: path
+        description: Controller access sheet containing server details and initial passwords.
+        default: '{{ workshop_git_private_dir }}/git-access.json'
+      workshop_git_timeout:
+        type: int
+        description: SSM registration and command timeout in seconds, from 30 to 172800.
+        default: 1200
