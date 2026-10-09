@@ -1,6 +1,6 @@
 = Lab 4 assets: Customer NetBox delivery project
 
-Work as a team to migrate the Lab 2 installer, deploy NetBox infrastructure in your AWS environment, and demonstrate NetBox dynamic inventory with AWS VPC IPAM data.
+Work as a team to migrate the Lab 2 installer and deploy NetBox infrastructure in your AWS environment. Manually add demo hosts in NetBox and query them with Ansible's dynamic inventory plugin.
 Learner steps are in `documentation/modules/ROOT/pages/04-aws-lab-provisioning.adoc`.
 
 == Files
@@ -13,10 +13,9 @@ Create your project under `teams/<team-name>/` on a branch such as `team/switchb
 Bring forward useful output from Labs 2 and 3, then review it together before deployment.
 The lab does not provide a completed port or deployment playbook. Your team chooses and implements the design.
 
-For community NetBox, build an AWS VPC IPAM-to-NetBox sync as part of the project.
-Using the official NetBox Labs integration requires its commercial deployment and access prerequisites.
-Both routes need VM or device host records and primary IPs for Ansible inventory.
+Add demo hosts through the NetBox UI as VM or device records with interfaces, primary IPs, and a team-specific tag.
+Use `netbox.netbox.nb_inventory` to query those records and select hosts for the customer demo.
 
 Commit source, non-secret examples, and sanitized validation evidence.
 Keep AWS credentials, NetBox tokens, generated secret files, and private inventory exports out of Git.
-Document dependencies, deployment, reruns, IPAM sync, dynamic inventory, recovery, and teardown.
+Document dependencies, deployment, reruns, manual host entry, dynamic inventory, recovery, and teardown.

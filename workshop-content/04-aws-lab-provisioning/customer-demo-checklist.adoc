@@ -10,9 +10,7 @@ Link to evidence in the team project rather than pasting credentials or private 
 | Show the Ansible roles or task files and migration decisions | |
 | Show NetBox and its services running on AWS | |
 | Show the second deployment run and preserved state | |
-| Trace an AWS VPC IPAM network into NetBox | |
-| Show a repeat sync without duplicate records | |
-| Show an AWS demo host and its NetBox primary IP in that network | |
+| Show manually entered AWS hosts in NetBox with interfaces, primary IPs, and a team tag | |
 | Query the team-filtered NetBox dynamic inventory | |
 | Run the demo Ansible play against selected AWS hosts | |
 | Change a NetBox record, refresh inventory, and show membership change | |

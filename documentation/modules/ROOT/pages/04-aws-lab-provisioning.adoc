@@ -1,7 +1,7 @@
 = Lab: Customer NetBox delivery project
 
 [abstract]
-Work as a delivery team for a fictional company. Migrate the inherited Python installer to Ansible, deploy NetBox infrastructure in your AWS environment, and demonstrate NetBox as a dynamic inventory with AWS VPC IPAM data.
+Work as a delivery team for a fictional company. Migrate the inherited Python installer to Ansible and deploy NetBox infrastructure in your AWS environment. Manually add demo hosts to NetBox and query them with Ansible's dynamic inventory plugin.
 
 == The customer
 
@@ -21,11 +21,11 @@ There is no required team size or competition score.
 
 * Reviewed Ansible content that installs and configures NetBox and its dependencies, based on the Python installer from Lab 2.
 * Running AWS hosts for the NetBox infrastructure, with a documented network layout and deployment procedure.
-* An AWS VPC IPAM-to-NetBox integration and a working demo that uses NetBox as Ansible's dynamic inventory.
+* Manually created NetBox host records and a working demo that queries them through `netbox.netbox.nb_inventory`.
 * A customer handover with validation evidence, operating instructions, known limitations, and cleanup steps.
 
 The final demo must execute an Ansible play against team-owned AWS hosts selected from NetBox.
-A screenshot of prefixes or an AWS EC2 inventory alone does not meet that requirement.
+Show the host records in NetBox and the inventory returned by the plugin.
 
 == Before you start
 
@@ -34,26 +34,9 @@ Bring your own AWS environment that your team is authorized to use for testing a
 Confirm the account, region, allowed services, IAM permissions, budget, and cleanup owner together.
 Use your existing RHEL or macOS Ansible control workstation and an approved AI tool.
 
-You need access to EC2 and the networking resources your design requires, plus AWS VPC IPAM.
-Check the account's IPAM configuration, supported resource discovery, tier, and pricing before choosing the demo scope.
-See the link:https://docs.aws.amazon.com/vpc/latest/ipam/what-it-is-ipam.html[AWS VPC IPAM documentation].
-Do not assume the account already has IPAM or that every IPAM feature is free.
-
-=== Choose the integration route before provisioning
-
-The Lab 2 script installs community NetBox.
-For that installation, build a small, documented integration that reads AWS VPC IPAM data and writes the relevant VRFs, prefixes, and addresses through the NetBox API.
-Use read-only AWS IPAM access. Keep the sync one-way from AWS to NetBox and limit it to your team's scope.
-This student-built integration is part of the project deliverable.
-
-If your team has access to the official NetBox Labs `aws-vpc-ipam` integration, you may use it instead.
-Its current documentation requires commercial NetBox with Assurance, Orb Agent Pro credentials, and public-preview access. Private IP management requires AWS IPAM Advanced Tier.
-That changes the deployment requirements from the standalone community installer. Document how your migration relates to the supported commercial deployment.
-Read the link:https://netboxlabs.com/docs/integrations/aws-vpc-ipam/getting-started/[official setup guide] and link:https://netboxlabs.com/docs/integrations/aws-vpc-ipam/aws-vpc-ipam-faq/[integration FAQ] before committing to this route.
-Do not assume the Lab 2 installation can run the commercial integration unchanged.
-
-Both routes need host records as well as IPAM records for the inventory demo.
-IPAM network data alone does not create a usable list of EC2 hosts.
+You need access to EC2 and the networking resources your design requires.
+Use the community NetBox installation based on the Lab 2 script.
+Your team will enter its demo hosts in the NetBox UI after deployment.
 
 == Step 1: Organize the team
 
@@ -68,7 +51,7 @@ mkdir -p workshop-content/04-aws-lab-provisioning/teams/switchboard
 ----
 
 Agree on shared variables and file ownership before parallel work.
-Divide responsibilities such as the installer migration, AWS infrastructure, IPAM sync, inventory demo, and review.
+Divide responsibilities such as the installer migration, AWS infrastructure, NetBox host records, inventory demo, and review.
 Pair or rotate roles so everyone can explain at least one part of the delivery.
 Ask a teammate or another team to act as the customer during scope review and the final demo.
 Review each other's changes and resolve conflicting assumptions in the code and README.
@@ -89,7 +72,6 @@ Choose a supported OS and compatible dependency versions. If you change the sour
 Start by considering `t3.small` instances for lightweight demo targets or separated low-load components.
 They have 2 vCPUs and 2 GiB of memory. That is not a sizing guarantee for a complete NetBox stack.
 For an all-in-one community NetBox host, consider a larger instance such as `t3.medium` and measure memory during installation and the demo.
-Size commercial deployments according to their own requirements.
 Check regional availability, CPU credit behavior, storage, and current costs before launching.
 See link:https://docs.aws.amazon.com/ec2/latest/instancetypes/gp.html[AWS instance specifications].
 ====
@@ -104,7 +86,7 @@ Use Ansible for the NetBox installation and configuration.
 Define the deployment entry point and a separate bootstrap inventory so you can deploy NetBox before its inventory API is available.
 
 Write acceptance checks before generating more code.
-Include fresh installation, a second run, saved credentials, release persistence, HTTP or HTTPS access, service health, IPAM sync, dynamic inventory, and cleanup.
+Include fresh installation, a second run, saved credentials, release persistence, HTTP or HTTPS access, service health, manually entered host records, dynamic inventory, and cleanup.
 
 == Step 3: Finish the Ansible migration
 
@@ -126,40 +108,29 @@ Run syntax checks and your available lint tools, then deploy to the agreed AWS h
 Save service, login, and API verification results.
 Run the deployment again and investigate changes that should not repeat. Document necessary exceptions, such as explicit migration tasks.
 
-== Step 4: Connect AWS VPC IPAM to NetBox
+== Step 4: Manually add demo hosts to NetBox
 
-Start with one region and a small team-owned network scope.
-Confirm AWS VPC IPAM can discover the VPC or subnet you plan to show before testing your sync.
-Allow for AWS discovery delays and record the last sync time.
+Choose team-owned AWS hosts for the inventory demo.
+Use their actual names and addresses. Confirm how your control workstation will reach them.
 
-For the community route, design a repeatable reader and writer:
+Add the records through the NetBox UI:
 
-. Read the relevant IPAM scopes, pools, allocated CIDRs, or discovered resource CIDRs using supported AWS APIs.
-. Map those records to NetBox VRFs and prefixes. Define stable identifiers for updates and handle overlapping address space.
-. Tag or otherwise mark integration-owned records. Update only those records and report conflicts with customer-maintained data.
-. Run the sync twice and show that it does not create duplicates. Report stale records and decide how the customer will review deletions.
+. Create any supporting records your chosen host type requires, such as a site or cluster.
+. Create a virtual-machine or device record for each demo host and set its status to active.
+. Add an interface to each host.
+. Create an IP address with its prefix length and assign it to that host's interface.
+. Set the address as the host's primary IPv4 or IPv6 address.
+. Add the same team-specific tag to each demo host so your inventory can select them.
 
-Your implementation may use Ansible collections, a small Python helper, or both.
-Declare dependencies, explain API permissions, and provide an Ansible entry point for running the integration.
-Use the official link:https://docs.aws.amazon.com/vpc/latest/ipam/what-it-is-ipam.html[AWS IPAM documentation] and link:https://netbox.readthedocs.io/en/stable/integrations/rest-api/[NetBox REST API documentation] to check model-generated code.
+Check each host's name, primary IP, status, and tag in NetBox before querying the inventory.
+Document these manual steps in the customer handover so another operator can add a host.
 
-For the official integration route, use the supported agent configuration and IAM policy from its setup guide.
-Review and apply the discovered deviations in Assurance, then verify the resulting records in NetBox.
-Save evidence of the sync and any required approval step.
-
-== Step 5: Build a usable NetBox inventory
-
-Create NetBox virtual-machine or device records for the AWS hosts in your demo.
-Create interfaces and IP addresses, assign primary IPs, and give demo hosts a team-specific tag.
-Use a repeatable Ansible task or helper to populate those records, with stable AWS instance identifiers.
-EC2 instance discovery can supply the host metadata that the IPAM integration does not provide.
-Connect each host's addresses to the corresponding IPAM-derived network and VRF.
-Do not assume IPAM discovers every instance address.
+== Step 5: Query the NetBox dynamic inventory
 
 Use `netbox.netbox.nb_inventory` for the final inventory source.
 Read its link:https://docs.ansible.com/projects/ansible/latest/collections/netbox/netbox/nb_inventory_inventory.html[inventory plugin documentation] and install the required collection and Python dependencies.
 Keep the API endpoint and token in your environment or approved credential store.
-Use a read-only inventory token and a separate scoped write credential for the sync.
+Use a read-only inventory token for the queries.
 Keep certificate validation enabled and document any private CA trust configuration.
 Filter the inventory to the team's demo tag and hosts with primary addresses.
 Choose addresses reachable from your control workstation, or configure an approved connection path.
@@ -192,12 +163,12 @@ Use `workshop-content/04-aws-lab-provisioning/customer-demo-checklist.adoc` to p
 
 Demonstrate the deployed NetBox service and explain the Ansible content that configured it.
 Show a second deployment run and describe any remaining changes.
-Trace one AWS IPAM network into NetBox, then show a demo host with an address in that network.
+Show the hosts your team manually entered in NetBox, including their interfaces, primary IPs, and team tag.
 Query the NetBox inventory and run your demo playbook against the selected AWS hosts.
-Show the inventory membership change and explain how the customer would operate the sync.
+Show the inventory membership change and explain how the customer would add another host in NetBox.
 
 Describe what you tested, what remains incomplete, and what would need more work before production use.
-Give the customer a README with setup, dependency versions, required permissions, deployment, rerun, verification, sync, inventory, recovery, and teardown instructions.
+Give the customer a README with setup, dependency versions, required permissions, deployment, rerun, verification, manual host entry, dynamic inventory, recovery, and teardown instructions.
 Include your architecture decisions and useful AI model comparison findings.
 
 == Step 7: Handover and cleanup
@@ -207,15 +178,14 @@ Agree on how to share the branch or pull request with the customer.
 Keep the source, sanitized evidence, and operating instructions together.
 
 Use your documented teardown process after the demo, unless the environment owner explicitly wants the resources retained.
-Remove only team-owned resources. Account for instances, volumes, public addresses, network resources, and any IPAM resources your team created.
+Remove only team-owned resources. Account for instances, volumes, public addresses, and network resources.
 Verify the result in AWS and record any retained resources, their owner, and expiry.
 
 == Completion checklist
 
 * The team has reviewed Ansible content that installs and configures NetBox.
 * NetBox infrastructure is running on the team's AWS hosts, with installation and rerun evidence.
-* AWS VPC IPAM data reaches NetBox through the documented integration route.
-* NetBox host records reference the relevant network data and provide reachable primary addresses.
+* The team manually added demo host records, interfaces, primary addresses, and a team tag in NetBox.
 * The customer demo queries NetBox dynamic inventory and runs Ansible against the selected AWS hosts.
 * Inventory membership changes when the team changes a NetBox record.
 * The handover explains limitations, operating procedures, and cleanup, with no committed secrets.

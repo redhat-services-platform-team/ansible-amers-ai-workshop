@@ -10,7 +10,7 @@ Use Codex or Cursor with Ansible to migrate a Python NetBox installer, compare m
 * Optional Podman access to preview the documentation locally.
 
 Lab 2's generation and review steps run on your workstation.
-Lab 4 requires an AWS environment your team can use for testing and deployment, with access to AWS VPC IPAM.
+Lab 4 requires an AWS environment your team can use for testing and deployment.
 The workshop does not require OpenShift, AAP, or Showroom services.
 
 == Labs
@@ -18,7 +18,7 @@ The workshop does not require OpenShift, AAP, or Showroom services.
 . xref:01-cursor-workspace.adoc[Workspace setup]. Configure Codex or Cursor with your local Ansible tools, using the CLI or desktop interface.
 . xref:02-shell-to-ansible.adoc[Python-to-Ansible NetBox migration]. Write your own prompt and make one initial port with Composer in Cursor or Luna in Codex.
 . xref:03-managing-ai-costs.adoc[Comparing models and effort]. Repeat the migration with fixed inputs, change models and effort levels, and compare output, review work, time, and usage.
-. xref:04-aws-lab-provisioning.adoc[Customer NetBox delivery project]. Work as a team to migrate the installer, deploy NetBox infrastructure on AWS, and demonstrate NetBox dynamic inventory with AWS VPC IPAM data.
+. xref:04-aws-lab-provisioning.adoc[Customer NetBox delivery project]. Work as a team to migrate the installer, deploy NetBox infrastructure on AWS, and manually add hosts to NetBox, and query them through Ansible dynamic inventory.
 
 == Start the workshop
 
