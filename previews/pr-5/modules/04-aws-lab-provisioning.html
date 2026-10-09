@@ -143,7 +143,8 @@ Leave instructions another team can follow.
 Use <code>workshop-content/04-aws-lab-provisioning/customer-brief.adoc</code> as your project brief.</p>
 </div>
 <div class="paragraph">
-<p>Choose your team size, architecture, and division of work.
+<p>Work with your assigned team.
+Choose your architecture and division of work together.
 Write your own prompts and choose models based on your Lab 3 results.
 Agree on what you will deliver and explain any unfinished work to the customer.</p>
 </div>
@@ -187,6 +188,38 @@ Use your existing RHEL or macOS Ansible control workstation and an approved AI t
 <p>You need access to EC2 and the networking resources your design requires.
 Use the community NetBox installation based on the Lab 2 script.
 Your team will enter its demo hosts in the NetBox UI after deployment.</p>
+</div>
+<div class="sect2">
+<h3 id="_check_aws_costs_in_harness"><a class="anchor" href="#_check_aws_costs_in_harness"></a>Check AWS costs in Harness</h3>
+<div class="paragraph">
+<p>Use the workshop&#8217;s Harness link and sign-in method.
+Open the cost view assigned to your AWS account. If you cannot see it, ask the instructor for access before provisioning.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open <strong>Cloud &amp; AI Cost Management</strong> and select the workshop view in <strong>Cost Explorer</strong>, or its classic <strong>Perspective</strong>.</p>
+</li>
+<li>
+<p>Filter to your AWS account ID and region. Add the team resource-tag filter if the view includes it. Confirm the account ID against your AWS environment.</p>
+</li>
+<li>
+<p>Set a date range covering the lab. Record the displayed total, currency, cost basis, filters, and latest data timestamp before launching hosts.</p>
+</li>
+<li>
+<p>Group by AWS <strong>Service</strong> to identify the main charges. Use <strong>Resource Id</strong> or <strong>Instance Type</strong> to investigate EC2 charges.</p>
+</li>
+<li>
+<p>Recheck after deployment and before the demo. Compare the reported spend with the team&#8217;s budget and document any retained resources.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Cost data can arrive after the resources have run. An empty report does not establish that a deployment is free.
+Use AWS resource checks to verify cleanup, then revisit Harness when updated billing data is available.
+If you cannot isolate team resources in a shared account, label the total as account-wide.
+See <a href="https://developer.harness.io/docs/cloud-cost-management/cost-explorer/">Harness cost filters and grouping</a>.</p>
+</div>
 </div>
 </div>
 </div>
@@ -401,7 +434,8 @@ Keep the source, sanitized evidence, and operating instructions together.</p>
 <div class="paragraph">
 <p>Use your documented teardown process after the demo, unless the environment owner explicitly wants the resources retained.
 Remove only team-owned resources. Account for instances, volumes, public addresses, and network resources.
-Check AWS to confirm cleanup. Record any retained resources, their owner, and when they should be removed.</p>
+Check AWS to confirm cleanup. Record any retained resources, their owner, and when they should be removed.
+Recheck the same Harness cost view after billing data updates and include its scope and timestamps in the handover.</p>
 </div>
 </div>
 </div>
@@ -424,6 +458,9 @@ Check AWS to confirm cleanup. Record any retained resources, their owner, and wh
 </li>
 <li>
 <p>Inventory membership changes when the team changes a NetBox record.</p>
+</li>
+<li>
+<p>The team checked AWS costs in Harness and recorded the report scope, timestamps, and any access or data limitations.</p>
 </li>
 <li>
 <p>The handover explains limitations, operating procedures, and cleanup, with no committed secrets.</p>

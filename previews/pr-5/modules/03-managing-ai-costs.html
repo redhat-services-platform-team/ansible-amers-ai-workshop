@@ -365,15 +365,47 @@ Check that the code implements the behavior described in its README.</p>
 </li>
 </ul>
 </div>
+<div class="sect2">
+<h3 id="_check_ai_costs_in_harness"><a class="anchor" href="#_check_ai_costs_in_harness"></a>Check AI costs in Harness</h3>
 <div class="paragraph">
-<p>Record actual usage or cost from your account&#8217;s report if available.
+<p>Use the Harness link and sign-in method supplied for the workshop.
+Your instructor must have connected the AI billing source and granted access to its cost view.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open <strong>Cloud &amp; AI Cost Management</strong> and select the workshop view in <strong>Cost Explorer</strong>. In the classic interface, select the workshop <strong>Perspective</strong>.</p>
+</li>
+<li>
+<p>Set the date range to cover your runs. Record the report&#8217;s time zone and latest data timestamp.</p>
+</li>
+<li>
+<p>Apply the assigned account, project, or team filters that the view exposes. Confirm the report covers your usage.</p>
+</li>
+<li>
+<p>Group AI spend by <strong>Model</strong> or <strong>Provider</strong>. Record the displayed cost, currency, and filters in your scorecard.</p>
+</li>
+<li>
+<p>Use session or request details only if the workshop has trace attribution. Otherwise, record costs for the report&#8217;s available period and scope.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Provider billing totals do not identify individual runs or reasoning effort settings.
+If several runs share a model or account, do not assign the whole total to one run.
+Record <code>unavailable</code> when the report cannot isolate a run or has not ingested its usage yet.
+Recheck later and record when you checked.
+See <a href="https://developer.harness.io/docs/cloud-cost-management/cost-explorer/">Harness Cost Explorer</a> and <a href="https://developer.harness.io/docs/cloud-cost-management/ai-cost-management/overview/">AI cost attribution</a>.</p>
+</div>
+<div class="paragraph">
+<p>If your tool&#8217;s usage is not connected to Harness, use its account report.
 Cursor users can check <a href="https://cursor.com/dashboard/spending">Spending</a>. Codex users can use the usage view or their organization&#8217;s report.
-If per-run usage is unavailable, record <code>unavailable</code>.
 Elapsed time and turn counts cannot tell you what a run cost.</p>
 </div>
 <div class="paragraph">
 <p>You may repeat a run to see whether the same settings produce similar results.
 Record repeats separately so you can compare how much the results vary.</p>
+</div>
 </div>
 </div>
 </div>
