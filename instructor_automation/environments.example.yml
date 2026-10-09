@@ -6,9 +6,9 @@ workshop_git_aws_account:
   access_key: "{{ lookup('ansible.builtin.env', 'AWS_ACCESS_KEY_ID') }}"
   secret_key: "{{ lookup('ansible.builtin.env', 'AWS_SECRET_ACCESS_KEY') }}"
   session_token: "{{ lookup('ansible.builtin.env', 'AWS_SESSION_TOKEN') }}"
-  # Set one of these if the account has multiple public Route 53 zones.
-  # hosted_zone_id: Z0123456789EXAMPLE
-  # hosted_zone_name: demo.example.com
+
+# Server hostname is git.<discovered Route 53 zone>. Change this prefix if needed.
+workshop_git_dns_label: git
 
 # Each key creates an organization and a permission group with the same name.
 # Add or remove entries to match your class. Each student belongs to one team.
