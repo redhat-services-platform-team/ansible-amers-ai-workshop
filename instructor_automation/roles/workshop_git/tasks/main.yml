@@ -11,10 +11,10 @@
       - workshop_git_deployment_id is match('^[a-z][a-z0-9-]{0,23}$')
       - workshop_git_dns_label is match('^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$')
       - workshop_git_volume_size | int >= 8 and workshop_git_volume_size | int <= 16384
-      - workshop_git_timeout | int >= 30 and workshop_git_timeout | int <= 172800
+      - workshop_git_timeout | int > 0
       - workshop_git_instance_type is match('^[a-z][a-z0-9]*[.][a-z0-9]+$')
-      - workshop_git_gitea_image | length > 0
-      - workshop_git_caddy_image | length > 0
+      - workshop_git_gitea_version is match('^[0-9]+[.][0-9]+[.][0-9]+$')
+      - workshop_git_ssh_private_key_file | length > 0
       - workshop_git_password_file != workshop_git_output_file
       - workshop_git_private_dir | length > 0
       - workshop_git_password_file | length > 0
@@ -56,15 +56,6 @@
     loop_var: __workshop_git_git_env
     label: "{{ __workshop_git_git_env.name }}"
 
-- name: Validate saved credentials against every environment
-  workshop_git_passwords:
-    path: "{{ workshop_git_password_file }}"
-    students: "{{ workshop_git_student_ids }}"
-    required_students: "{{ __workshop_git_plan | map(attribute='credential_student_ids') | flatten | unique | list }}"
-  check_mode: true
-  changed_when: false
-  no_log: true
-
 - name: Show discovered server names
   ansible.builtin.debug:
     msg: "{{ __workshop_git_plan | map(attribute='url') | list }}"
@@ -72,30 +63,45 @@
 - name: Provision Git servers
   when: not (workshop_git_discover_only | bool) and not ansible_check_mode
   block:
-    - name: Check for saved password state
-      ansible.builtin.stat:
-        path: "{{ workshop_git_password_file }}"
-      register: __workshop_git_password_state
-
-    - name: Refuse to replace lost passwords for existing servers
-      ansible.builtin.assert:
-        that:
-          - __workshop_git_password_state.stat.exists or __workshop_git_plan | map(attribute='instance_ids') | flatten | length == 0
-        fail_msg: Existing Git instances need the original student-passwords.json. Restore it before rerunning.
-
     - name: Restrict the dedicated private directory
       ansible.builtin.file:
         path: "{{ workshop_git_private_dir }}"
         state: directory
         mode: '0700'
 
-    - name: Create or reuse initial student passwords
-      workshop_git_passwords:
-        path: "{{ workshop_git_password_file }}"
-        students: "{{ workshop_git_student_ids }}"
-        required_students: "{{ __workshop_git_plan | map(attribute='credential_student_ids') | flatten | unique | list }}"
-      register: __workshop_git_passwords_result
+    - name: Check for the saved instructor SSH key
+      ansible.builtin.stat:
+        path: "{{ workshop_git_ssh_private_key_file }}"
+      register: __workshop_git_key_state
+
+    - name: Refuse to replace a lost key for existing instances
+      ansible.builtin.assert:
+        that:
+          - __workshop_git_key_state.stat.exists or __workshop_git_plan | map(attribute='instance_ids') | flatten | length == 0
+        fail_msg: Restore the original instructor SSH key before configuring existing instances.
+
+    - name: Generate or reuse the instructor SSH key
+      community.crypto.openssh_keypair:
+        path: "{{ workshop_git_ssh_private_key_file }}"
+        type: ed25519
+        backend: opensshbin
+        regenerate: fail
+        mode: '0600'
+      register: __workshop_git_key
       no_log: true
+
+    - name: Discover the instructor public IPv4 address
+      ansible.builtin.uri:
+        url: https://checkip.amazonaws.com
+        return_content: true
+      register: __workshop_git_public_ip
+      when: workshop_git_ssh_cidr | length == 0
+
+    - name: Select the allowed instructor SSH network
+      ansible.builtin.set_fact:
+        __workshop_git_ssh_cidr: >-
+          {{ workshop_git_ssh_cidr if workshop_git_ssh_cidr | length > 0
+             else (__workshop_git_public_ip.content | trim) ~ '/32' }}
 
     - name: Provision and configure each environment
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/environment.yml"
@@ -103,18 +109,3 @@
       loop_control:
         loop_var: __workshop_git_git_plan
         label: "{{ __workshop_git_git_plan.name }}"
-
-    - name: Write the private instructor access sheet
-      ansible.builtin.copy:
-        dest: "{{ workshop_git_output_file }}"
-        mode: '0600'
-        content: >-
-          {{ {'servers': __workshop_git_servers,
-              'initial_passwords': __workshop_git_passwords_result.passwords,
-              'must_change_password': workshop_git_must_change_password | bool,
-              'students_are_admins': workshop_git_students_are_admins | bool} | to_nice_json }}
-      no_log: true
-
-    - name: Report where the access sheet was saved
-      ansible.builtin.debug:
-        msg: "Git server URLs and initial student passwords are in {{ workshop_git_output_file }}"

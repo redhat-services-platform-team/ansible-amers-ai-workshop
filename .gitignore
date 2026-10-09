@@ -63,3 +63,6 @@ workshop-content/04-aws-lab-provisioning/**/private/
 instructor_automation/private/
 instructor_automation/**/__pycache__/
 instructor_automation/.venv/
+
+# Pinned third-party instructor roles installed from requirements.yml
+instructor_automation/external_roles/

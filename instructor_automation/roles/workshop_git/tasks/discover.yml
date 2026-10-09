@@ -1,5 +1,5 @@
 ---
-- name: discover | Discover the public DNS zone and Amazon Linux image
+- name: discover | Discover the public DNS zone and Ubuntu image
   workshop_git_discovery:
     access_key: "{{ __workshop_git_git_env.access_key }}"
     secret_key: "{{ __workshop_git_git_env.secret_key }}"
@@ -11,7 +11,6 @@
     environment_name: "{{ __workshop_git_git_env.name }}"
     deployment_id: "{{ workshop_git_deployment_id }}"
     resource_name: "{{ workshop_git_deployment_id }}-{{ __workshop_git_git_env.name }}-git"
-    students: "{{ workshop_git_student_ids }}"
     vpc_cidr: "{{ workshop_git_vpc_cidr }}"
     subnet_cidr: "{{ workshop_git_subnet_cidr }}"
   register: __workshop_git_discovery
@@ -25,9 +24,9 @@
          'fqdn': (__workshop_git_git_env.dns_label | default(workshop_git_dns_label)) ~ '.' ~ __workshop_git_discovery.zone_name,
          'url': 'https://' ~ (__workshop_git_git_env.dns_label | default(workshop_git_dns_label)) ~ '.' ~ __workshop_git_discovery.zone_name,
          'zone_id': __workshop_git_discovery.zone_id, 'ami_id': __workshop_git_discovery.ami_id,
+         'root_device_name': __workshop_git_discovery.root_device_name,
          'account_id': __workshop_git_discovery.account_id, 'partition': __workshop_git_discovery.partition,
-         'instance_ids': __workshop_git_discovery.instance_ids,
-         'credential_student_ids': __workshop_git_discovery.credential_student_ids}
+         'instance_ids': __workshop_git_discovery.instance_ids}
       ] }}
   no_log: true
 

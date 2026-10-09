@@ -59,7 +59,7 @@ argument_specs:
         default: git
       workshop_git_instance_type:
         type: str
-        description: An x86_64 EC2 instance type compatible with Amazon Linux 2023.
+        description: An x86_64 EC2 instance type compatible with Ubuntu 24.04.
         default: t3.medium
       workshop_git_volume_size:
         type: int
@@ -81,14 +81,6 @@ argument_specs:
         type: bool
         description: Require newly created users to change their password at first login.
         default: true
-      workshop_git_gitea_image:
-        type: str
-        description: Pinned Gitea container image to deploy.
-        default: docker.gitea.com/gitea:28.1.0
-      workshop_git_caddy_image:
-        type: str
-        description: Pinned Caddy container image to deploy.
-        default: docker.io/library/caddy:2.11.7
       workshop_git_private_dir:
         type: path
         description: Dedicated controller directory whose permissions the role manages as 0700.
@@ -103,5 +95,21 @@ argument_specs:
         default: '{{ workshop_git_private_dir }}/git-access.json'
       workshop_git_timeout:
         type: int
-        description: SSM registration and command timeout in seconds, from 30 to 172800.
+        description: SSH connection timeout in seconds.
         default: 1200
+      workshop_git_gitea_version:
+        type: str
+        default: 28.1.0
+        description: Pinned Gitea binary release installed by the upstream role.
+      workshop_git_ssh_private_key_file:
+        type: path
+        default: '{{ workshop_git_private_dir }}/{{ workshop_git_deployment_id }}_ed25519'
+        description: Generated instructor SSH key on the controller. Preserve it across reruns.
+      workshop_git_ssh_cidr:
+        type: str
+        default: ''
+        description: SSH source network. Empty discovers the instructor public IPv4 address and uses its /32.
+      workshop_git_acme_email:
+        type: str
+        default: ''
+        description: Optional contact address for Let's Encrypt renewal notices.

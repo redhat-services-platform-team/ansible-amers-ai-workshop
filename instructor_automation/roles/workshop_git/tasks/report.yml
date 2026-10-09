@@ -1,0 +1,32 @@
+---
+- name: report | Gather verified server details
+  ansible.builtin.set_fact:
+    __workshop_git_servers: >-
+      {{ groups['workshop_git_servers'] | map('extract', hostvars, '__workshop_git_server_result') | list }}
+
+- name: report | Read initial passwords without changing them
+  workshop_git_passwords:
+    path: "{{ workshop_git_password_file }}"
+    students: "{{ workshop_git_student_ids }}"
+    required_students: "{{ workshop_git_student_ids }}"
+  check_mode: true
+  changed_when: false
+  register: __workshop_git_passwords_result
+  no_log: true
+
+- name: report | Write the private instructor access sheet
+  ansible.builtin.copy:
+    dest: "{{ workshop_git_output_file }}"
+    mode: '0600'
+    content: >-
+      {{ {'servers': __workshop_git_servers,
+          'initial_passwords': __workshop_git_passwords_result.passwords,
+          'must_change_password': workshop_git_must_change_password | bool,
+          'students_are_admins': workshop_git_students_are_admins | bool} | to_nice_json }}
+  no_log: true
+
+- name: report | Show student URLs and the access sheet path
+  ansible.builtin.debug:
+    msg:
+      urls: "{{ __workshop_git_servers | map(attribute='url') | list }}"
+      access_sheet: "{{ workshop_git_output_file }}"

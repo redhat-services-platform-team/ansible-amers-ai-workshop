@@ -1,5 +1,5 @@
 #!/usr/bin/python
-"""Read the account's DNS zones, AMI, and existing workshop instance."""
+"""Read the account's DNS zones, Ubuntu AMI, and existing workshop instance."""
 import ipaddress
 from ansible.module_utils.basic import AnsibleModule
 
@@ -41,15 +41,6 @@ def validate_networks(vpc_cidr, subnet_cidr):
         raise ValueError('The subnet CIDR must be inside the VPC CIDR.')
 
 
-def credential_student_ids(client, prefix, students):
-    requested = {student.lower() for student in students}
-    return [parameter['Name'].rsplit('/', 1)[-1]
-            for page in client.get_paginator('get_parameters_by_path').paginate(
-                Path=prefix, Recursive=False, WithDecryption=False)
-            for parameter in page['Parameters']
-            if parameter['Name'].rsplit('/', 1)[-1].lower() in requested]
-
-
 def main():
     module = AnsibleModule(argument_spec={
         'access_key': {'type': 'str', 'required': True, 'no_log': True},
@@ -62,7 +53,6 @@ def main():
         'dns_label': {'type': 'str', 'default': 'git'},
         'environment_name': {'type': 'str', 'required': True},
         'deployment_id': {'type': 'str', 'required': True},
-        'students': {'type': 'list', 'elements': 'str', 'default': []},
         'vpc_cidr': {'type': 'str', 'required': True},
         'subnet_cidr': {'type': 'str', 'required': True},
     }, supports_check_mode=True)
@@ -80,8 +70,17 @@ def main():
                    for record in page['ResourceRecordSets']]
         verify_dns_ownership(records, p['dns_label'] + '.' + zone['Name'].rstrip('.'),
                              p['deployment_id'] + '/' + p['environment_name'])
-        ami = session.client('ssm').get_parameter(
-            Name='/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64')['Parameter']['Value']
+        images = session.client('ec2').describe_images(Owners=['099720109477'], Filters=[
+            {'Name': 'name', 'Values': ['ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*']},
+            {'Name': 'state', 'Values': ['available']},
+            {'Name': 'architecture', 'Values': ['x86_64']},
+            {'Name': 'virtualization-type', 'Values': ['hvm']},
+            {'Name': 'root-device-type', 'Values': ['ebs']},
+        ])['Images']
+        if not images:
+            raise ValueError('No Canonical Ubuntu 24.04 image is available in this region.')
+        image = max(images, key=lambda image: image['CreationDate'])
+        ami = image['ImageId']
         reservations = session.client('ec2').describe_instances(Filters=[
             {'Name': 'tag:Name', 'Values': [p['resource_name']]},
             {'Name': 'tag:WorkshopDeployment', 'Values': [p['deployment_id']]},
@@ -90,11 +89,9 @@ def main():
         instances = [instance for reservation in reservations for instance in reservation['Instances']]
         if len(instances) > 1:
             raise ValueError('Multiple instances match this deployment. Resolve the duplicate tags before running again.')
-        known_students = credential_student_ids(session.client('ssm'),
-            '/' + p['deployment_id'] + '/' + p['environment_name'] + '/students', p['students'])
-        module.exit_json(changed=False, credential_student_ids=known_students, account_id=identity['Account'], partition=identity['Arn'].split(':')[1],
+        module.exit_json(changed=False, account_id=identity['Account'], partition=identity['Arn'].split(':')[1],
                          zone_id=zone['Id'].split('/')[-1], zone_name=zone['Name'].rstrip('.'),
-                         ami_id=ami, instance_ids=[instance['InstanceId'] for instance in instances])
+                         ami_id=ami, root_device_name=image['RootDeviceName'], instance_ids=[instance['InstanceId'] for instance in instances])
     except Exception as exc:
         module.fail_json(msg=str(exc))
 

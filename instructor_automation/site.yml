@@ -1,6 +1,29 @@
 ---
-- name: Build participant Git servers
+- name: Provision participant Git servers
   hosts: local
   gather_facts: false
   roles:
     - role: workshop_git
+
+- name: Configure Gitea and student accounts over SSH
+  hosts: workshop_git_servers
+  gather_facts: false
+  any_errors_fatal: true
+  tasks:
+    - name: Configure the SSH server
+      ansible.builtin.include_role:
+        name: workshop_git
+        tasks_from: configure
+
+- name: Write the verified student access sheet
+  hosts: local
+  gather_facts: false
+  tasks:
+    - name: Report successful Git servers
+      ansible.builtin.include_role:
+        name: workshop_git
+        tasks_from: report
+      when:
+        - not ansible_check_mode
+        - not (workshop_git_discover_only | default(false) | bool)
+        - groups['workshop_git_servers'] | default([]) | length > 0

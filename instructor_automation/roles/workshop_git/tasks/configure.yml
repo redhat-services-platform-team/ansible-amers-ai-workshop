@@ -1,0 +1,127 @@
+---
+- name: configure | Wait for SSH access
+  ansible.builtin.wait_for_connection:
+    timeout: "{{ workshop_git_timeout }}"
+
+- name: configure | Gather server facts
+  ansible.builtin.setup:
+
+- name: configure | Install ACL support for the Gitea service user
+  ansible.builtin.apt:
+    name: acl
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+
+- name: configure | Check for an existing native Gitea installation
+  ansible.builtin.stat:
+    path: "{{ __workshop_git_installation_path }}"
+  loop:
+    - /usr/local/bin/gitea
+    - /etc/gitea/gitea.ini
+    - /var/lib/gitea/data/gitea.db
+  loop_control:
+    loop_var: __workshop_git_installation_path
+  register: __workshop_git_installation
+
+- name: configure | Read existing student usernames
+  workshop_git_users:
+  become: true
+  become_user: gitea
+  register: __workshop_git_existing_users
+  when: __workshop_git_installation.results | map(attribute='stat.exists') | select('equalto', true) | list | length == 3
+
+- name: configure | Refuse to replace missing saved passwords
+  workshop_git_passwords:
+    path: "{{ workshop_git_password_file }}"
+    students: "{{ workshop_git_student_ids }}"
+    required_students: >-
+      {{ (__workshop_git_existing_users.usernames | default([])) |
+         intersect(workshop_git_student_ids | map('lower') | list) }}
+  delegate_to: "{{ workshop_git_controller }}"
+  check_mode: true
+  changed_when: false
+  no_log: true
+
+- name: configure | Create or reuse initial student passwords
+  workshop_git_passwords:
+    path: "{{ workshop_git_password_file }}"
+    students: "{{ workshop_git_student_ids }}"
+  delegate_to: "{{ workshop_git_controller }}"
+  run_once: true
+  register: __workshop_git_passwords_result
+  no_log: true
+
+- name: configure | Install Gitea with the pinned upstream role
+  ansible.builtin.include_role:
+    name: roles-ansible.gitea
+    apply:
+      no_log: true
+  vars:
+    # Define optional fork defaults for the upstream role's vars lookup on Ansible 2.19+.
+    gitea_theme_default: gitea-auto
+    gitea_themes: gitea-auto,gitea-light,gitea-dark
+    gitea_gpg_local_key: ''
+    gitea_version: "{{ workshop_git_gitea_version }}"
+    gitea_fqdn: "{{ workshop_git_server.fqdn }}"
+    gitea_root_url: "{{ workshop_git_server.url }}/"
+    gitea_protocol: https
+    gitea_http_listen: 0.0.0.0
+    gitea_http_port: '443'
+    gitea_start_ssh: false
+    gitea_server_extra_config: 'DISABLE_SSH = true'
+    gitea_redirect_other_port: true
+    gitea_port_to_redirect: '80'
+    gitea_enable_acme: true
+    gitea_acme_accepttos: true
+    gitea_acme_email: "{{ workshop_git_acme_email }}"
+    gitea_acme_directory: /var/lib/gitea/custom/https
+    gitea_systemd_cap_net_bind_service: true
+    gitea_disable_registration: true
+    gitea_show_registration_button: false
+    gitea_require_signin: true
+    gitea_db_type: sqlite3
+    gitea_users: []
+
+- name: configure | Apply Gitea service changes
+  ansible.builtin.meta: flush_handlers
+
+- name: configure | Check trusted HTTPS from the instructor controller
+  ansible.builtin.uri:
+    url: "{{ workshop_git_server.url }}/api/healthz"
+    status_code: 200
+    validate_certs: true
+  delegate_to: "{{ workshop_git_controller }}"
+  register: __workshop_git_https
+  retries: 40
+  delay: 15
+  until: __workshop_git_https is succeeded
+
+- name: configure | Prepare student accounts
+  ansible.builtin.set_fact:
+    __workshop_git_users: >-
+      {{ (__workshop_git_users | default([])) +
+         [{'username': __workshop_git_student_id,
+           'email': __workshop_git_student_id ~ '@' ~ workshop_git_server.fqdn,
+           'password': __workshop_git_passwords_result.passwords[__workshop_git_student_id],
+           'admin': workshop_git_students_are_admins | bool,
+           'must_change_password': workshop_git_must_change_password | bool}] }}
+  loop: "{{ workshop_git_student_ids }}"
+  loop_control:
+    loop_var: __workshop_git_student_id
+  no_log: true
+
+- name: configure | Create missing students without changing existing passwords
+  workshop_git_users:
+    users: "{{ __workshop_git_users }}"
+  become: true
+  become_user: gitea
+  register: __workshop_git_created_users
+  no_log: true
+
+- name: configure | Save verified server details
+  ansible.builtin.set_fact:
+    __workshop_git_server_result: >-
+      {{ workshop_git_server | combine({'students': workshop_git_student_ids,
+         'new_users': __workshop_git_created_users.created_users}) }}

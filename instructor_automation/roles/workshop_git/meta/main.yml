@@ -7,7 +7,7 @@ galaxy_info:
   license: Proprietary
   min_ansible_version: '2.19'
   platforms:
-    - name: Amazon
+    - name: Ubuntu
       versions:
         - all
   galaxy_tags:

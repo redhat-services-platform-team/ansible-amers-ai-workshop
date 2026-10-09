@@ -19,8 +19,7 @@ def load(name, path):
 
 discovery = load('discovery', 'roles/workshop_git/library/workshop_git_discovery.py')
 passwords = load('passwords', 'roles/workshop_git/library/workshop_git_passwords.py')
-remote = load('remote', 'roles/workshop_git/files/configure_git.py')
-ssm = load('ssm', 'roles/workshop_git/library/workshop_git_ssm_command.py')
+remote = load('remote', 'roles/workshop_git/library/workshop_git_users.py')
 
 
 class DiscoveryTests(unittest.TestCase):
@@ -36,18 +35,6 @@ class DiscoveryTests(unittest.TestCase):
             discovery.select_public_zone(zones, zone_id='Z2')
         with self.assertRaises(ValueError):
             discovery.select_public_zone([])
-
-    def test_existing_credential_names_are_read_without_decryption(self):
-        client = Mock()
-        paginator = client.get_paginator.return_value
-        paginator.paginate.return_value = [
-            {'Parameters': [{'Name': '/lab/students/Alice'}]},
-            {'Parameters': [{'Name': '/lab/students/bob'}, {'Name': '/lab/students/former'}]},
-        ]
-        self.assertEqual(discovery.credential_student_ids(client, '/lab/students', ['ALICE', 'bob', 'new']),
-                         ['Alice', 'bob'])
-        client.get_paginator.assert_called_once_with('get_parameters_by_path')
-        paginator.paginate.assert_called_once_with(Path='/lab/students', Recursive=False, WithDecryption=False)
 
     def test_invalid_networks_are_rejected_before_discovery(self):
         discovery.validate_networks('10.77.0.0/16', '10.77.1.0/24')
@@ -147,7 +134,7 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(created, ['bob', 'charlie'])
         self.assertEqual(run.call_count, 2)
         for call in run.call_args_list:
-            self.assertIn('--admin', call.args[0])
+            self.assertIn('--admin=true', call.args[0])
             self.assertIn('--must-change-password=true', call.args[0])
         self.assertEqual(remote.create_missing_users(users, {'alice', 'bob', 'charlie'}, run), [])
         self.assertEqual(run.call_count, 2)
@@ -156,85 +143,21 @@ class RemoteTests(unittest.TestCase):
     def test_cli_list_ignores_log_lines(self):
         self.assertEqual(remote.usernames_from_list('2026/10/09 migration complete\nID Username Email\n1 Alice alice@example.com\n2 bob bob@example.com\n'), {'alice', 'bob'})
 
-    def test_secure_parameters_are_batched_and_missing_credentials_fail(self):
-        students = ['student' + str(n) for n in range(23)]
-        client = Mock()
-        client.get_parameters.side_effect = lambda **kw: {
-            'Parameters': [{'Name': name, 'Value': json.dumps({'username': name.split('/')[-1]})} for name in kw['Names']]}
-        self.assertEqual(len(remote.fetch_students(client, '/lab/students', students)), 23)
-        self.assertEqual([len(call.kwargs['Names']) for call in client.get_parameters.call_args_list], [10, 10, 3])
-        self.assertTrue(all(call.kwargs['WithDecryption'] for call in client.get_parameters.call_args_list))
-        client.get_parameters.side_effect = None
-        client.get_parameters.return_value = {'Parameters': [], 'InvalidParameters': ['/lab/students/student0']}
-        with self.assertRaises(RuntimeError):
-            remote.fetch_students(client, '/lab/students', students)
+    def test_check_mode_does_not_create_users(self):
+        run = Mock()
+        user = dict(username='new', email='new@example.com', password='example', admin=False,
+                    must_change_password=True)
+        self.assertEqual(remote.create_missing_users([user], set(), run, check_mode=True), ['new'])
+        run.assert_not_called()
 
-    def test_failed_caddy_update_retries_with_persisted_configuration(self):
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            old_content = 'old.example.com {\n    reverse_proxy 127.0.0.1:3000\n}\n'
-            caddyfile = root / 'Caddyfile'
-            caddyfile.write_text(old_content)
-            args = ['--network', 'host', '-v', str(caddyfile) + ':/etc/caddy/Caddyfile:ro',
-                    '-v', 'workshop-caddy-data:/data', '-v', 'workshop-caddy-config:/config']
-            image = 'caddy:test'
-            old_digest = remote.hashlib.sha256(json.dumps([image, args, old_content], sort_keys=True).encode()).hexdigest()
-            current = {'Config': {'Labels': {'workshop.config': old_digest}}, 'State': {'Running': True}}
-            commands = []
-            def run(command):
-                if command[:2] == ['docker', 'exec']:
-                    return ''
-                commands.append(command)
-                if command[:2] == ['docker', 'pull'] and len(commands) == 1:
-                    raise RuntimeError('Simulated image pull failure')
-                if command[:2] == ['docker', 'run']:
-                    label = command[command.index('--label') + 1].split('=', 1)[1]
-                    current['Config']['Labels']['workshop.config'] = label
-                return ''
-            ensure_container = remote.ensure_container
-            def ensure(name, image, args, **kwargs):
-                return ensure_container(name, image, args, **kwargs) if name == 'workshop-caddy' else False
-            def inspect(*args, **kwargs):
-                return Mock(returncode=0, stdout=json.dumps([current]))
-            config = dict(fqdn='new.example.com', region='us-east-2', parameter_prefix='/test',
-                          student_ids=[], gitea_image='gitea:test', caddy_image=image)
-            with patch.object(remote, 'Path', return_value=root), patch.object(remote.os, 'chown'), \
-                 patch.object(remote, 'ensure_container', side_effect=ensure), \
-                 patch.object(remote, 'wait_for_gitea'), patch.object(remote, 'fetch_students', return_value=[]), \
-                 patch.object(remote, 'command', side_effect=run), patch.object(remote.subprocess, 'run', side_effect=inspect), \
-                 patch('boto3.client'):
-                with self.assertRaisesRegex(RuntimeError, 'pull failure'):
-                    remote.configure(config)
-                self.assertIn('new.example.com', caddyfile.read_text())
-                self.assertTrue(remote.configure(config)['changed'])
-                self.assertFalse(remote.configure(config)['changed'])
-            self.assertEqual(sum(command[:2] == ['docker', 'pull'] for command in commands), 2)
-            self.assertEqual(sum(command[:3] == ['docker', 'rm', '-f'] for command in commands), 1)
-
-    def test_container_rerun_preserves_data_and_running_container(self):
-        args = ['-v', '/data:/data']
-        digest = remote.hashlib.sha256(json.dumps(['gitea:fixed', args], sort_keys=True).encode()).hexdigest()
-        inspect = Mock(returncode=0, stdout=json.dumps([{'Config': {'Labels': {'workshop.config': digest}}, 'State': {'Running': True}}]))
-        with patch.object(remote.subprocess, 'run', return_value=inspect), patch.object(remote, 'command') as command:
-            self.assertFalse(remote.ensure_container('gitea', 'gitea:fixed', args))
-            command.assert_not_called()
-
-
-class SSMTests(unittest.TestCase):
-    def test_failed_remote_setup_does_not_report_success(self):
-        client = Mock()
-        client.describe_instance_information.return_value = {'InstanceInformationList': [{'PingStatus': 'Online'}]}
-        client.send_command.return_value = {'Command': {'CommandId': 'test-command'}}
-        client.get_command_invocation.return_value = {'Status': 'Failed'}
-        with self.assertRaisesRegex(RuntimeError, 'test-command'):
-            ssm.run_command(client, 'i-example', 'safe script', 60)
-
-    def test_success_returns_actual_changed_flag(self):
-        client = Mock()
-        client.describe_instance_information.return_value = {'InstanceInformationList': [{'PingStatus': 'Online'}]}
-        client.send_command.return_value = {'Command': {'CommandId': 'test-command'}}
-        client.get_command_invocation.return_value = {'Status': 'Success', 'StandardOutputContent': '{"changed": false, "created_users": []}\n'}
-        self.assertFalse(ssm.run_command(client, 'i-example', 'safe script', 60)['changed'])
+    def test_existing_username_match_is_exact_and_ignores_case(self):
+        run = Mock()
+        user = dict(username='ann', email='ann@example.com', password='example', admin=False,
+                    must_change_password=True)
+        self.assertEqual(remote.create_missing_users([user], {'anna'}, run), ['ann'])
+        run.reset_mock()
+        self.assertEqual(remote.create_missing_users([dict(user, username='ANN')], {'ann'}, run), [])
+        run.assert_not_called()
 
 
 if __name__ == '__main__':
