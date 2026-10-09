@@ -131,7 +131,7 @@
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-Repeat the NetBox migration with fixed inputs. Try different models and reasoning effort levels, then compare the output, review work, time, and reported usage.
+Repeat the NetBox migration with the same source files and prompt. Compare models and reasoning effort levels. Record the output, corrections, elapsed time, and reported usage.
 </blockquote>
 </div>
 </div>
@@ -184,7 +184,7 @@ The shared inputs are under <code>workshop-content/02-shell-to-ansible/</code>:<
 <div class="paragraph">
 <p>Lab 2 started with your own prompt. This lab uses the supplied <code>prompt.md</code> unchanged so the initial request stays the same across runs.
 Only the output directory changes.
-Keep prior generated projects and conversations out of each run&#8217;s context.
+Do not include earlier generated projects or conversations in a new run.
 Use <code>workshop-content/03-managing-ai-costs/lab-scorecard.adoc</code> or your own notebook.</p>
 </div>
 <div class="paragraph">
@@ -344,7 +344,7 @@ ansible-playbook -i inventory.ini.example --syntax-check site.yml</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_step_4_compare_evidence"><a class="anchor" href="#_step_4_compare_evidence"></a>Step 4: Compare evidence</h2>
+<h2 id="_step_4_compare_the_results"><a class="anchor" href="#_step_4_compare_the_results"></a>Step 4: Compare the results</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Use the same migration checklist for each output.
@@ -429,7 +429,7 @@ If the report cannot isolate a run or show its cost, record <code>unavailable</c
 Elapsed time and turn counts cannot tell you what a run cost.</p>
 </div>
 <div class="paragraph">
-<p>You may repeat a run to see whether the same settings produce similar results.
+<p>Repeat a run if you want to check whether the same settings produce similar results.
 Record repeats separately so you can compare how much the results vary.</p>
 </div>
 </div>

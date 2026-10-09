@@ -131,7 +131,7 @@
 <div class="sectionbody">
 <div class="quoteblock abstract">
 <blockquote>
-Work as a delivery team for a fictional company. Migrate the inherited Python installer to Ansible and deploy NetBox infrastructure in your AWS environment. Manually add demo hosts to NetBox and query them with Ansible&#8217;s dynamic inventory plugin.
+With your assigned team, migrate the Python installer to Ansible for a fictional customer. Deploy NetBox on AWS, add demo hosts in its UI, and query them with Ansible dynamic inventory.
 </blockquote>
 </div>
 </div>
@@ -167,7 +167,7 @@ Agree on what you will deliver and explain any unfinished work to the customer.<
 <p>Ansible content that installs and configures NetBox and its dependencies, based on the Python installer from Lab 2.</p>
 </li>
 <li>
-<p>Running AWS hosts for the NetBox infrastructure, with a documented network layout and deployment procedure.</p>
+<p>AWS hosts running NetBox, with a documented network layout and deployment instructions.</p>
 </li>
 <li>
 <p>Manually created NetBox host records and a working demo that queries them through <code>netbox.netbox.nb_inventory</code>.</p>
@@ -214,15 +214,15 @@ mkdir -p workshop-content/04-aws-lab-provisioning/teams/switchboard</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Agree on shared variables and file ownership before parallel work.
+<p>Agree on variable names and who will edit each file before working in parallel.
 Divide responsibilities such as the installer migration, AWS infrastructure, NetBox host records, inventory demo, and review.
-Pair or rotate roles so everyone can explain at least one part of the delivery.
+Pair or rotate tasks so each student can explain part of the project.
 Ask a teammate or another team to act as the customer during scope review and the final demo.
 Review each other&#8217;s changes and resolve conflicting assumptions in the code and README.</p>
 </div>
 <div class="paragraph">
 <p>Review your ports from Labs 2 and 3.
-Choose one to continue, or start again if none provides a useful base.
+Choose a port to finish, or start again if none meets your needs.
 Use your model comparison notes to decide which requests need more reasoning effort.
 Use the customer brief to decide what to ask the tool.</p>
 </div>
@@ -276,7 +276,7 @@ Also check manual host entry, dynamic inventory, and cleanup.</p>
 <h2 id="_step_3_finish_the_ansible_migration"><a class="anchor" href="#_step_3_finish_the_ansible_migration"></a>Step 3: Finish the Ansible migration</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Use the source installer and <code>workshop-content/02-shell-to-ansible/migration-checklist.adoc</code> to account for its behavior.
+<p>Compare your migration with the installer and <code>workshop-content/02-shell-to-ansible/migration-checklist.adoc</code>.
 Convert the installer stages to Ansible tasks. Running the original script from a playbook does not complete the migration.</p>
 </div>
 <div class="paragraph">
@@ -293,9 +293,9 @@ Explain any intentional changes to the installer&#8217;s state file, refusal con
 Document the supported upgrade and recovery procedures, including what you have not tested.</p>
 </div>
 <div class="paragraph">
-<p>Read the generated changes before running them.
+<p>Review the generated changes before running them.
 Run syntax checks and your available lint tools, then deploy to the agreed AWS hosts.
-Save service, login, and API verification results.
+Save the results of your service, login, and API checks.
 Run the deployment again and investigate changes that should not repeat. Document necessary exceptions, such as explicit migration tasks.</p>
 </div>
 </div>
@@ -392,7 +392,7 @@ Query the NetBox inventory and run your demo playbook against the selected AWS h
 Show the inventory membership change and explain how the customer would add another host in NetBox.</p>
 </div>
 <div class="paragraph">
-<p>Describe what you tested, what remains incomplete, and what would need more work before production use.
+<p>Explain what you tested and what remains incomplete. List the work needed before production use.
 Give the customer a README with dependency versions and required permissions.
 Include instructions for deployment, reruns, verification, manual host entry, inventory queries, recovery, and teardown.
 Include your architecture decisions and useful AI model comparison findings.</p>
@@ -405,7 +405,7 @@ Include your architecture decisions and useful AI model comparison findings.</p>
 <div class="paragraph">
 <p>Review the staged files for credentials and private output before committing your team&#8217;s work.
 Agree on how to share the branch or pull request with the customer.
-Keep the source, sanitized evidence, and operating instructions together.</p>
+Keep the source, test results with secrets removed, and operating instructions together.</p>
 </div>
 <div class="paragraph">
 <p>Use your documented teardown process after the demo, unless the environment owner explicitly wants the resources retained.

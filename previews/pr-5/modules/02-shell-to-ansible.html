@@ -141,7 +141,7 @@ Write your own prompt to port the Python NetBox installer with Composer in Curso
 <div class="sectionbody">
 <div class="paragraph">
 <p>Fifty maintainers have touched the installer over several years.
-The runbook is missing, the wiki disagrees with the comments, and everyone agrees that this script holds the company together.
+The runbook is missing and the wiki disagrees with the comments. The company still depends on the script.
 Your assignment is to replace it with automation the next maintainer can review and operate.</p>
 </div>
 <div class="paragraph">
@@ -185,7 +185,7 @@ Keep that model throughout this lab and work on one port in <code>attempt-1/</co
 If your account lacks the requested model, use an approved available model and note the substitution.
 Lab 3 is where you will compare models and effort levels.
 See the <a href="https://cursor.com/docs/models/cursor-composer-2-5">Composer documentation</a> and <a href="https://learn.chatgpt.com/docs/models">official OpenAI model documentation</a> for available controls.
-You can finish this lab with a partial migration. Record what you tried and what remains.</p>
+A partial migration is enough for this lab. Record what you tried and what remains.</p>
 </div>
 <div class="paragraph">
 <p>Run terminal commands from the repository root unless a step changes directories.</p>
@@ -247,7 +247,7 @@ cp workshop-content/02-shell-to-ansible/starter/inventory.ini.example "$lab_outp
 </div>
 </div>
 <div class="paragraph">
-<p>The starter inventory names the <code>netbox_lab</code> group and uses a documentation-only IP address.
+<p>The starter inventory defines <code>netbox_lab</code> with an example IP address.
 Leave it as an example during generation and syntax review.
 Git ignores learner output.
 Save your first prompt and a few notes in this folder so you can refer to them in Lab 3.</p>
@@ -324,7 +324,7 @@ Save each follow-up and note what changed. Lab 3 compares models and effort leve
 <div class="paragraph">
 <p>After trying your own prompt, you can read <code>workshop-content/02-shell-to-ansible/prompt.md</code>.
 Use it as a reference for requirements you may have missed.
-Borrow useful requirements or edit it to guide a follow-up on the same port.
+Use any requirements you missed in a follow-up on the same port.
 You can also ask the tool to suggest improvements to your original prompt.
 Note which suggestions you choose and why.</p>
 </div>
