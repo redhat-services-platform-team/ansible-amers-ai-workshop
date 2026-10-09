@@ -1,0 +1,47 @@
+= Customer brief: Switchboard Supply
+
+Switchboard Supply uses NetBox to record its networks and hosts.
+A Python installer has accumulated years of undocumented changes, and operators still copy AWS host addresses into static Ansible inventories.
+The customer wants your team to replace that process with maintainable automation and demonstrate how Ansible can use NetBox data.
+
+== What the customer needs
+
+Deliver Ansible content that installs and configures NetBox on AWS hosts the team is authorized to use.
+Base the migration on `workshop-content/02-shell-to-ansible/legacy/install_netbox.py` and review it against the migration checklist.
+You may change the architecture and defaults if you explain the reason and test the resulting behavior.
+
+Use AWS VPC IPAM data in NetBox and demonstrate NetBox as Ansible's dynamic inventory.
+For the community installation, implement a small IPAM-to-NetBox sync.
+The official NetBox Labs integration is an alternative only when the required commercial deployment, Assurance, Orb Agent Pro, and preview access are available.
+Document the chosen route before deployment.
+
+The customer needs to see the connection between an AWS IPAM network, its NetBox record, and an AWS host selected by Ansible from NetBox.
+Create the host records and primary addresses separately where IPAM data does not supply them.
+Do not present a static inventory or an AWS EC2 inventory as the NetBox inventory demo.
+
+== Questions to settle as a team
+
+* Which AWS account, region, and resources can we use? Who owns cleanup?
+* Which IPAM scope and network will we sync? What permissions and tier does that require?
+* Which NetBox version, OS, and deployment layout will we support?
+* Which installer behaviors will we preserve, improve, or leave unsupported?
+* How will we protect secrets and keep database and cache access private?
+* How will we identify sync-owned records and handle overlapping networks or stale data?
+* How will the control workstation reach the hosts returned by NetBox?
+* What evidence will convince the customer that installation, reruns, sync, and inventory work?
+
+== Acceptance criteria
+
+[cols="2,3",options="header"]
+|===
+| Customer request | Evidence to bring to the demo
+| Repeatable NetBox installation | Reviewed Ansible project, declared dependencies, AWS host details, and healthy application and services
+| Safe reruns | A second deployment run, preserved credentials and release, and explanations for remaining changes
+| AWS VPC IPAM integration | The chosen sync implementation or supported agent setup, one network traced into NetBox, and a second sync without duplicates
+| NetBox dynamic inventory | Tagged VM or device records with primary IPs, a filtered inventory query, and a successful Ansible play against team-owned AWS hosts
+| Dynamic host selection | A NetBox record change that changes inventory membership without editing a static list
+| Maintainable handover | README, architecture decisions, verification evidence, known limitations, recovery notes, and teardown instructions
+|===
+
+This is a workshop delivery, not proof of production readiness.
+Keep the demo small enough to understand and test. Record production work that remains rather than claiming it is complete.

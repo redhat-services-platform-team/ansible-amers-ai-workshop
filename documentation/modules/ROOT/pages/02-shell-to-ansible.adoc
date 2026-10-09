@@ -1,7 +1,7 @@
 = Lab: Python-to-Ansible NetBox migration
 
 [abstract]
-Write your own prompt to start migrating the Python NetBox installer. Try follow-up requests, explore the tools, and inspect what they produce.
+Write your own prompt and make one initial port of the Python NetBox installer with Composer in Cursor or Luna in Codex. Use follow-up requests to learn how to guide and review the tool.
 
 == The handover
 
@@ -24,8 +24,13 @@ Read the code to determine what the installer does.
 
 Complete xref:01-cursor-workspace.adoc[Module 1: Workspace setup].
 Use Codex or Cursor and your existing Ansible environment on the RHEL or macOS control workstation.
-Choose an approved model available in your tool.
-You can change prompts, models, or interaction modes as you experiment.
+Select Composer if you use Cursor, or Luna if you use Codex.
+Use the Composer version available to your account, or `gpt-6-luna` in Codex.
+For Luna, start with High reasoning effort if available. Record the actual model and setting.
+Keep that model throughout this lab and work on one port in `attempt-1/`.
+If your account lacks the requested model, use an approved available model and note the substitution.
+Lab 3 is where you will compare models and effort levels.
+See the link:https://cursor.com/docs/models/cursor-composer-2-5[Composer documentation] and link:https://learn.chatgpt.com/docs/models[official OpenAI model documentation] for available controls.
 A partial migration is a useful result if you can explain what you tried and what remains.
 You do not need to finish a full NetBox deployment in this lab.
 
@@ -33,10 +38,11 @@ Run terminal commands from the repository root unless a step changes directories
 
 [source,bash]
 ----
+# Check the Ansible installation on your control workstation.
 ansible-playbook --version
 ----
 
-Generate and review the projects locally for the base exercise.
+Generate and review your port locally for this exercise.
 The installer requires root and changes system configuration. Do not execute it on your control workstation.
 
 == Step 1: Read the inherited installer
@@ -60,15 +66,18 @@ Replace `learner` with your name without spaces:
 
 [source,bash]
 ----
+# Set the folder for your prompts, notes, and generated project.
 lab_output=workshop-content/02-shell-to-ansible/output/learner
+# Create the directory for this lab's single port.
 mkdir -p "$lab_output/attempt-1"
+# Copy the placeholder inventory for local syntax checks.
 cp workshop-content/02-shell-to-ansible/starter/inventory.ini.example "$lab_output/attempt-1/"
 ----
 
 The starter inventory names the `netbox_lab` group and uses a documentation-only IP address.
 Leave it as an example during generation and syntax review.
 Git ignores learner output.
-Save your first prompt and a few notes in this folder so you can compare them with later attempts.
+Save your first prompt and a few notes in this folder so you can refer to them in Lab 3.
 
 == Step 3: Write your own first prompt
 
@@ -101,24 +110,15 @@ Try something that answers a question you have about the tool or output.
 For example, ask it to explain a generated task, convert one installer stage, revise a variable name, or check whether secrets survive a second run.
 Inspect the diff after each change.
 
-You can also try a fresh conversation, another approved model, or a different interaction mode.
-If you want to preserve the first attempt, create another folder:
-
-[source,bash]
-----
-mkdir -p "$lab_output/attempt-2"
-cp workshop-content/02-shell-to-ansible/starter/inventory.ini.example "$lab_output/attempt-2/"
-----
-
-Tell the tool to save the new attempt there.
-Changing one thing at a time can help you see its effect, but you are free to explore.
-Record prompt and mode changes so you can explain the differences you see.
+Continue improving the same port with your selected model.
+Keep notes about each follow-up and inspect its changes before asking for more.
+You can change the request as you learn, but save model and effort comparisons for Lab 3.
 
 === Optional prompt resource
 
 After trying your own prompt, you can read `workshop-content/02-shell-to-ansible/prompt.md`.
 It is a detailed example, not the required starting prompt for this lab.
-Borrow useful requirements, edit it, or try it in a separate conversation to compare the response.
+Borrow useful requirements or edit it to guide a follow-up on the same port.
 You can also ask the tool to suggest improvements to your original prompt.
 Note which suggestions you choose and why.
 
@@ -138,7 +138,9 @@ If your attempt has `site.yml` and `inventory.ini.example`, check syntax from th
 [source,bash]
 ----
 (
+  # Enter the generated project directory.
   cd "$lab_output/attempt-1"
+  # Check playbook syntax without connecting to the example host.
   ansible-playbook -i inventory.ini.example --syntax-check site.yml
 )
 ----
@@ -149,7 +151,9 @@ If the project declares collection dependencies, review `requirements.yml` and i
 [source,bash]
 ----
 (
+  # Enter the generated project directory.
   cd "$lab_output/attempt-1"
+  # Install the collections declared by this project.
   ansible-galaxy collection install -r requirements.yml
 )
 ----
@@ -172,10 +176,9 @@ Save brief notes alongside your prompts and generated files:
 * What remains incomplete or untested?
 * What would you try next?
 
-You can use the Module 2 rows in `workshop-content/03-managing-ai-costs/lab-scorecard.adoc` or your own notebook.
-Record the actual model, tool and mode, and whether you used your own prompt, an edited example, or the supplied prompt.
-Leave the optional experiment row blank if you only made one attempt.
-Differences here can come from your prompts, context, model, or mode. They are observations to discuss, not a controlled model ranking.
+You can use the Lab 2 row in `workshop-content/03-managing-ai-costs/lab-scorecard.adoc` or your own notebook.
+Record the actual model, effort setting, tool and mode, and which parts of the optional prompt you used.
+These notes describe one port and your follow-ups. Lab 3 uses fresh conversations for a controlled comparison.
 
 == Completion checklist
 
@@ -188,8 +191,8 @@ Differences here can come from your prompts, context, model, or mode. They are o
 An unfinished migration can satisfy this lab.
 The goal is to get familiar with the tools and learn how to guide and review their output.
 
-Proceed to xref:03-managing-ai-costs.adoc[Module 3: Managing AI costs].
-That lab uses the supplied `prompt.md` unchanged across runs to compare models with fixed inputs.
+Proceed to xref:03-managing-ai-costs.adoc[Module 3: Comparing models and effort].
+That lab uses the supplied `prompt.md` unchanged across runs to compare models and effort levels with fixed inputs.
 Your experiments here are useful discussion notes, but their prompts and settings may differ from that comparison.
 
 If you see an error in this lab, fork and submit a pull request against link:{workshop_repo_url}[{workshop_repo_url},window=_blank].

@@ -47,10 +47,14 @@ yarn.lock
 workshop-content/02-shell-to-ansible/output/**
 !workshop-content/02-shell-to-ansible/output/.gitkeep
 
-# Lab 4 — never commit AWS secrets (teams commit playbooks on group_* branches)
+# Lab 4 team secrets and private runtime output
 workshop-content/04-aws-lab-provisioning/**/credentials.yml
 workshop-content/04-aws-lab-provisioning/**/secrets.yml
 workshop-content/04-aws-lab-provisioning/group_vars/all.yml
 
 # Track the Lab 2 NetBox example with blank secret values
 !workshop-content/02-shell-to-ansible/legacy/.env.example
+
+workshop-content/04-aws-lab-provisioning/**/state.json
+workshop-content/04-aws-lab-provisioning/**/inventory-export.json
+workshop-content/04-aws-lab-provisioning/**/private/

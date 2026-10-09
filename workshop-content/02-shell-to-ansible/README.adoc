@@ -2,7 +2,7 @@
 
 Migrate a NetBox installer with fifty fictional maintainers and contradictory handover notes.
 Write your own first prompt, try follow-up requests, and inspect the generated output.
-This lab gives new users time to experiment with Codex or Cursor. A complete migration is not required.
+Use Composer in Cursor or Luna in Codex for one initial port. Learn through follow-up requests on that project. A complete migration is not required.
 
 == Files
 
@@ -22,14 +22,13 @@ The exercise now migrates Python rather than the previous shell-script example.
 [source,text]
 ----
 output/<your-name>/attempt-1/
-output/<your-name>/attempt-2/
 ----
 
-Save prompts, notes, and generated files in the attempt folders. Create `attempt-2/` only if you want a separate experiment.
+Save prompts, notes, and generated files in `attempt-1/`.
 A full project may include `site.yml`, task or role files, templates, variable examples, an inventory, a README, and collection requirements.
 A plan or partial conversion is also useful if you record what you tried and what remains.
 
-Change prompts, models, or interaction modes as you explore and record those changes.
+Keep the selected model for Lab 2 and record how your follow-ups change the port.
 Module 3 uses `run-a/`, `run-b/`, and `run-c/` under the same learner directory, with fixed inputs and the supplied prompt unchanged.
 
 == Control host and managed host

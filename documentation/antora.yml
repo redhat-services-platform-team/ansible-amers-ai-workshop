@@ -21,9 +21,6 @@ asciidoc:
     cursor_access_request_url: "https://devservices.dpp.openshift.com/support/cursor_license_request/"
     cursor_internal_user_guide_url: "https://docs.google.com/document/d/16AV-1J5munHd-ev4oYuoayxl91sCS4muAL6vgsFkdZw"
 
-    # Lab 4 — Delivering with AI (RHDP AWS Blank Open Environment)
-    rhdp_aws_blank_catalog_url: "https://catalog.demo.redhat.com/catalog/babylon-catalog-prod?item=babylon-catalog-prod/sandboxes-gpte.sandbox-open.prod"
-
     # Header navigation links (used by supplemental UI)
     page-links:
     - url: https://cursor.com/docs

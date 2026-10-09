@@ -1,124 +1,152 @@
-= Lab: Managing AI costs
+= Lab: Comparing models and effort
 
 [abstract]
-Use the NetBox installer from Module 2 for a fixed-prompt comparison of three models. Compare usage, time, and corrections, then write rules for your own work.
+Repeat the NetBox migration with fixed inputs. Try different models and reasoning effort levels, then compare the output, review work, time, and reported usage.
 
 == Learning objectives
 
-* Identify the account, model, tokens, and interaction mode that affect usage.
-* Compare three models using the same migration prompt and inputs.
-* Record the work needed to accept each output.
-* Choose practical rules for controlling usage.
+* Select models and reasoning effort settings in your tool.
+* Change one setting at a time and record what changed in the output.
+* Check migration coverage instead of judging a result by its length or confidence.
+* Use the evidence to decide when to change models or increase effort.
 
 == Before you start
 
-Complete xref:02-shell-to-ansible.adoc[Module 2: Python-to-Ansible NetBox migration] or read its installer and example inputs.
-The shared files are under `workshop-content/02-shell-to-ansible/`:
+Complete xref:02-shell-to-ansible.adoc[Lab 2: Python-to-Ansible NetBox migration].
+Use the same tool and Ansible environment for all runs.
+The shared inputs are under `workshop-content/02-shell-to-ansible/`:
 
 * `legacy/install_netbox.py`
 * `legacy/.env.example`
 * `migration-checklist.adoc`
 * `prompt.md`
 
-Use `workshop-content/03-managing-ai-costs/lab-scorecard.adoc` or a notebook copy to record results.
+Lab 2 started with your own prompt. This lab uses the supplied `prompt.md` unchanged so the initial request stays the same across runs.
+Only the output directory changes.
+Keep prior generated projects and conversations out of each run's context.
+Use `workshop-content/03-managing-ai-costs/lab-scorecard.adoc` or your own notebook.
 
-Keep link:https://cursor.com/dashboard/spending[Spending,window=_blank] open during the lab.
-If it is unavailable, record elapsed time and turns, and use your enterprise usage report if available.
-These measurements alone do not establish spend.
+Generate and review locally during the comparison. Do not run the installer or deploy the generated projects during these runs.
+Syntax checks do not prove that NetBox deploys correctly or that reruns preserve credentials.
 
-Module 2 encouraged your own prompts and experiments. Here, use the supplied `prompt.md` unchanged and hold the input files constant across runs.
+== Step 1: Find the controls
 
-The timed runs cover generation and static review.
-Do not run the installer or deploy generated projects during these runs.
-Record untested runtime behavior and missing implementation details.
+In Codex, use the model picker or `/model` in the CLI to choose a model and a supported reasoning effort.
+Start with Luna for the baseline. GPT-6.1 Sol is an option for the model comparison if your account has access.
+See the link:https://learn.chatgpt.com/docs/models[official OpenAI model documentation] for current controls and availability.
 
-== Step 1: Record your billing context
+In Cursor, select Composer for the baseline, then choose another approved model for comparison.
+For the effort comparison, choose a model that exposes reasoning effort settings in your client.
+If a model has no effort selector, record `not exposed`; use another approved model for the effort pair.
+See link:https://cursor.com/docs/models[Cursor's model documentation] and the options shown in your client.
 
-. Open Spending or your enterprise usage report.
-. Record the billing period reset date and the pool names shown in your account.
-. Record the selected model, interaction mode, and any router mode shown in the tool.
-. Add these details to the scorecard or your notebook.
+Record the exact model name or version, reasoning effort label, interaction mode, and any speed setting.
+A speed setting such as Fast is a separate control from reasoning effort.
+Avoid automatic model routing for this experiment if you can select a model directly.
+If access restrictions force a substitution, record it.
 
-== Step 2: Review usage patterns
+== Step 2: Plan the comparison
 
-Write one example from Module 2, the workshop, or your work for each pattern:
+Choose at least two models and two supported effort levels on one model.
+Use this plan when both models expose the same effort labels:
 
-* A narrow request that names one change and the relevant files.
-* Repeated requests to fix an output that still fails review or validation.
-* A long agent session with many tool calls.
+[cols="1,2,2,3",options="header"]
+|===
+| Run | Model | Reasoning effort | Question
+| A | Composer or Luna | Record the baseline setting | What does the baseline produce?
+| B | Another approved model | Same effort label as A, if supported | What changes when I change the model?
+| C | Same model as B | A higher supported effort than B | What changes when I increase effort?
+|===
 
-== Step 3: Prepare three migration runs
+For Cursor with no Composer effort selector, record A as `not exposed`.
+Use two explicit effort levels on the model chosen for B and C.
+The A-to-B comparison then includes different reasoning behavior as well as model choice.
+Even matching labels across models do not imply equal computation or cost.
+B-to-C is the cleaner comparison because only effort changes.
 
-Migrate the same Python NetBox installer three times.
-Use a new conversation for each run and keep the prompt and input files unchanged.
+Keep the tool, interaction mode, permissions, source files, initial prompt, and review criteria the same.
+Use a fresh conversation and separate output directory for each run:
 
-. Create output directories under your learner folder:
-+
 [source,text]
 ----
 workshop-content/02-shell-to-ansible/output/<your-name>/run-a/
 workshop-content/02-shell-to-ansible/output/<your-name>/run-b/
 workshop-content/02-shell-to-ansible/output/<your-name>/run-c/
 ----
-. Keep the canonical `prompt.md` ready to copy for each run.
-. Choose the models your facilitator assigns. Use a cost-efficient model for Run A, a balanced model for Run B, and an approved escalation model for Run C.
 
-If no escalation model is available, repeat B using Agent and record the mode change.
-Changing the mode means the comparison includes that difference as well as model choice.
+If no available model exposes two effort levels, complete the model comparison and record the access limitation. Do not label a mode change as an effort comparison.
 
-== Step 4: Run A
+== Step 3: Run the migrations
 
-. Start a new conversation and select the Run A model.
-. Attach the legacy installer, `.env.example`, and migration checklist. Keep prior generated projects out of the conversation.
-. Paste `prompt.md` unchanged and name your `run-a/` output directory.
-. Review the generated project against the checklist.
-. Follow its README for collection dependencies and non-secret variable files. From the generated project directory, run `ansible-playbook -i inventory.ini.example --syntax-check site.yml`.
-. Stop when the definition of done in `prompt.md` is met or you reach 15 user turns, whichever comes first. Record any missing behavior at the limit.
-. Fill the Run A scorecard row with the actual model, tool and mode, elapsed minutes, user turns, review decision, and corrections.
-. Check Spending. If exact usage is unavailable, you may record a subjective low, medium, or high estimate in Notes.
+Repeat these steps for A, B, and C:
 
-Count the initial prompt and every follow-up as user turns.
-A syntax pass does not prove that NetBox deploys correctly or that a second run leaves credentials and release state unchanged.
+. Start a fresh conversation and set the planned model and effort. Confirm the settings before sending the prompt.
+. Attach the installer, `.env.example`, and migration checklist.
+. Paste the supplied `prompt.md` unchanged. In a separate sentence, name this run's output directory.
+. Start a timer and review the generated project against the checklist.
+. Save the first response before requesting corrections. Record missing behavior, assumptions, and file structure.
+. Request corrections for issues you can identify. Save each follow-up so you can explain how the conversation changed.
+. Stop when the definition of done in `prompt.md` is met or after 15 user turns, whichever comes first. Keep incomplete output and record what remains.
+. Record total generation and review time, user turns, manual edits, and your review decision.
 
-== Step 5: Run B
+Count the initial prompt and each follow-up as user turns.
+Follow-ups may differ because the outputs have different problems. Compare both the initial output and the final reviewed result.
+These runs are a small experiment, not a general model ranking.
 
-. Start a new conversation and select Run B's model.
-. Use the same attachments and unchanged prompt. Save the project under `run-b/`.
-. Review coverage and check syntax using the same steps and stopping rule as Run A.
-. Fill the Run B scorecard row.
+If the project includes `requirements.yml`, review it and install the declared collections from its output directory:
 
-== Step 6: Run C
+[source,bash]
+----
+# Install the collections declared by this generated project.
+ansible-galaxy collection install -r requirements.yml
+----
 
-. Start a new conversation and select Run C's model or assigned mode.
-. Use the same attachments and unchanged prompt. Save the project under `run-c/`.
-. Review coverage and check syntax using the same steps and stopping rule as Run A.
-. Fill the Run C scorecard row.
+Use its README for non-secret validation variables. Adjust paths for its layout:
 
-== Step 7: Compare the results
+[source,bash]
+----
+# Check syntax without connecting to the placeholder inventory host.
+ansible-playbook -i inventory.ini.example --syntax-check site.yml
+----
 
-Compare Runs A, B, and C using their fixed inputs.
-You can also discuss your Module 2 notes, but those attempts may have different prompts, context, or modes. Their time and results are not a controlled comparison with these runs.
-Answer in your scorecard notes or notebook:
+Record the errors and any fixes. If the project cannot reach syntax validation, record why.
 
-* Which accepted result needed the fewest user turns?
-* Which run would you choose under a monthly usage limit, and why?
-* Did a more expensive model reduce corrections or missing behavior?
+== Step 4: Compare evidence
 
-Include manual review and edits when comparing the work needed to accept a result.
-Mark incomplete or discarded outputs so they are not counted as successful migrations.
+Use the same migration checklist for each output.
+Check saved secrets and release state, database setup, service handlers, TLS behavior, and verification tasks.
+Distinguish implemented behavior from a README promise.
 
-== Step 8: Write personal rules
+Answer in your notes:
 
-Write three sentences in the scorecard's Personal rules section.
-Choose actions you can apply to your work, such as trying a cheaper model before escalating, attaching only relevant inputs, or reading validation errors before requesting a correction.
+* Which first output covered the source behavior most closely? What code supports that judgment?
+* What changed between B and C when effort increased?
+* Which output needed fewer corrections or less manual editing?
+* Did extra time or usage buy a result you would accept?
+* What remains untested in each project?
 
-== Step 9: Optional CLI comparison
+Record actual usage or cost from your account's report if available.
+Cursor users can check link:https://cursor.com/dashboard/spending[Spending]. Codex users can use the usage view or their organization's report.
+If per-run usage is unavailable, record `unavailable`.
+Elapsed time and turn counts describe work; they do not establish spend.
 
-Repeat Run A with `cursor-agent` using the same prompt, legacy input files, and checklist.
-Record CLI mode and note any differences in turns or usage compared with the editor run.
+You may repeat a run to see whether the same settings produce similar results.
+Keep repeats separate in your notes. A single successful response does not establish reliability.
 
-== Next steps
+== Step 5: Decide what you would use next
 
-Proceed to xref:04-aws-lab-provisioning.adoc[Module 4: Delivering with AI].
+Write a few rules based on your results.
+Name a task where you would keep Composer or Luna, a task where you would try another model, and a reason to increase effort.
+Tie each choice to a concrete result from the comparison.
+
+== Completion checklist
+
+* You compared at least two approved models with the same initial prompt and source files.
+* You compared two supported effort levels on one model, or documented why access prevented that comparison.
+* You saved separate outputs and recorded the actual settings and follow-ups.
+* You reviewed behavior coverage and recorded syntax results, missing work, and untested runtime behavior.
+* You can explain which settings you would use for the team project and why.
+
+Proceed to xref:04-aws-lab-provisioning.adoc[Lab 4: Customer NetBox delivery project].
 
 If you see an error in this lab, fork and submit a pull request against link:{workshop_repo_url}[{workshop_repo_url},window=_blank].

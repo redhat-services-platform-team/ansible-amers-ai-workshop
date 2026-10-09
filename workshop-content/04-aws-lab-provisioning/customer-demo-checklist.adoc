@@ -1,0 +1,26 @@
+= Customer demo checklist
+
+Use this to prepare the demonstration and record the customer's questions.
+Link to evidence in the team project rather than pasting credentials or private output here.
+
+[cols="2,3,2",options="header"]
+|===
+| Demonstration | Evidence or file path | Result and open questions
+| Explain the inherited installer and the customer's problem | |
+| Show the Ansible roles or task files and migration decisions | |
+| Show NetBox and its services running on AWS | |
+| Show the second deployment run and preserved state | |
+| Trace an AWS VPC IPAM network into NetBox | |
+| Show a repeat sync without duplicate records | |
+| Show an AWS demo host and its NetBox primary IP in that network | |
+| Query the team-filtered NetBox dynamic inventory | |
+| Run the demo Ansible play against selected AWS hosts | |
+| Change a NetBox record, refresh inventory, and show membership change | |
+| Explain operating procedures, known limitations, and cleanup | |
+|===
+
+Which customer task is easier with this automation?
+
+What needs more testing before production use?
+
+What resources remain after the demo, and who owns them?
