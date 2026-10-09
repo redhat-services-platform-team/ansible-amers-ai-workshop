@@ -12,11 +12,13 @@ Interaction mode and speed setting:
 
 Initial prompt and source revision:
 
-Harness view or account usage report URL:
+Codex or Cursor usage report URL:
 
-Report scope and filters, including whether usage is individual, team, or account-wide:
+Report scope, including whether usage is individual, team, or account-wide:
 
-Date range, time zone, currency, and latest data timestamp:
+For each run, record the check times, usage before and after, and allowance reset times:
+
+Included usage, credits consumed, and any reported cost with currency. Keep on-demand charges separate:
 
 Costs attributable to individual runs, or the reason they are unavailable:
 

@@ -125,25 +125,34 @@ Answer in your notes:
 * Did higher effort improve the output enough to justify extra time or usage?
 * What remains untested in each project?
 
-=== Check AI costs in Harness
+=== Check usage in Codex or Cursor
 
-Use the Harness link and sign-in method supplied for the workshop.
-Your instructor must have connected the AI billing source and granted access to its cost view.
+Check your tool's usage before and after each comparison run.
+Record the time and the values shown in your scorecard.
 
-. Open *Cloud & AI Cost Management* and select the workshop view in *Cost Explorer*. In the classic interface, select the workshop *Perspective*.
-. Set the date range to cover your runs. Record the report's time zone and latest data timestamp.
-. Apply the assigned account, project, or team filters that the view exposes. Confirm the report covers your usage.
-. Group AI spend by *Model* or *Provider*. Record the displayed cost, currency, and filters in your scorecard.
-. Use session or request details only if the workshop has trace attribution. Otherwise, record costs for the report's available period and scope.
+==== Codex
 
-Provider billing totals do not identify individual runs or reasoning effort settings.
-If several runs share a model or account, do not assign the whole total to one run.
-Record `unavailable` when the report cannot isolate a run or has not ingested its usage yet.
-Recheck later and record when you checked.
-See link:https://developer.harness.io/docs/cloud-cost-management/cost-explorer/[Harness Cost Explorer] and link:https://developer.harness.io/docs/cloud-cost-management/ai-cost-management/overview/[AI cost attribution].
+. Open the link:https://chatgpt.com/codex/settings/usage[Codex usage dashboard] with the account you use for the workshop.
+. Record your remaining allowance, reset times, and any credit usage shown before the run.
+. In an active Codex CLI session, enter `/status` to check remaining limits. This is an interactive command, not a shell command.
+. After the run, check the dashboard again and record the change.
 
-If your tool's usage is not connected to Harness, use its account report.
-Cursor users can check link:https://cursor.com/dashboard/spending[Spending]. Codex users can use the usage view or their organization's report.
+Remaining allowance is not a dollar amount.
+If you use an API key, check the link:https://platform.openai.com/usage[API usage dashboard] for the project that owns the key instead.
+See link:https://developers.openai.com/codex/pricing/[Codex usage and pricing] for details about your plan.
+
+==== Cursor
+
+. Open link:https://cursor.com/dashboard/spending[Spending] in the Cursor dashboard with your workshop account.
+. Record included usage, remaining allowance, any on-demand charges, and the reset date before the run.
+. After the run, refresh the page and record the change. Use request details if the dashboard exposes them.
+
+Keep included usage separate from on-demand charges in your notes.
+See link:https://cursor.com/help/models-and-usage/usage-limits[Cursor usage and limits] for details.
+
+For either tool, note whether the report covers your account or a shared team.
+Other activity and allowance resets can affect the difference between readings.
+If the report cannot isolate a run or show its cost, record `unavailable` and explain why.
 Elapsed time and turn counts cannot tell you what a run cost.
 
 You may repeat a run to see whether the same settings produce similar results.

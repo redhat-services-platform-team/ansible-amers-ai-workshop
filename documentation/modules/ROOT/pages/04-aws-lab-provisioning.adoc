@@ -40,22 +40,6 @@ You need access to EC2 and the networking resources your design requires.
 Use the community NetBox installation based on the Lab 2 script.
 Your team will enter its demo hosts in the NetBox UI after deployment.
 
-=== Check AWS costs in Harness
-
-Use the workshop's Harness link and sign-in method.
-Open the cost view assigned to your AWS account. If you cannot see it, ask the instructor for access before provisioning.
-
-. Open *Cloud & AI Cost Management* and select the workshop view in *Cost Explorer*, or its classic *Perspective*.
-. Filter to your AWS account ID and region. Add the team resource-tag filter if the view includes it. Confirm the account ID against your AWS environment.
-. Set a date range covering the lab. Record the displayed total, currency, cost basis, filters, and latest data timestamp before launching hosts.
-. Group by AWS *Service* to identify the main charges. Use *Resource Id* or *Instance Type* to investigate EC2 charges.
-. Recheck after deployment and before the demo. Compare the reported spend with the team's budget and document any retained resources.
-
-Cost data can arrive after the resources have run. An empty report does not establish that a deployment is free.
-Use AWS resource checks to verify cleanup, then revisit Harness when updated billing data is available.
-If you cannot isolate team resources in a shared account, label the total as account-wide.
-See link:https://developer.harness.io/docs/cloud-cost-management/cost-explorer/[Harness cost filters and grouping].
-
 == Step 1: Organize the team
 
 Create a team branch and a project directory. Replace `switchboard` with your team name:
@@ -90,7 +74,7 @@ Choose a supported OS and compatible dependency versions. If you change the sour
 Consider `t3.small` instances for demo targets or separate services with low demand.
 They have 2 vCPUs and 2 GiB of memory. Measure memory use before choosing one for NetBox.
 For an all-in-one community NetBox host, consider a larger instance such as `t3.medium` and measure memory during installation and the demo.
-Check regional availability, CPU credit behavior, storage, and current costs before launching.
+Check regional availability, CPU credit behavior, and storage before launching.
 See link:https://docs.aws.amazon.com/ec2/latest/instancetypes/gp.html[AWS instance specifications].
 ====
 
@@ -201,7 +185,6 @@ Keep the source, sanitized evidence, and operating instructions together.
 Use your documented teardown process after the demo, unless the environment owner explicitly wants the resources retained.
 Remove only team-owned resources. Account for instances, volumes, public addresses, and network resources.
 Check AWS to confirm cleanup. Record any retained resources, their owner, and when they should be removed.
-Recheck the same Harness cost view after billing data updates and include its scope and timestamps in the handover.
 
 == Completion checklist
 
@@ -210,7 +193,6 @@ Recheck the same Harness cost view after billing data updates and include its sc
 * The team manually added demo host records, interfaces, primary addresses, and a team tag in NetBox.
 * The customer demo queries NetBox dynamic inventory and runs Ansible against the selected AWS hosts.
 * Inventory membership changes when the team changes a NetBox record.
-* The team checked AWS costs in Harness and recorded the report scope, timestamps, and any access or data limitations.
 * The handover explains limitations, operating procedures, and cleanup, with no committed secrets.
 
 If you see an error in this lab, fork and submit a pull request against link:{workshop_repo_url}[{workshop_repo_url},window=_blank].

@@ -21,7 +21,6 @@ Document the manual host-entry steps so another operator can follow them.
 == Questions to settle as a team
 
 * Which AWS account, region, and resources can we use? Who owns cleanup?
-* Which Harness cost view covers the account, what budget applies, and can we filter it to our team?
 * Which NetBox version, OS, and deployment layout will we support?
 * Which installer behaviors will we preserve, improve, or leave unsupported?
 * How will we protect secrets and keep database and cache access private?
@@ -39,7 +38,6 @@ Document the manual host-entry steps so another operator can follow them.
 | Manual host entry | Demo AWS hosts entered through the NetBox UI with interfaces, primary IPs, and a team tag
 | NetBox dynamic inventory | A filtered query using `netbox.netbox.nb_inventory` and a successful Ansible play against the selected AWS hosts
 | Dynamic host selection | A NetBox record change that changes inventory membership without editing a static list
-| Cost review | Harness report scope, filters, timestamps, budget comparison, and retained-resource costs or data limitations
 | Maintainable handover | README, architecture decisions, verification evidence, known limitations, recovery notes, and teardown instructions
 |===
 
