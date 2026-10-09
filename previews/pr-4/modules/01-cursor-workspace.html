@@ -192,6 +192,17 @@ Install your choice of Codex or Cursor on RHEL or macOS, sign in with the approv
 </div>
 </div>
 <div class="sect1">
+<h2 id="_editing_configuration_files_is_optional"><a class="anchor" href="#_editing_configuration_files_is_optional"></a>Editing configuration files is optional</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Install your chosen tool, sign in, and open the workshop repository to start working.
+The lab works without editing configuration files.
+The permissions settings and CLI options below are reference material if you want to explore them.
+You can skip the configuration examples and continue to host runtime verification.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_choose_one_setup_path"><a class="anchor" href="#_choose_one_setup_path"></a>Choose One Setup Path</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -212,22 +223,22 @@ Install your choice of Codex or Cursor on RHEL or macOS, sign in with the approv
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Codex</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">CLI</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Verify existing Ansible and clone the workshop (1–2), Codex CLI installation and enterprise CLI sign-in (3) including Permissions, Recommended settings, and References, verification (5–7)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Verify existing Ansible and clone the workshop (1–2), Codex CLI installation and enterprise CLI sign-in (3) verification (5–7)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Codex</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Desktop</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Verify existing Ansible and clone the workshop (1–2), Codex desktop installation and sign-in for your OS (3) including Permissions, Recommended settings, and References, verification (5–7)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Verify existing Ansible and clone the workshop (1–2), Codex desktop installation and sign-in for your OS (3) verification (5–7)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Cursor</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">CLI</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Verify existing Ansible and clone the workshop (1–2), Cursor access and CLI installation (4) including Permissions, Recommended settings, and References, verification (5–7)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Verify existing Ansible and clone the workshop (1–2), Cursor access and CLI installation (4) verification (5–7)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Cursor</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Desktop</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Verify existing Ansible and clone the workshop (1–2), Cursor access and desktop installation for your OS (4) including Permissions, Recommended settings, and References, verification (5–7)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Verify existing Ansible and clone the workshop (1–2), Cursor access and desktop installation for your OS (4) verification (5–7)</p></td>
 </tr>
 </tbody>
 </table>
@@ -244,8 +255,11 @@ Install your choice of Codex or Cursor on RHEL or macOS, sign in with the approv
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">command -v ansible-playbook
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Locate the Ansible executable in this terminal's environment.
+command -v ansible-playbook
+# Show the Ansible version, configuration path, and Python runtime.
 ansible-playbook --version
+# Confirm Git is available and show its version.
 git --version</code></pre>
 </div>
 </div>
@@ -262,7 +276,9 @@ git --version</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">git clone {workshop_repo_url}.git
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Download the workshop repository into a new local directory.
+git clone {workshop_repo_url}.git
+# Enter the cloned workshop repository.
 cd ansible-amers-ai-workshop</code></pre>
 </div>
 </div>
@@ -284,11 +300,17 @@ cd ansible-amers-ai-workshop</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -fsSL https://chatgpt.com/codex/install.sh -o /tmp/codex-install.sh
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Download the Codex installer to a temporary file for inspection.
+curl -fsSL https://chatgpt.com/codex/install.sh -o /tmp/codex-install.sh
+# Read the installer before running it; press q to exit less.
 less /tmp/codex-install.sh
+# Run the inspected Codex installer as your regular user.
 sh /tmp/codex-install.sh
+# Add the installer directory to the command path for this terminal.
 export PATH="$HOME/.local/bin:$PATH"
+# Show the installed Codex CLI version.
 codex --version
+# List the commands and flags supported by this installed version.
 codex --help</code></pre>
 </div>
 </div>
@@ -302,7 +324,9 @@ codex --help</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">brew install --cask codex
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Install Codex CLI through Homebrew.
+brew install --cask codex
+# Show the installed Codex CLI version.
 codex --version</code></pre>
 </div>
 </div>
@@ -363,7 +387,9 @@ codex --version</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd "$HOME/Downloads"
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Enter the directory where you saved the downloaded RPM.
+cd "$HOME/Downloads"
+# Install the downloaded ChatGPT desktop RPM and its dependencies.
 sudo dnf install ./chatgpt.x86_64.rpm</code></pre>
 </div>
 </div>
@@ -384,7 +410,9 @@ sudo dnf install ./chatgpt.x86_64.rpm</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">codex login
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Start Codex account sign-in in your browser.
+codex login
+# Check whether Codex is signed in.
 codex login status</code></pre>
 </div>
 </div>
@@ -398,22 +426,29 @@ codex login status</code></pre>
 <div class="sect2">
 <h3 id="_permissions"><a class="anchor" href="#_permissions"></a>Permissions</h3>
 <div class="paragraph">
+<p>Editing configuration files is optional. These examples are for reference; you can continue with your installed tool and its current settings.</p>
+</div>
+<div class="paragraph">
 <p>Permissions determine where Codex can write files, whether generated commands can use the network, and when an action needs approval. In the CLI, use <code>/permissions</code> to inspect the active policy; in desktop Codex, use the permissions control beneath the composer. Routine commands allowed by the sandbox can run without asking every time. Enterprise requirements can restrict the options available to you.</p>
 </div>
 <div class="sect3">
-<h4 id="_recommended_settings_for_this_lab"><a class="anchor" href="#_recommended_settings_for_this_lab"></a>Recommended settings for this lab</h4>
+<h4 id="_optional_configuration_reference"><a class="anchor" href="#_optional_configuration_reference"></a>Optional configuration reference</h4>
 <div class="paragraph">
-<p>Use workspace editing with human review for requests that need more access. The default configuration file on RHEL and macOS is <code>~/.codex/config.toml</code>; if you already use <code>CODEX_HOME</code>, edit its <code>config.toml</code> instead.</p>
+<p>If you want to customize permissions, this example allows workspace editing with human review for requests that need more access. The default configuration file on RHEL and macOS is <code>~/.codex/config.toml</code>; if you already use <code>CODEX_HOME</code>, edit its <code>config.toml</code> instead.</p>
 </div>
 <div class="paragraph">
 <p><strong>This file may already contain settings</strong>, including model choices, project entries, and enterprise defaults. Inspect it first and back it up. Merge the proposed keys into the existing file; do not replace the whole file or append duplicate keys or table headers. For a new file, the example below is a complete starting point. These are user defaults and cannot override managed requirements.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mkdir -p "$HOME/.codex"
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Create the Codex settings directory if you choose to edit the examples.
+mkdir -p "$HOME/.codex"
+# Check for an existing config before making a backup.
 if [ -f "$HOME/.codex/config.toml" ]; then
+  # Save a timestamped copy of the existing Codex configuration.
   cp "$HOME/.codex/config.toml" "$HOME/.codex/config.toml.backup-$(date +%Y%m%d-%H%M%S)"
 fi
+# Open the configuration in your chosen editor, or vi if EDITOR is unset.
 ${EDITOR:-vi} "$HOME/.codex/config.toml"</code></pre>
 </div>
 </div>
@@ -422,7 +457,6 @@ ${EDITOR:-vi} "$HOME/.codex/config.toml"</code></pre>
 <pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">approval_policy = "on-request"
 approvals_reviewer = "user"
 sandbox_mode = "workspace-write"
-web_search = "disabled"
 
 [sandbox_workspace_write]
 network_access = false</code></pre>
@@ -451,26 +485,26 @@ network_access = false</code></pre>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Generated commands can edit the workspace and run local validation. Writes outside the permitted roots are restricted; this is not a promise that reads are limited to the workspace.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>web_search = "disabled"</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Hosted web search is off for the local workshop exercises; supplied files provide the initial context.</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>network_access = false</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Commands inside the workspace sandbox cannot freely contact remote services. This is separate from web search and does not block Codex&#8217;s own sign-in or model connection.</p></td>
 </tr>
 </tbody>
 </table>
 <div class="paragraph">
-<p>Place top-level keys before TOML table headers. If <code>[sandbox_workspace_write]</code> already exists, update <code>network_access</code> inside that table. Restart Codex and check the active permissions before your first prompt. The same sample is available at <code>workshop-content/01-codex-workspace/samples/config.toml</code>.</p>
+<p>Place top-level keys before TOML table headers. If <code>[sandbox_workspace_write]</code> already exists, update <code>network_access</code> inside that table. If you edit the file, restart Codex and check the active permissions. The same sample is available at <code>workshop-content/01-codex-workspace/samples/config.toml</code>.</p>
 </div>
 <div class="paragraph">
-<p>Common CLI examples, using your existing Ansible installation:</p>
+<p>Optional CLI examples, using your existing Ansible installation. Choose one command for the session you want:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">codex -s read-only -a on-request
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Start a read-only session with approval requests for actions needing more access.
+codex -s read-only -a on-request
+# Allow workspace edits and ask for approval when more access is needed.
 codex -s workspace-write -a on-request
+# Start a session with the Lab 2 directory as its working directory.
 codex -C workshop-content/02-shell-to-ansible
+# Continue the most recent session for the current directory.
 codex resume --last</code></pre>
 </div>
 </div>
@@ -541,12 +575,19 @@ codex resume --last</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -fsSL https://cursor.com/install -o /tmp/cursor-install.sh
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Download the Cursor CLI installer to a temporary file for inspection.
+curl -fsSL https://cursor.com/install -o /tmp/cursor-install.sh
+# Read the installer before running it; press q to exit less.
 less /tmp/cursor-install.sh
+# Run the inspected Cursor CLI installer as your regular user.
 bash /tmp/cursor-install.sh
+# Add the installer directory to the command path for this terminal.
 export PATH="$HOME/.local/bin:$PATH"
+# Show the installed Cursor CLI version.
 agent --version
+# Start Cursor CLI account sign-in.
 agent login
+# Check the Cursor CLI authentication status.
 agent status</code></pre>
 </div>
 </div>
@@ -554,7 +595,7 @@ agent status</code></pre>
 <p>Complete sign-in with the account approved for Cursor access. From the workshop repository root, use your existing Ansible environment and start an interactive session with <code>agent</code>. The CLI can update with <code>agent update</code>. See <a href="https://cursor.com/docs/cli/installation" target="_blank" rel="noopener">CLI installation</a> and <a href="https://cursor.com/docs/cli/reference/authentication" target="_blank" rel="noopener">CLI sign-in</a>.</p>
 </div>
 <div class="paragraph">
-<p>If you chose CLI, skip the desktop installation steps below and continue to the Cursor Permissions and References subsections before host runtime verification.</p>
+<p>If you chose CLI, skip the desktop installation steps below and continue to host runtime verification. The Permissions and References subsections are optional reading.</p>
 </div>
 </div>
 <div class="sect2">
@@ -564,7 +605,9 @@ agent status</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd "$HOME/Downloads"
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Enter the directory where you saved the downloaded RPM.
+cd "$HOME/Downloads"
+# Install the Cursor RPM after replacing the placeholder with its filename.
 sudo dnf install './&lt;downloaded-cursor-package&gt;.rpm'</code></pre>
 </div>
 </div>
@@ -595,7 +638,9 @@ sudo dnf install './&lt;downloaded-cursor-package&gt;.rpm'</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">command -v ansible-playbook
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Locate the Ansible executable in this terminal's environment.
+command -v ansible-playbook
+# Show the Ansible version, configuration path, and Python runtime.
 ansible-playbook --version</code></pre>
 </div>
 </div>
@@ -606,10 +651,13 @@ ansible-playbook --version</code></pre>
 <div class="sect2">
 <h3 id="_permissions_2"><a class="anchor" href="#_permissions_2"></a>Permissions</h3>
 <div class="paragraph">
+<p>Editing configuration files is optional. These examples are for reference; you can continue with your installed tool and its current settings.</p>
+</div>
+<div class="paragraph">
 <p>Cursor desktop and Cursor CLI have different configuration files. Use only the instructions for your chosen interface. In desktop Cursor, open <strong>Settings → Agents → Approvals &amp; Execution</strong>. In the CLI, permissions are configured in <code>~/.cursor/cli-config.json</code> or the project-specific <code>.cursor/cli.json</code>. A CLI configuration file does not configure the desktop Run Mode.</p>
 </div>
 <div class="sect3">
-<h4 id="_recommended_settings_for_this_lab_desktop"><a class="anchor" href="#_recommended_settings_for_this_lab_desktop"></a>Recommended settings for this lab — desktop</h4>
+<h4 id="_optional_configuration_reference_for_desktop"><a class="anchor" href="#_optional_configuration_reference_for_desktop"></a>Optional configuration reference for desktop</h4>
 <div class="paragraph">
 <p>Use <strong>Auto-review</strong> with sandboxing enabled. Routine allowlisted calls run immediately, supported shell commands run in the sandbox, and other calls are evaluated by an automatic reviewer. Some actions therefore run without a human prompt. For Cursor 3.23 or later, choose <strong>Read Access → Workspace</strong> so reads outside the workspace require approval unless included in the read allowlist. Keep the existing enterprise restrictions in place.</p>
 </div>
@@ -635,7 +683,7 @@ ansible-playbook --version</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_recommended_settings_for_this_lab_cli"><a class="anchor" href="#_recommended_settings_for_this_lab_cli"></a>Recommended settings for this lab — CLI</h4>
+<h4 id="_optional_configuration_reference_for_cli"><a class="anchor" href="#_optional_configuration_reference_for_cli"></a>Optional configuration reference for CLI</h4>
 <div class="paragraph">
 <p>Inspect and back up <code>~/.cursor/cli-config.json</code>, then merge these settings. The CLI may already have created this file when you signed in. If you use <code>CURSOR_CONFIG_DIR</code> or <code>XDG_CONFIG_HOME</code>, use the configured location instead. For a new file, this is a complete starting point:</p>
 </div>
@@ -695,11 +743,16 @@ ansible-playbook --version</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mkdir -p "$HOME/.cursor"
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Create the Cursor settings directory if you choose to edit the examples.
+mkdir -p "$HOME/.cursor"
+# Check whether a Cursor CLI config exists before backing it up.
 if [ -f "$HOME/.cursor/cli-config.json" ]; then
+  # Save a timestamped backup of the Cursor CLI configuration.
   cp "$HOME/.cursor/cli-config.json" "$HOME/.cursor/cli-config.json.backup-$(date +%Y%m%d-%H%M%S)"
 fi
+# Check whether desktop permission settings exist before backing them up.
 if [ -f "$HOME/.cursor/permissions.json" ]; then
+  # Save a timestamped backup of the Cursor desktop permission settings.
   cp "$HOME/.cursor/permissions.json" "$HOME/.cursor/permissions.json.backup-$(date +%Y%m%d-%H%M%S)"
 fi</code></pre>
 </div>
@@ -747,8 +800,11 @@ fi</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cd workshop-content/01-codex-workspace
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Enter Lab 1 so Ansible uses its local configuration and inventory.
+cd workshop-content/01-codex-workspace
+# Check the sample playbook syntax without running its tasks.
 ansible-playbook --syntax-check playbooks/hello.yml
+# Run the sample checks on localhost using your existing Ansible installation.
 ansible-playbook playbooks/hello.yml</code></pre>
 </div>
 </div>
