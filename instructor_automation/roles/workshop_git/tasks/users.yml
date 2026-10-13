@@ -1,0 +1,29 @@
+---
+- name: users | Check trusted HTTPS from the instructor controller
+  ansible.builtin.uri:
+    url: "{{ workshop_git_server.url }}/api/healthz"
+    status_code: 200
+    validate_certs: true
+  delegate_to: "{{ workshop_git_controller }}"
+  register: __workshop_git_https
+  retries: 40
+  delay: 15
+  until: __workshop_git_https is succeeded
+
+- name: users | Read local users after installing Gitea
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/read_users.yml"
+
+- name: users | Prepare missing local accounts for the upstream role
+  ansible.builtin.set_fact:
+    __workshop_git_users: >-
+      {{ (__workshop_git_users | default([])) + [{'name': __workshop_git_username,
+      'email': __workshop_git_username ~ '@' ~ workshop_git_server.fqdn,
+      'password': __workshop_git_passwords[__workshop_git_username | lower],
+      'admin': __workshop_git_username == workshop_git_admin_user,
+      'must_change_password': workshop_git_must_change_password | bool
+      if __workshop_git_username != workshop_git_admin_user else false}] }}
+  loop: "{{ __workshop_git_student_ids + [workshop_git_admin_user] }}"
+  loop_control:
+    loop_var: __workshop_git_username
+  when: __workshop_git_username | lower not in __workshop_git_existing_usernames
+  no_log: true

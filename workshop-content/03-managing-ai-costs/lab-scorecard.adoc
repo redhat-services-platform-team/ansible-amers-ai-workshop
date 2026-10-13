@@ -1,30 +1,51 @@
-= Lab scorecard: Module 3 managing AI costs
+= Lab scorecard: Comparing models and effort
 
-Use the Module 2 rows for optional experiment notes. Record the prompt source and any changes to context, model, or mode; leave unused rows blank.
-Module 3 rows record model runs on the same NetBox migration with fixed inputs.
-Use `prompt.md`, `legacy/install_netbox.py`, `legacy/.env.example`, and `migration-checklist.adoc` under `workshop-content/02-shell-to-ansible/`.
-For Module 3, keep the supplied prompt and attachments constant across runs unless the facilitator directs a change.
-Module 2 experiments may differ and are not directly comparable to these timed runs.
-Record generation and static review time.
-In Notes, include missing behavior, syntax results, and which runtime checks you completed or left untested.
+Use the Lab 2 row for your single port with Composer or Luna and your own prompt.
+For Lab 3, keep `prompt.md`, the installer, `.env.example`, and the migration checklist constant.
+Record exact model versions and the effort labels shown in your client. Use `not exposed` for unavailable controls.
+Record which installer behaviors the first output implements. Note which behaviors your corrections add.
+Time generation and code review. Do not include deployment time in the comparison.
 
-Billing period reset date:
+Tool and version:
 
-Usage pools observed:
+Interaction mode and speed setting:
+
+Initial prompt and source revision:
+
+Codex or Cursor usage report URL:
+
+Report scope, including whether usage is individual, team, or account-wide:
+
+For each run, record the check times, usage before and after, and allowance reset times:
+
+Included usage, credits consumed, and reported cost with currency. Record on-demand charges separately:
+
+Costs attributable to individual runs, or the reason they are unavailable:
 
 [cols="2,2,1,1,1,2,3",options="header"]
 |===
-| Run | Model and router mode | Tool and mode | Minutes | User turns | Decision: merge, edit, or discard | Notes: corrections, context, usage, validation
-
-| Module 2 first attempt | | | | | |
-| Module 2 optional experiment | | | | | |
-| Run A, cost-efficient | | | | | |
-| Run B, balanced | | | | | |
-| Run C, escalation | | | | | |
+| Run | Model | Reasoning effort | Minutes | User turns | Decision: accept, edit, or discard | Notes: initial/final coverage, corrections, manual edits, syntax, reported usage
+| Lab 2 port | | | | | |
+| A, baseline | | | | | |
+| B, another model | | | | | |
+| C, B at higher effort | | | | | |
+| Optional repeat | | | | | |
 |===
 
-== Personal rules
+== Comparison notes
 
-. Rule 1:
-. Rule 2:
-. Rule 3:
+What changed between models?
+
+What changed between effort levels on the same model?
+
+What remained incomplete or untested?
+
+Which measurements were unavailable or affected by other changes?
+
+== Rules for the team project
+
+When would you keep Composer or Luna?
+
+When would you choose another model?
+
+When would you increase reasoning effort?

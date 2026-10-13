@@ -1,0 +1,120 @@
+---
+- name: Read organization permission groups
+  ansible.builtin.uri:
+    url: "{{ live_access.server.url }}/api/v1/orgs/{{ live_team.key }}/teams?limit=50"
+  register: live_groups
+  no_log: true
+
+- name: Select the managed permission group
+  ansible.builtin.set_fact:
+    live_group: "{{ live_groups.json | selectattr('name', 'equalto', live_team.key) | first }}"
+  no_log: true
+
+- name: Check repository permissions in the group
+  ansible.builtin.assert:
+    that:
+      - live_group.includes_all_repositories
+      - >-
+        live_group.permission == 'admin' if live_team.value.permission == 'admin'
+        else live_group.units_map['repo.code'] == live_team.value.permission
+
+- name: Read every member of the permission group
+  ansible.builtin.include_role:
+    name: workshop_git
+    tasks_from: api_list
+  vars:
+    workshop_git_server: "{{ live_access.server }}"
+    __workshop_git_list_path: "teams/{{ live_group.id }}/members"
+  no_log: true
+
+- name: Require the exact configured student roster
+  ansible.builtin.assert:
+    that:
+      - >-
+        __workshop_git_api_items | map(attribute='login') | map('lower') | sort ==
+        live_team.value.members | map('lower') | sort
+
+- name: Read student site privileges
+  ansible.builtin.uri:
+    url: "{{ live_access.server.url }}/api/v1/users/{{ live_student }}"
+  loop: "{{ live_team.value.members }}"
+  loop_control:
+    loop_var: live_student
+  register: live_users
+  no_log: true
+
+- name: Require regular student accounts
+  ansible.builtin.assert:
+    that: not live_result.json.is_admin
+  loop: "{{ live_users.results }}"
+  loop_control:
+    loop_var: live_result
+    label: "{{ live_result.live_student }}"
+  no_log: true
+
+- name: Grant the probe this group's permissions
+  ansible.builtin.uri:
+    url: "{{ live_access.server.url }}/api/v1/teams/{{ live_group.id }}/members/{{ live_probe_user }}"
+    method: PUT
+    status_code: 204
+  changed_when: true
+  no_log: true
+
+- name: Check actual access without changing student passwords
+  no_log: true
+  block:
+    - name: Query every starter repository as the regular probe user
+      ansible.builtin.uri:
+        url: "{{ live_repository.value.repository_url | replace(live_access.server.url, live_access.server.url ~ '/api/v1/repos') }}"
+        url_username: "{{ live_probe_user }}"
+        url_password: "{{ live_probe_password }}"
+        status_code: [200, 404]
+      loop: "{{ live_access.teams | dict2items }}"
+      loop_control:
+        loop_var: live_repository
+      register: live_repo_access
+
+    - name: Require access only to the assigned organization
+      ansible.builtin.assert:
+        that:
+          - live_result.status == (200 if live_result.live_repository.key == live_team.key else 404)
+      loop: "{{ live_repo_access.results }}"
+      loop_control:
+        loop_var: live_result
+
+    - name: Create a temporary private repository to test inherited permissions
+      ansible.builtin.uri:
+        url: "{{ live_access.server.url }}/api/v1/orgs/{{ live_team.key }}/repos"
+        method: POST
+        status_code: 201
+        body:
+          name: "{{ live_probe_user }}"
+          private: true
+          auto_init: true
+      changed_when: true
+
+    - name: Test a repository write with the regular probe user
+      ansible.builtin.uri:
+        url: "{{ live_access.server.url }}/api/v1/repos/{{ live_team.key }}/{{ live_probe_user }}/contents/access-check.txt"
+        url_username: "{{ live_probe_user }}"
+        url_password: "{{ live_probe_password }}"
+        method: POST
+        status_code: "{{ [403, 404] if live_team.value.permission == 'read' else [201] }}"
+        body:
+          content: "{{ 'Workshop permission check' | b64encode }}"
+          message: Verify workshop team write access
+      changed_when: live_team.value.permission != 'read'
+  always:
+    - name: Delete the temporary test repository
+      ansible.builtin.uri:
+        url: "{{ live_access.server.url }}/api/v1/repos/{{ live_team.key }}/{{ live_probe_user }}"
+        method: DELETE
+        status_code: [204, 404]
+      changed_when: true
+
+    - name: Remove the probe from the organization
+      ansible.builtin.uri:
+        url: "{{ live_access.server.url }}/api/v1/orgs/{{ live_team.key }}/members/{{ live_probe_user }}"
+        method: DELETE
+        status_code: 204
+      changed_when: true

@@ -1,21 +1,18 @@
-# Lab 1 — Workspace Setup
+# Lab 1: Workspace setup
 
-Choose **Codex or Cursor** on **RHEL** or **macOS (OS X)** and run Ansible
-directly on the workstation. You only need **one tool and one interface: CLI or
-desktop**. Codex uses enterprise OAuth/SSO; Cursor uses the approved associate
-account. Every path uses the same checkout and your existing Ansible installation.
+Install Codex or Cursor on RHEL or macOS. Choose CLI or desktop and use your existing Ansible installation. Sign in with the account approved for the workshop.
 
-Full workshop page: [Workspace Setup](../../documentation/modules/ROOT/pages/01-cursor-workspace.adoc).
+The [workshop page](../../documentation/modules/ROOT/pages/01-cursor-workspace.adoc) has the lab steps.
 
 Commands and configuration were checked against official OpenAI documentation
-on **2026-10-07** and local **Codex CLI 0.160.1** help. Check `codex --help` after
+on 2026-10-07 and local Codex CLI 0.160.1 help. Check `codex --help` after
 upgrading; available models and features depend on your account and workspace.
 
 ## Editing configuration files is optional
 
 Install your chosen tool, sign in, and open the workshop repository to start working.
 The lab works without editing configuration files.
-The permissions settings and CLI options below are reference material if you want to explore them.
+Use the permissions examples and CLI options below when you want to change a setting.
 You can skip the configuration examples and continue to local runtime verification.
 
 ## Choose one setup path
@@ -37,7 +34,7 @@ The documented supported desktop distributions are Ubuntu 24.04/26.04 LTS,
 Debian 13, Fedora 43/44, and current Arch Linux, on x64 and ARM64. RHEL is not
 listed; compatibility of the Fedora RPM with RHEL is not established by that
 support list. The optional RPM steps below let you try the desktop app on RHEL
-as an **unsupported preview**. See the
+as an unsupported preview. See the
 [Linux desktop installation and support guide](https://learn.chatgpt.com/docs/linux/linux-app).
 
 On macOS, download and install the ChatGPT desktop app, complete enterprise
@@ -47,9 +44,9 @@ composer before running work. See the
 [desktop app guide](https://learn.chatgpt.com/docs/app) and
 [sandboxing guide](https://learn.chatgpt.com/docs/sandboxing).
 
-## Prerequisites — working Ansible installation
+## Prerequisites
 
-- A RHEL or macOS workstation with **Ansible already installed and working**.
+- A RHEL or macOS workstation with Ansible already installed and working.
 - `ansible-playbook` accessible in the terminal used for the labs.
 - Git, installer download utilities, and access to the account for your selected tool.
 - A graphical desktop session only if you choose a desktop interface.
@@ -72,7 +69,7 @@ activation command, provide that actual command to the tool; desktop launches
 may not inherit your shell environment. An absolute executable path is another
 option. `ansible-lint` is optional for the additional lint check.
 
-## Codex setup (choose CLI or desktop)
+## Set up Codex
 
 Follow only the selected OS and interface.
 
@@ -86,7 +83,7 @@ Linux installer and does not require Node.js. The optional desktop route uses
 the Linux preview RPM. Both assume a registered RHEL system with enabled
 repositories and outbound HTTPS access.
 
-#### Codex CLI — standalone installer
+#### Codex CLI standalone installer
 
 ```bash
 # Install the download tools, Git, and Linux sandbox dependency.
@@ -127,10 +124,10 @@ or host policies can prevent it from starting. If that occurs, capture the error
 and work with the lab administrator on the supported environment; keep SELinux
 enabled. See [OS sandbox details](https://learn.chatgpt.com/docs/agent-approvals-security#os-level-sandbox).
 
-#### Desktop RPM — unsupported preview on RHEL
+#### Desktop RPM preview on RHEL
 
-The Linux desktop app is a preview, and **RHEL is not a supported desktop
-distribution**. These steps adapt the official Fedora RPM instructions for
+The Linux desktop app is a preview, and RHEL is not a supported desktop
+distribution. These steps adapt the official Fedora RPM instructions for
 RHEL; installation and runtime compatibility have not been verified on RHEL.
 Use a RHEL machine with a graphical desktop session to try this option.
 
@@ -154,9 +151,9 @@ For ARM64, use `sudo dnf install ./chatgpt.aarch64.rpm` instead. Let DNF resolve
 package dependencies from the enabled repositories. If it cannot resolve them,
 use Codex CLI for the lab rather than forcing the RPM installation.
 
-Open **ChatGPT** from the applications menu, or run `chatgpt` in a terminal
+Open ChatGPT from the applications menu, or run `chatgpt` in a terminal
 inside the graphical desktop session. Complete enterprise OAuth/SSO sign-in,
-select the assigned enterprise workspace, choose **Codex**, and open the
+select the assigned enterprise workspace, choose Codex, and open the
 workshop repository folder. Inspect the permissions control before starting.
 
 The official RPM installation configures an OpenAI package repository. If that
@@ -184,7 +181,7 @@ finish the installer dialog:
 xcode-select --install
 ```
 
-Choose **one** CLI installation method below.
+Choose one CLI installation method below.
 
 #### Homebrew
 
@@ -224,7 +221,7 @@ changes. macOS Codex sandboxing uses Seatbelt. See
 [CLI installation](https://learn.chatgpt.com/docs/codex/cli) and
 [OS sandbox details](https://learn.chatgpt.com/docs/agent-approvals-security#os-level-sandbox).
 
-### Sign in to Codex CLI and open the workspace (Codex CLI users only)
+### Sign in to Codex CLI and open the workspace
 
 Confirm that your enterprise account has Codex access and membership in the
 workshop workspace. On a machine with a browser, start the OAuth sign-in flow:
@@ -236,7 +233,7 @@ codex login
 codex login status
 ```
 
-Choose **Sign in with ChatGPT**, use your work identity, and complete the
+Choose Sign in with ChatGPT, use your work identity, and complete the
 organization's enterprise OAuth/SSO flow when prompted. Select the enterprise
 workspace assigned for the workshop rather than a personal workspace.
 `codex login status` confirms the authentication method; verify workspace
@@ -294,15 +291,15 @@ prerequisites before connecting to managed hosts.
 
 ### Permissions
 
-Editing configuration files is optional. These examples are for reference; you can continue with your installed tool and its current settings.
+You can keep the installed settings. Use these examples only if you want to change permissions.
 
-Permissions determine where Codex can write files, whether generated commands can use the network, and when an action needs approval. In the CLI, use `/permissions` to inspect the active policy; in desktop Codex, use the permissions control beneath the composer. Routine commands allowed by the sandbox can run without asking every time. Enterprise requirements can restrict the options available to you.
+Permissions control file writes, command network access, and approval requests. Check them with `/permissions` in the CLI or the control beneath the desktop composer. Codex can run commands allowed by the sandbox without asking each time. Your organization may restrict the available settings.
 
 #### Optional configuration reference
 
-If you want to customize permissions, this example allows workspace editing with human review for requests that need more access. The default configuration file on RHEL and macOS is `~/.codex/config.toml`; if you already use `CODEX_HOME`, edit its `config.toml` instead.
+This example allows workspace edits and sends requests for more access to you for review. Edit `~/.codex/config.toml` on RHEL or macOS. If you set `CODEX_HOME`, edit `config.toml` there instead.
 
-*This file may already contain settings*, including model choices, project entries, and enterprise defaults. Inspect it first and back it up. Merge the proposed keys into the existing file; do not replace the whole file or append duplicate keys or table headers. For a new file, the example below is a complete starting point. These are user defaults and cannot override managed requirements.
+Read and back up an existing file before editing it. Merge the example keys with your settings. Keep unrelated entries and avoid duplicate keys or table headers. For a new file, use the complete example below. Organization requirements take precedence over user defaults.
 
 ```bash
 # Create the Codex settings directory if you choose to edit the examples.
@@ -359,17 +356,13 @@ If Ansible needs environment activation, tell Codex your actual activation comma
 - [Permissions, approvals, and sandboxing](https://learn.chatgpt.com/docs/sandboxing)
 - [CLI commands and flags](https://learn.chatgpt.com/docs/developer-commands?surface=cli)
 
-## Cursor setup (choose CLI or desktop)
+## Set up Cursor
 
-Request access, then choose CLI or desktop. Skip the other interface.
+Choose CLI or desktop. Skip the other interface.
+Sign in with the account approved for the workshop.
+If your organization provides a license, complete its account setup before continuing.
 
-Red Hat associates should review the current
-[Cursor access guidance](https://source.redhat.com/projects_and_programs/ai/ai_tools/cursor)
-and submit the [license request](https://devservices.dpp.openshift.com/support/cursor_license_request/)
-(VPN required). Complete the confirmation-email setup with the assigned account;
-use current internal guidance for eligibility and regional availability.
-
-### CLI — RHEL and macOS
+### CLI on RHEL and macOS
 
 Run the installer as your regular user, then sign in with the approved account:
 
@@ -396,7 +389,7 @@ From the workshop repository root, use your existing Ansible environment and run
 [CLI authentication](https://cursor.com/docs/cli/reference/authentication).
 CLI users can skip the desktop installation steps below and continue to local runtime verification. Permissions and configuration examples are optional reference material.
 
-### Desktop — RHEL RPM
+### Desktop on RHEL RPM
 
 Download the Linux RPM matching `uname -m` from
 [Cursor downloads](https://cursor.com/download). Save it in `~/Downloads` and
@@ -413,7 +406,7 @@ Launch Cursor from the applications menu and sign in with the approved account.
 For repository-based installation and updates, see
 [Cursor's RHEL/Fedora quickstart](https://cursor.com/docs/get-started/quickstart).
 
-### Desktop — macOS installer
+### Desktop on macOS installer
 
 Download the Apple Silicon or Intel `.dmg` from
 [Cursor downloads](https://cursor.com/download), open it, move Cursor into
@@ -421,8 +414,8 @@ Applications, and launch it. Sign in with the approved account.
 
 ### Open the local checkout (desktop users only)
 
-Choose **File → Open Folder…** and select `ansible-amers-ai-workshop`. Open
-**Terminal → New Terminal**, activate your existing Ansible environment if needed, and verify it:
+Choose File → Open Folder… and select `ansible-amers-ai-workshop`. Open
+Terminal → New Terminal, activate your existing Ansible environment if needed, and verify it:
 
 ```bash
 # Locate the Ansible executable in this terminal's environment.
@@ -436,15 +429,15 @@ Cursor settings.
 
 ### Permissions
 
-Editing configuration files is optional. These examples are for reference; you can continue with your installed tool and its current settings.
+You can keep the installed settings. Use these examples only if you want to change permissions.
 
-Cursor desktop and Cursor CLI have different configuration files. Use only the instructions for your chosen interface. In desktop Cursor, open *Settings → Agents → Approvals & Execution*. In the CLI, permissions are configured in `~/.cursor/cli-config.json` or the project-specific `.cursor/cli.json`. A CLI configuration file does not configure the desktop Run Mode.
+Cursor desktop and CLI use different settings. In desktop Cursor, open *Settings → Agents → Approvals & Execution*. For CLI, edit `~/.cursor/cli-config.json` or the project file `.cursor/cli.json`. CLI settings do not change desktop Run Mode.
 
 #### Optional configuration reference for desktop
 
-Use *Auto-review* with sandboxing enabled. Routine allowlisted calls run immediately, supported shell commands run in the sandbox, and other calls are evaluated by an automatic reviewer. Some actions therefore run without a human prompt. For Cursor 3.23 or later, choose *Read Access → Workspace* so reads outside the workspace require approval unless included in the read allowlist. Keep the existing enterprise restrictions in place.
+Use Auto-review with sandboxing enabled. Allowlisted calls run immediately. Supported shell commands run in the sandbox; an automatic reviewer evaluates other calls. Some actions run without asking you. In Cursor 3.23 or later, choose *Read Access → Workspace* to require approval for reads outside the workspace unless they are allowlisted. Keep your organization's restrictions.
 
-To steer Auto-review toward asking before publishing, installing software, or changing remote systems, merge this example into `~/.cursor/permissions.json` (all projects) or `<repo>/.cursor/permissions.json` (this workshop only):
+To request review before publishing, installing software, or changing remote systems, merge this example into `~/.cursor/permissions.json` for all projects or `<repo>/.cursor/permissions.json` for this workshop:
 
 ```json
 {
@@ -459,7 +452,7 @@ To steer Auto-review toward asking before publishing, installing software, or ch
 }
 ```
 
-`allow_instructions` is empty because the lab adds no special automatic exceptions. `block_instructions` describes actions the reviewer should block so the agent can choose another approach or ask you to approve. These sentences guide a model-based reviewer; they are not deterministic command-deny rules. Team Auto-review policy can take precedence over these local files. If Auto-review is unavailable under your enterprise policy, use *Allowlist* with no added automatic allowances and follow the administrator's restrictions.
+`allow_instructions` adds no exceptions. `block_instructions` asks the reviewer to block the listed actions so the agent can ask for approval or try another approach. These instructions guide a model; they do not guarantee that a command will be blocked. Team policy can override local files. If your organization disables Auto-review, use Allowlist without adding automatic approvals.
 
 #### Optional configuration reference for CLI
 
@@ -485,11 +478,11 @@ Inspect and back up `~/.cursor/cli-config.json`, then merge these settings. The 
 | `permissions.allow: []` | Adds no blanket automatic approvals. Review approval requests before accepting them; existing sandbox behavior can still permit supported actions. |
 | `permissions.deny` | Blocks commands whose base command is `sudo` or `rm`. These token rules do not block every possible way to change or remove files, and deny entries take precedence over allow entries. |
 
-Use an interactive `agent` session for this lab and inspect each command request. If a deny rule blocks a task you intended, review the task and perform the approved host operation yourself or deliberately revise the applicable rule.
+Use an interactive `agent` session and read each command request. If a deny rule blocks an intended task, review it before running the command yourself or changing the rule.
 
 #### Preserve existing settings before editing
 
-*All of these files may already have contents.* Back up only the files you intend to edit, using commands such as:
+Back up the files you plan to edit:
 
 ```bash
 # Create the Cursor settings directory if you choose to edit the examples.
@@ -506,7 +499,9 @@ if [ -f "$HOME/.cursor/permissions.json" ]; then
 fi
 ```
 
-For project-scoped files, back up the corresponding file under the repository's `.cursor/` directory instead. Preserve unrelated settings and existing restrictions. Update an existing JSON object instead of pasting a second top-level object; merge permission arrays without duplicate entries. An empty example array does not mean you should erase existing rules. JSON cannot contain comments or trailing commas. Restart the selected interface after editing and inspect its active mode and permissions. Samples are in `samples/cursor/`; review them before merging, rather than copying over an existing file.
+For project settings, back up the file in the repository's `.cursor/` directory. Merge keys and permission arrays with the existing JSON object. Keep unrelated settings and restrictions. Do not erase existing rules to match an empty example array.
+
+JSON does not allow comments or trailing commas. Restart the interface after editing and check its active permissions. Compare the samples in `samples/cursor/` with your files before merging.
 
 ### References
 
@@ -541,9 +536,9 @@ executable and checks for Linux or macOS without changing host configuration.
 runs Ansible. [ansible.cfg](ansible.cfg) selects the lab inventory when commands
 run from this directory.
 
-## Advanced Codex configuration (optional)
+## Optional Codex configuration
 
-### Update the policy configuration (Codex users only)
+### Update Codex policy settings
 
 Cursor users can skip these Codex-specific settings.
 
@@ -646,7 +641,7 @@ preference domain. User flags cannot bypass active managed requirements; resolve
 policy conflicts with the administrator. See
 [managed configuration](https://learn.chatgpt.com/docs/enterprise/managed-configuration).
 
-### Common Codex flags and commands (Codex CLI users only)
+### Codex CLI flags and commands
 
 | Option / command | Purpose | Example |
 | --- | --- | --- |
@@ -703,21 +698,12 @@ appropriate before committing it or running a playbook against a lab inventory.
 
 ## Troubleshooting
 
-- **`codex: command not found`:** Open a new terminal. For the standalone
-  installer, check `~/.local/bin/codex` and the `PATH` above. For Homebrew,
-  inspect that package manager's bin path with `command -v codex`.
-- **Login cannot complete over SSH:** Use `codex login --device-auth` with device
-  login enabled, or the SSH callback forwarding flow in the authentication guide.
-- **A policy flag is rejected:** Check the installed CLI's help and managed
-  requirements. Update old config/profile formats before retrying.
-- **A project config seems ignored:** Confirm the working directory and whether
-  the checkout is trusted; inspect higher-priority CLI settings.
-- **A shell download or Ansible connection is blocked:** Check command network
-  access, sandbox permissions, and host connectivity. Hosted web search does not
-  enable shell networking.
-- **Ansible is missing:** Restore your existing installation or activate its
-  environment in the command shell. A working Ansible installation is a
-  prerequisite for this lab; ask the facilitator if it is unavailable.
+- If `codex` is not found, open a new terminal. For the standalone installer, check `~/.local/bin/codex` and your `PATH`. For Homebrew, check its executable path with `command -v codex`.
+- If login fails over SSH, use `codex login --device-auth` with device login enabled, or follow the authentication guide's SSH callback forwarding steps.
+- If Codex rejects a policy flag, check the installed CLI's help and your organization's requirements. Update older configuration formats before retrying.
+- If project settings do not apply, check the working directory and whether the checkout is trusted. Check for CLI flags that override them.
+- If a shell download or Ansible connection is blocked, check command network access, sandbox permissions, and host connectivity. Hosted web search does not enable shell networking.
+- If Ansible is missing, restore its installation or activate its environment. Ask the instructor for help if it remains unavailable.
 
 ## Included assets
 

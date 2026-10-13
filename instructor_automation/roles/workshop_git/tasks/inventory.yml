@@ -1,0 +1,13 @@
+---
+- name: inventory | Restrict the inventory directory containing AWS credentials
+  ansible.builtin.file:
+    path: "{{ playbook_dir }}/inventory"
+    state: directory
+    mode: '0700'
+
+- name: inventory | Write the AWS EC2 inventory plugin configuration
+  ansible.builtin.template:
+    src: workshop.aws_ec2.yml.j2
+    dest: "{{ playbook_dir }}/inventory/workshop.aws_ec2.yml"
+    mode: '0600'
+  no_log: true

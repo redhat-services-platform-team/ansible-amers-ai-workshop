@@ -1,0 +1,16 @@
+---
+- name: student_permissions | Read the student account
+  ansible.builtin.uri:
+    url: "{{ workshop_git_server.url }}/api/v1/users/{{ __workshop_git_student }}"
+  register: __workshop_git_student_account
+
+- name: student_permissions | Remove global administrator privileges
+  ansible.builtin.uri:
+    url: "{{ workshop_git_server.url }}/api/v1/admin/users/{{ __workshop_git_student }}"
+    method: PATCH
+    body:
+      source_id: 0
+      admin: false
+      allow_create_organization: false
+  when: __workshop_git_student_account.json.is_admin
+  changed_when: true

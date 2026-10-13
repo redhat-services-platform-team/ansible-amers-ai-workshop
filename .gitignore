@@ -42,15 +42,30 @@ yarn.lock
 .lock
 
 .ansible
-
+.env
 # Learner-generated playbooks (Module 2 / 3)
 workshop-content/02-shell-to-ansible/output/**
 !workshop-content/02-shell-to-ansible/output/.gitkeep
 
-# Lab 4 — never commit AWS secrets (teams commit playbooks on group_* branches)
+# Lab 4 team secrets and private runtime output
 workshop-content/04-aws-lab-provisioning/**/credentials.yml
 workshop-content/04-aws-lab-provisioning/**/secrets.yml
 workshop-content/04-aws-lab-provisioning/group_vars/all.yml
 
 # Track the Lab 2 NetBox example with blank secret values
 !workshop-content/02-shell-to-ansible/legacy/.env.example
+
+workshop-content/04-aws-lab-provisioning/**/state.json
+workshop-content/04-aws-lab-provisioning/**/inventory-export.json
+workshop-content/04-aws-lab-provisioning/**/private/
+
+# Instructor credentials, password sheets, and local test caches
+instructor_automation/private/
+instructor_automation/**/__pycache__/
+instructor_automation/.venv/
+
+# Pinned third-party instructor roles installed from requirements.yml
+instructor_automation/external_roles/
+
+# Generated AWS inventory source contains account credentials.
+instructor_automation/inventory/workshop.aws_ec2.yml

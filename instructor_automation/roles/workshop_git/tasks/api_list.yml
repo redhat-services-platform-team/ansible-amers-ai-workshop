@@ -1,0 +1,30 @@
+---
+- name: api_list | Read the first API page
+  ansible.builtin.uri:
+    url: "{{ workshop_git_server.url }}/api/v1/{{ __workshop_git_list_path }}?limit=50&page=1"
+  register: __workshop_git_first_page
+  retries: 3
+  delay: 2
+  until: __workshop_git_first_page is succeeded
+
+- name: api_list | Require the API pagination count
+  ansible.builtin.assert:
+    that:
+      - __workshop_git_first_page.x_total_count is defined
+
+- name: api_list | Read remaining API pages
+  ansible.builtin.uri:
+    url: "{{ workshop_git_server.url }}/api/v1/{{ __workshop_git_list_path }}?limit=50&page={{ __workshop_git_page }}"
+  loop: "{{ range(2, ((__workshop_git_first_page.x_total_count | int + 49) // 50) + 1) | list }}"
+  loop_control:
+    loop_var: __workshop_git_page
+  register: __workshop_git_other_pages
+  retries: 3
+  delay: 2
+  until: __workshop_git_other_pages is succeeded
+
+- name: api_list | Collect every item
+  ansible.builtin.set_fact:
+    __workshop_git_api_items: >-
+      {{ __workshop_git_first_page.json +
+      (__workshop_git_other_pages.results | map(attribute='json') | flatten | list) }}

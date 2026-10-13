@@ -1,0 +1,71 @@
+---
+- name: prepare | Wait for SSH access
+  ansible.builtin.wait_for_connection:
+    timeout: "{{ workshop_git_timeout }}"
+
+- name: prepare | Gather server facts
+  ansible.builtin.setup:
+
+- name: prepare | Require RHEL 9
+  ansible.builtin.assert:
+    that:
+      - ansible_facts.distribution == 'RedHat'
+      - ansible_facts.distribution_major_version == '9'
+    fail_msg: This playbook configures RHEL 9 instances. Existing servers need a separate migration.
+
+- name: prepare | Install ACL support for the Gitea service user
+  ansible.builtin.package:
+    name: acl
+    state: present
+  become: true
+
+- name: prepare | Check for an existing native Gitea installation
+  ansible.builtin.stat:
+    path: "{{ __workshop_git_installation_path }}"
+  loop:
+    - /usr/local/bin/gitea
+    - /etc/gitea/gitea.ini
+    - /var/lib/gitea/data/gitea.db
+  loop_control:
+    loop_var: __workshop_git_installation_path
+  register: __workshop_git_installation
+
+- name: prepare | Read existing local users before generating passwords
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/read_users.yml"
+  when: __workshop_git_installation.results | map(attribute='stat.exists') | select('equalto', true) | list | length == 3
+
+- name: prepare | Load controller account state
+  ansible.builtin.set_fact:
+    __workshop_git_student_ids: "{{ hostvars[workshop_git_controller].__workshop_git_student_ids }}"
+    __workshop_git_passwords: "{{ hostvars[workshop_git_controller].__workshop_git_passwords }}"
+    __workshop_git_teams: "{{ hostvars[workshop_git_controller].__workshop_git_teams }}"
+  no_log: true
+
+- name: prepare | Refuse to replace missing saved passwords
+  ansible.builtin.assert:
+    that:
+      - >-
+        (__workshop_git_existing_usernames | default([])) | intersect(
+        (__workshop_git_student_ids + [workshop_git_admin_user]) | map('lower') | list)
+        | difference(__workshop_git_passwords.keys() | map('lower') | list) | length == 0
+    fail_msg: Restore the saved password file before configuring existing workshop users.
+  no_log: true
+
+- name: prepare | Generate passwords only for new accounts
+  ansible.builtin.set_fact:
+    __workshop_git_passwords: >-
+      {{ __workshop_git_passwords | combine({__workshop_git_username | lower:
+      'Aa1!' ~ lookup('ansible.builtin.password', '/dev/null', length=32, chars=['ascii_letters', 'digits'])}) }}
+  loop: "{{ __workshop_git_student_ids + [workshop_git_admin_user] }}"
+  loop_control:
+    loop_var: __workshop_git_username
+  when: __workshop_git_username | lower not in __workshop_git_passwords.keys() | map('lower') | list
+  no_log: true
+
+- name: prepare | Save passwords before creating accounts
+  ansible.builtin.copy:
+    dest: "{{ workshop_git_password_file }}"
+    content: "{{ __workshop_git_passwords | to_nice_json }}"
+    mode: '0600'
+  delegate_to: "{{ workshop_git_controller }}"
+  no_log: true

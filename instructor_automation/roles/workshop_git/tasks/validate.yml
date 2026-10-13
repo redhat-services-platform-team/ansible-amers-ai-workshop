@@ -1,0 +1,70 @@
+---
+- name: validate | Require a team dictionary
+  ansible.builtin.assert:
+    that:
+      - workshop_git_teams is mapping
+      - workshop_git_teams | length > 0
+
+- name: validate | Prepare organization names and student IDs
+  ansible.builtin.set_fact:
+    __workshop_git_teams: "{{ workshop_git_teams | dict2items(key_name='name', value_name='members') }}"
+    __workshop_git_student_ids: "{{ workshop_git_teams.values() | flatten | list }}"
+
+- name: validate | Require lists of student usernames
+  ansible.builtin.assert:
+    that:
+      - __workshop_git_team.members is sequence and __workshop_git_team.members is not string and __workshop_git_team.members is not mapping
+      - __workshop_git_team.members | select('string') | list | length == __workshop_git_team.members | length
+  loop: "{{ __workshop_git_teams }}"
+  loop_control:
+    loop_var: __workshop_git_team
+
+- name: validate | Check deployment settings
+  ansible.builtin.assert:
+    that:
+      - workshop_git_aws_account is mapping
+      - workshop_git_teams.keys() | map('lower') | unique | length == workshop_git_teams | length
+      - workshop_git_team_permission in ['read', 'write', 'admin']
+      - __workshop_git_student_ids | map('lower') | unique | length == __workshop_git_student_ids | length
+      - workshop_git_deployment_id is match('^[a-z][a-z0-9-]{0,23}$')
+      - workshop_git_dns_label is match('^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$')
+      - workshop_git_volume_size | int >= 8 and workshop_git_volume_size | int <= 16384
+      - workshop_git_timeout | int > 0
+      - workshop_git_instance_type is match('^[a-z][a-z0-9]*[.][a-z0-9]+$')
+      - workshop_git_ssh_private_key_file | length > 0
+      - workshop_git_private_dir | length > 0
+      - workshop_git_password_file | length > 0
+      - workshop_git_output_file | length > 0
+      - workshop_git_gitea_version is match('^[0-9]+[.][0-9]+[.][0-9]+$')
+      - workshop_git_admin_user | lower not in __workshop_git_student_ids | map('lower') | list
+      - workshop_git_password_file != workshop_git_output_file
+    fail_msg: Supply one AWS account and a nonempty team dictionary with unique student IDs.
+
+- name: validate | Check the AWS account
+  ansible.builtin.assert:
+    that:
+      - workshop_git_aws_account.name is match('^[a-z][a-z0-9-]{0,23}$')
+      - workshop_git_aws_account.region is match('^[a-z]{2}(?:-[a-z]+)+-[0-9]+$')
+      - workshop_git_aws_account.access_key | length > 0
+      - workshop_git_aws_account.secret_key | length > 0
+  no_log: true
+
+- name: validate | Check usernames and organization names
+  ansible.builtin.assert:
+    that:
+      - __workshop_git_name is match('^[A-Za-z0-9]+(?:[._-][A-Za-z0-9]+)*$')
+      - __workshop_git_name | length <= 40
+      - __workshop_git_name | lower not in __workshop_git_reserved_users
+      - not (__workshop_git_name | lower is match('.*[.](keys|gpg|rss|atom|png)$'))
+  loop: "{{ __workshop_git_student_ids + [workshop_git_admin_user] + (workshop_git_teams.keys() | list) }}"
+  loop_control:
+    loop_var: __workshop_git_name
+
+- name: validate | Keep organization and user names separate
+  ansible.builtin.assert:
+    that:
+      - >-
+        workshop_git_teams.keys() | map('lower') | intersect(
+        (__workshop_git_student_ids + [workshop_git_admin_user]) | map('lower') | list) | length == 0
+      - "'owners' not in workshop_git_teams.keys() | map('lower') | list"
+      - workshop_git_repository_name is match('^[A-Za-z0-9][A-Za-z0-9._-]*$')

@@ -1,0 +1,120 @@
+---
+argument_specs:
+  main:
+    short_description: Deploy one AWS Gitea instance with student organizations.
+    options:
+      workshop_git_discover_only:
+        type: bool
+        description: Read AWS state and validate inputs without provisioning or writing files.
+        default: false
+      workshop_git_deployment_id:
+        type: str
+        description: Stable identifier used in resource names and tags.
+        default: ai-workshop
+      workshop_git_dns_label:
+        type: str
+        description: Default Git subdomain label in the selected hosted zone.
+        default: git
+      workshop_git_instance_type:
+        type: str
+        description: An x86_64 EC2 instance type compatible with RHEL 9.
+        default: t3.medium
+      workshop_git_volume_size:
+        type: int
+        description: Encrypted gp3 root volume size in GiB, from 8 to 16384.
+        default: 30
+      workshop_git_vpc_cidr:
+        type: str
+        description: IPv4 VPC network with a prefix length from 16 to 28.
+        default: 10.77.0.0/16
+      workshop_git_subnet_cidr:
+        type: str
+        description: IPv4 subnet inside the VPC with a prefix length from 16 to 28.
+        default: 10.77.1.0/24
+      workshop_git_must_change_password:
+        type: bool
+        description: Require newly created users to change their password at first login.
+        default: true
+      workshop_git_private_dir:
+        type: path
+        description: Dedicated controller directory whose permissions the role manages as 0700.
+        default: '{{ playbook_dir }}/private'
+      workshop_git_password_file:
+        type: path
+        description: Controller file that retains initial student passwords with mode 0600.
+        default: '{{ workshop_git_private_dir }}/student-passwords.json'
+      workshop_git_output_file:
+        type: path
+        description: Controller access sheet containing server details and initial passwords.
+        default: '{{ workshop_git_private_dir }}/git-access.json'
+      workshop_git_timeout:
+        type: int
+        description: SSH connection timeout in seconds.
+        default: 1200
+      workshop_git_gitea_version:
+        type: str
+        default: 28.1.0
+        description: Pinned Gitea binary release installed by the upstream role.
+      workshop_git_ssh_private_key_file:
+        type: path
+        default: '{{ workshop_git_private_dir }}/{{ workshop_git_deployment_id }}_ed25519'
+        description: Generated instructor SSH key on the controller. Preserve it across reruns.
+      workshop_git_ssh_cidr:
+        type: str
+        default: ''
+        description: SSH source network. Empty discovers the instructor public IPv4 address and uses its /32.
+      workshop_git_acme_email:
+        type: str
+        default: ''
+        description: Optional contact address for Let's Encrypt renewal notices.
+      workshop_git_aws_account:
+        type: dict
+        description: Single AWS account and region for the Gitea instance.
+        required: true
+        options:
+          name:
+            type: str
+            required: true
+            description: Unique environment name used in AWS resource names.
+          region:
+            type: str
+            required: true
+            description: AWS region in which to create resources.
+          access_key:
+            type: str
+            required: true
+            no_log: true
+            description: Instructor AWS access key.
+          secret_key:
+            type: str
+            required: true
+            no_log: true
+            description: Instructor AWS secret key.
+          session_token:
+            type: str
+            no_log: true
+            description: Session token for temporary AWS credentials.
+          hosted_zone_id:
+            type: str
+            description: Public Route 53 zone ID when discovery is ambiguous.
+          hosted_zone_name:
+            type: str
+            description: Public Route 53 zone name when discovery is ambiguous.
+      workshop_git_teams:
+        type: dict
+        required: true
+        description: Organization and permission group names mapped to lists of student usernames. Any nonempty
+          number of teams is supported.
+      workshop_git_admin_user:
+        type: str
+        default: instructor
+        description: Separate instructor site administrator, excluded from student teams.
+      workshop_git_team_permission:
+        type: str
+        default: write
+        choices: [read, write, admin]
+        description: Repository permission granted to each organization group.
+      workshop_git_repository_name:
+        type: str
+        default: netbox-migration
+        description: Private starter repository created in each organization.

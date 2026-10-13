@@ -1,0 +1,34 @@
+---
+- name: report | Collect the verified server
+  ansible.builtin.set_fact:
+    __workshop_git_verified_host: "{{ groups['workshop_git_servers'][0] }}"
+
+- name: report | Build organization URLs
+  ansible.builtin.set_fact:
+    __workshop_git_team_access: >-
+      {{ (__workshop_git_team_access | default({})) | combine({__workshop_git_team.name:
+      {'members': __workshop_git_team.members, 'permission': workshop_git_team_permission,
+      'url': hostvars[__workshop_git_verified_host].workshop_git_server.url ~ '/' ~ __workshop_git_team.name,
+      'repository_url': hostvars[__workshop_git_verified_host].workshop_git_server.url ~ '/' ~
+      __workshop_git_team.name ~ '/' ~ workshop_git_repository_name}}) }}
+  loop: "{{ __workshop_git_teams }}"
+  loop_control:
+    loop_var: __workshop_git_team
+
+- name: report | Write the private instructor access sheet
+  ansible.builtin.copy:
+    dest: "{{ workshop_git_output_file }}"
+    mode: '0600'
+    content: >-
+      {{ {'server': hostvars[__workshop_git_verified_host].__workshop_git_server_result,
+      'teams': __workshop_git_team_access,
+      'initial_passwords': hostvars[__workshop_git_verified_host].__workshop_git_passwords,
+      'instructor_user': workshop_git_admin_user,
+      'must_change_password': workshop_git_must_change_password | bool} | to_nice_json }}
+  no_log: true
+
+- name: report | Show the Git URL and access sheet path
+  ansible.builtin.debug:
+    msg:
+      url: "{{ hostvars[__workshop_git_verified_host].workshop_git_server.url }}"
+      access_sheet: "{{ workshop_git_output_file }}"

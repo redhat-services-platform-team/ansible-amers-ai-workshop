@@ -1,0 +1,38 @@
+---
+- name: configure | Verify the upstream role created every requested user
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/read_users.yml"
+
+- name: configure | Require exact local usernames
+  ansible.builtin.assert:
+    that:
+      - >-
+        (__workshop_git_student_ids + [workshop_git_admin_user]) | map('lower')
+        | difference(__workshop_git_existing_usernames) | length == 0
+    fail_msg: The upstream role skipped a username. Check for a substring collision with an existing account.
+
+- name: configure | Manage organization permissions through the Gitea API
+  delegate_to: "{{ workshop_git_controller }}"
+  module_defaults:
+    ansible.builtin.uri:
+      url_username: "{{ workshop_git_admin_user }}"
+      url_password: "{{ __workshop_git_passwords[workshop_git_admin_user | lower] }}"
+      force_basic_auth: true
+      validate_certs: true
+      body_format: json
+  no_log: true
+  block:
+    - name: configure | Revoke student site administrator access
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/student_permissions.yml"
+      loop: "{{ __workshop_git_student_ids }}"
+      loop_control:
+        loop_var: __workshop_git_student
+
+    - name: configure | Configure each named organization and group
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/team.yml"
+      loop: "{{ __workshop_git_teams }}"
+      loop_control:
+        loop_var: __workshop_git_team
+
+- name: configure | Save verified server details
+  ansible.builtin.set_fact:
+    __workshop_git_server_result: "{{ workshop_git_server }}"

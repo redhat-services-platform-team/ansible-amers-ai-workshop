@@ -1,0 +1,132 @@
+---
+- name: environment | Manage this account with its own credentials
+  no_log: true
+  module_defaults:
+    group/amazon.aws.aws:
+      access_key: "{{ workshop_git_aws_account.access_key }}"
+      secret_key: "{{ workshop_git_aws_account.secret_key }}"
+      session_token: "{{ workshop_git_aws_account.session_token | default(omit, true) }}"
+      # aws_region avoids Route 53's separate latency-routing region option.
+      aws_region: "{{ workshop_git_aws_account.region }}"
+  block:
+    - name: environment | Set resource ownership
+      ansible.builtin.set_fact:
+        __workshop_git_tags:
+          WorkshopDeployment: "{{ workshop_git_deployment_id }}"
+          WorkshopEnvironment: "{{ __workshop_git_plan.name }}"
+          WorkshopGitFQDN: "{{ __workshop_git_plan.fqdn }}"
+          ManagedBy: "{{ __workshop_git_managed_by }}"
+
+    - name: environment | Create a dedicated VPC
+      amazon.aws.ec2_vpc_net:
+        name: "{{ __workshop_git_plan.resource_name }}"
+        cidr_block: "{{ workshop_git_vpc_cidr }}"
+        dns_hostnames: true
+        dns_support: true
+        tags: "{{ __workshop_git_tags }}"
+      register: __workshop_git_vpc
+
+    - name: environment | Create a public subnet
+      amazon.aws.ec2_vpc_subnet:
+        vpc_id: "{{ __workshop_git_vpc.vpc.id }}"
+        cidr: "{{ workshop_git_subnet_cidr }}"
+        map_public: true
+        tags: "{{ __workshop_git_tags | combine({'Name': __workshop_git_plan.resource_name}) }}"
+      register: __workshop_git_subnet
+
+    - name: environment | Attach an internet gateway
+      amazon.aws.ec2_vpc_igw:
+        vpc_id: "{{ __workshop_git_vpc.vpc.id }}"
+        tags: "{{ __workshop_git_tags }}"
+      register: __workshop_git_gateway
+
+    - name: environment | Route the public subnet to the internet
+      amazon.aws.ec2_vpc_route_table:
+        vpc_id: "{{ __workshop_git_vpc.vpc.id }}"
+        tags: "{{ __workshop_git_tags | combine({'Name': __workshop_git_plan.resource_name}) }}"
+        subnets:
+          - "{{ __workshop_git_subnet.subnet.id }}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{ __workshop_git_gateway.gateway_id }}"
+
+    - name: environment | Allow HTTPS and ACME HTTP validation
+      amazon.aws.ec2_security_group:
+        name: "{{ __workshop_git_plan.resource_name }}"
+        description: Workshop Git web access
+        vpc_id: "{{ __workshop_git_vpc.vpc.id }}"
+        tags: "{{ __workshop_git_tags }}"
+        rules:
+          - proto: tcp
+            ports: [80, 443]
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            ports: [22]
+            cidr_ip: "{{ __workshop_git_ssh_cidr }}"
+        rules_egress:
+          - proto: all
+            cidr_ip: 0.0.0.0/0
+      register: __workshop_git_security_group
+
+    - name: environment | Register the instructor public key in this account
+      amazon.aws.ec2_key:
+        name: "{{ __workshop_git_plan.resource_name }}"
+        key_material: "{{ __workshop_git_key.public_key }}"
+        force: false
+        tags: "{{ __workshop_git_tags }}"
+
+    - name: environment | Create or start the workshop Git instance
+      amazon.aws.ec2_instance:
+        name: "{{ __workshop_git_plan.resource_name }}"
+        image_id: "{{ __workshop_git_plan.ami_id }}"
+        instance_type: "{{ workshop_git_instance_type }}"
+        key_name: "{{ __workshop_git_plan.resource_name }}"
+        exact_count: 1
+        filters:
+          tag:Name: "{{ __workshop_git_plan.resource_name }}"
+          tag:WorkshopDeployment: "{{ workshop_git_deployment_id }}"
+          instance-state-name: [pending, running, stopping, stopped]
+        state: started
+        wait: true
+        cpu_credit_specification: "{{ 'standard' if workshop_git_instance_type is match('^t[23][a-z]*[.]') else omit }}"
+        metadata_options:
+          http_tokens: required
+          http_endpoint: enabled
+        network_interfaces:
+          - assign_public_ip: true
+            subnet_id: "{{ __workshop_git_subnet.subnet.id }}"
+            groups:
+              - "{{ __workshop_git_security_group.group_id }}"
+        volumes:
+          - device_name: "{{ __workshop_git_plan.root_device_name }}"
+            ebs:
+              volume_size: "{{ workshop_git_volume_size }}"
+              volume_type: gp3
+              encrypted: true
+              delete_on_termination: true
+        tags: "{{ __workshop_git_tags }}"
+      register: __workshop_git_instance
+      retries: 6
+      delay: 10
+      until: __workshop_git_instance is succeeded
+
+    - name: environment | Mark ownership of the Git DNS name
+      amazon.aws.route53:
+        hosted_zone_id: "{{ __workshop_git_plan.zone_id }}"
+        record: "_workshop-owner.{{ __workshop_git_plan.fqdn }}"
+        type: TXT
+        value: '{{ (workshop_git_deployment_id ~ "/" ~ __workshop_git_plan.name) | to_json }}'
+        ttl: 60
+        state: present
+        overwrite: false
+
+    - name: environment | Point the Git hostname to the instance
+      amazon.aws.route53:
+        hosted_zone_id: "{{ __workshop_git_plan.zone_id }}"
+        record: "{{ __workshop_git_plan.fqdn }}"
+        type: A
+        value: "{{ __workshop_git_instance.instances[0].public_ip_address }}"
+        ttl: 60
+        state: present
+        overwrite: true
+        wait: true

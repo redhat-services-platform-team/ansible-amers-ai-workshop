@@ -1,0 +1,19 @@
+---
+# Copy into private/ and use Ansible Vault if you store credentials in this file.
+workshop_git_aws_account:
+  name: demo-a
+  region: us-east-2
+  access_key: "{{ lookup('ansible.builtin.env', 'AWS_ACCESS_KEY_ID') }}"
+  secret_key: "{{ lookup('ansible.builtin.env', 'AWS_SECRET_ACCESS_KEY') }}"
+
+# Server hostname is git.<discovered Route 53 zone>. Change this prefix if needed.
+workshop_git_dns_label: git
+
+# Each key creates an organization and a permission group with the same name.
+# Add or remove entries to match your class. Each student belongs to one team.
+workshop_git_teams:
+  comet: [student01]
+  nebula: [student02]
+  orbit: [student03]
+  pulsar: [student04]
+  quasar: [student05]

@@ -1,0 +1,62 @@
+---
+- name: Validate deployment inputs
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate.yml"
+
+- name: Read saved passwords without generating credentials
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/password_state.yml"
+
+- name: Discover the single AWS deployment
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/discover.yml"
+
+- name: Show the discovered Git URL
+  ansible.builtin.debug:
+    msg: "{{ __workshop_git_plan.url }}"
+
+- name: Provision the Git server
+  when: not (workshop_git_discover_only | bool) and not ansible_check_mode
+  block:
+    - name: Restrict the dedicated private directory
+      ansible.builtin.file:
+        path: "{{ workshop_git_private_dir }}"
+        state: directory
+        mode: '0700'
+
+    - name: Check for the saved instructor SSH key
+      ansible.builtin.stat:
+        path: "{{ workshop_git_ssh_private_key_file }}"
+      register: __workshop_git_key_state
+
+    - name: Refuse to replace a lost key for the existing instance
+      ansible.builtin.assert:
+        that:
+          - __workshop_git_key_state.stat.exists or __workshop_git_existing_instances.instances | length == 0
+        fail_msg: Restore the original instructor SSH key before configuring an existing instance.
+
+    - name: Generate or reuse the instructor SSH key
+      community.crypto.openssh_keypair:
+        path: "{{ workshop_git_ssh_private_key_file }}"
+        type: ed25519
+        backend: opensshbin
+        regenerate: fail
+        mode: '0600'
+      register: __workshop_git_key
+      no_log: true
+
+    - name: Discover the instructor public IPv4 address
+      ansible.builtin.uri:
+        url: https://checkip.amazonaws.com
+        return_content: true
+      register: __workshop_git_public_ip
+      when: workshop_git_ssh_cidr | length == 0
+
+    - name: Select the allowed instructor SSH network
+      ansible.builtin.set_fact:
+        __workshop_git_ssh_cidr: >-
+          {{ workshop_git_ssh_cidr if workshop_git_ssh_cidr | length > 0
+             else (__workshop_git_public_ip.content | trim) ~ '/32' }}
+
+    - name: Provision the single instance
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/environment.yml"
+
+    - name: Write the account-specific EC2 inventory source
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/inventory.yml"

@@ -7,7 +7,7 @@ Read these source files:
 
 The script installs and reconciles a standalone NetBox stack on a dedicated CentOS Stream 10 host. The maintainer comments are workshop fiction. Read the code to determine behavior.
 
-Start with a short plan that maps the installer stages and lists unresolved decisions. Create the project in the output directory supplied with this prompt. Keep the legacy inputs and the rest of the workshop repository unchanged.
+First, list the installer stages and decisions that need clarification. Create the Ansible project in the output directory supplied with this prompt. Keep the legacy inputs and other repository files unchanged.
 
 Requirements:
 
@@ -26,6 +26,6 @@ Definition of done for generation:
 
 - The project and README exist in the requested output directory.
 - After declared collection dependencies are available, ansible-playbook -i inventory.ini.example --syntax-check site.yml passes from that directory using the existing Ansible installation.
-- A short report maps every installer stage to the generated files and lists behavior changes and missing implementation details. Separate static review from runtime checks that have not occurred.
+- A report maps each installer stage to the generated files and lists behavior changes and missing code. Identify which checks used code review and which runtime checks remain.
 - Explain what a second run does to credentials, the selected release, migrations, configuration, and services.
 - Report the checks completed and those that could not run. Distinguish syntax validation from runtime behavior you have not checked.
