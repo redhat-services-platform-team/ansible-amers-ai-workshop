@@ -53,8 +53,6 @@ The role checks a DNS ownership record before using an existing hostname.
 Export the access key and secret key before running, or store them in an Ansible Vault-encrypted input file. Temporary AWS credentials also require `session_token`. The account needs permission to manage EC2 networking, instances, key pairs, and Route 53 records.
 
 ```sh
-# Discover the zone and deployment without writing files or provisioning.
-ansible-navigator run site.yml -e @private/environment.yml -e workshop_git_discover_only=true
 # Provision the instance and configure student access.
 ansible-navigator run site.yml -e @private/environment.yml
 ```
