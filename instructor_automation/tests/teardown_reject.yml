@@ -1,0 +1,24 @@
+---
+- name: Clear the teardown rejection flag
+  ansible.builtin.set_fact:
+    test_teardown_rejected: false
+
+- name: Attempt teardown with conflicting ownership
+  block:
+    - name: Check teardown ownership
+      ansible.builtin.include_role:
+        name: workshop_git
+        tasks_from: teardown_ownership
+      vars:
+        __workshop_git_teardown_resources: "{{ rejected_teardown.__workshop_git_teardown_resources | default([]) }}"
+        __workshop_git_dns_records: "{{ rejected_teardown.__workshop_git_dns_records | default([]) }}"
+        __workshop_git_owner_records: "{{ rejected_teardown.__workshop_git_owner_records | default([]) }}"
+        __workshop_git_teardown_vpc_instances: "{{ rejected_teardown.__workshop_git_teardown_vpc_instances | default({'instances': []}) }}"
+  rescue:
+    - name: Record the expected teardown rejection
+      ansible.builtin.set_fact:
+        test_teardown_rejected: true
+
+- name: Require rejection before deleting resources
+  ansible.builtin.assert:
+    that: test_teardown_rejected

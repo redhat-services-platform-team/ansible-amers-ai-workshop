@@ -12,7 +12,7 @@ workshop_git_dns_label: git
 # Each key creates an organization and a permission group with the same name.
 # Add or remove entries to match your class. Each student belongs to one team.
 workshop_git_teams:
-  comet: [student01]
+  comet: [student01, asdf]
   nebula: [student02]
   orbit: [student03]
   pulsar: [student04]

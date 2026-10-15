@@ -1,0 +1,15 @@
+---
+ansible-navigator:
+  mode: stdout
+  execution-environment:
+    enabled: true
+    image: quay.io/igou/igou-awx-ee@sha256:5ac69ce7c970d6940bdcdea79e88c8aa889c3c337bd49ff46cb34d09f6e94986
+    pull:
+      policy: missing
+    environment-variables:
+      pass:
+        - AWS_ACCESS_KEY_ID
+        - AWS_SECRET_ACCESS_KEY
+        - AWS_SESSION_TOKEN
+  playbook-artifact:
+    enable: false

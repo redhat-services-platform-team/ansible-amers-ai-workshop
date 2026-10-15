@@ -1,0 +1,72 @@
+---
+- name: Check teardown ownership without AWS access
+  hosts: localhost
+  gather_facts: false
+  vars:
+    workshop_git_aws_account:
+      name: demo-a
+    __workshop_git_teardown_tags:
+      WorkshopDeployment: ai-workshop
+      WorkshopEnvironment: demo-a
+      WorkshopGitFQDN: git.example.com
+      ManagedBy: ansible-workshop-git
+    __workshop_git_dns_records: []
+    __workshop_git_owner_records: []
+    __workshop_git_teardown_instances:
+      instances: []
+  tasks:
+    - name: Accept absent resources for idempotent teardown
+      ansible.builtin.include_role:
+        name: workshop_git
+        tasks_from: teardown_ownership
+      vars:
+        __workshop_git_teardown_resources: []
+
+    - name: Accept owned resources with additional tags
+      ansible.builtin.include_role:
+        name: workshop_git
+        tasks_from: teardown_ownership
+      vars:
+        __workshop_git_teardown_resources:
+          - tags: "{{ __workshop_git_teardown_tags | combine({'Name': 'ai-workshop-demo-a-git'}) }}"
+
+    - name: Accept the deployment's DNS marker and ordinary A record
+      ansible.builtin.include_role:
+        name: workshop_git
+        tasks_from: teardown_ownership
+      vars:
+        __workshop_git_teardown_resources: []
+        __workshop_git_owner_records:
+          - type: TXT
+            resource_records:
+              - value: '"ai-workshop/demo-a"'
+        __workshop_git_dns_records:
+          - type: A
+            resource_records:
+              - value: 192.0.2.1
+
+    - name: Reject missing tags and conflicting ownership values
+      ansible.builtin.include_tasks: teardown_reject.yml
+      loop:
+        - __workshop_git_teardown_resources:
+            - tags: {}
+        - __workshop_git_teardown_resources:
+            - tags: "{{ __workshop_git_teardown_tags | combine({'WorkshopEnvironment': 'other'}) }}"
+        - __workshop_git_owner_records:
+            - type: TXT
+              resource_records:
+                - value: '"other/demo-a"'
+        - __workshop_git_owner_records:
+            - type: TXT
+              resource_records:
+                - value: '"ai-workshop/demo-a"'
+                - value: '"other/demo-a"'
+        - __workshop_git_dns_records:
+            - type: A
+              resource_records:
+                - value: 192.0.2.1
+        - __workshop_git_teardown_vpc_instances:
+            instances:
+              - instance_id: i-unrelated
+      loop_control:
+        loop_var: rejected_teardown
