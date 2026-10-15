@@ -6,41 +6,24 @@ The example has five teams: `comet`, `nebula`, `orbit`, `pulsar`, and `quasar`. 
 
 ## Install
 
-Run these commands from `instructor_automation/`.
+Install Ansible Navigator and Podman or Docker on the controller. Run these commands from `instructor_automation/`.
+
+`ansible-navigator.yml` uses `quay.io/igou/igou-awx-ee` pinned to the tested image digest. The image supplies Ansible, the AWS SDK, and the required collections.
 
 ```sh
-# Create a local environment for Ansible and the AWS SDK.
-python3 -m venv .venv
-# Activate that environment.
-source .venv/bin/activate
-# Install Ansible and its AWS dependencies.
-python -m pip install -r requirements.txt
-# Install the AWS and SSH key collections.
-ansible-galaxy collection install -r requirements.yml
-# Install the pinned upstream Gitea role.
-ansible-galaxy role install -r requirements.yml -p external_roles
 # Create a private directory for credentials and generated files.
-mkdir -p private && chmod 700 private
-# Copy the input example for your class.
-cp environments.example.yml private/environment.yml
+ansible-navigator exec -- install -d -m 0700 private
+# Copy the input example for your class, then edit it for your account and teams.
+ansible-navigator exec -- cp environments.example.yml private/environment.yml
+# Install the pinned upstream Gitea role into the project.
+ansible-navigator exec -- ansible-galaxy role install -r requirements.yml -p external_roles
 ```
 
 `site.yml` calls [roles-ansible.gitea](https://github.com/roles-ansible/ansible_role_gitea) to install Gitea and its `local_git_users` tasks to create local accounts. The workshop role uses Ansible modules and filters to discover AWS resources, save passwords, and manage organizations.
 
-## Run with Ansible Navigator
-
-`ansible-navigator.yml` uses `quay.io/igou/igou-awx-ee` pinned to the tested image digest. The image supplies Ansible, the AWS SDK, and the required collections. Install Ansible Navigator and Podman or Docker on the controller, then run these commands from `instructor_automation/`.
-
-```sh
-# Install the pinned upstream role into the project so the container can use it.
-ansible-navigator exec -- ansible-galaxy role install -r requirements.yml -p external_roles
-# Create the private input file as described above and export AWS credentials.
-ansible-navigator run site.yml -e @private/environment.yml
-```
-
 Navigator passes `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `AWS_SESSION_TOKEN` into the container. Add `session_token` to the account dictionary when using temporary credentials. Project files, including `private/` and the generated inventory, are available inside the container. Keep SSH keys and password files under the project directory when using this configuration.
 
-The configuration uses stdout mode and disables playbook artifacts because the playbook handles credentials. For encrypted inputs, add `--enable-prompts --ask-vault-pass`.
+The configuration uses stdout mode and disables playbook artifacts because the playbook handles credentials.
 
 ## Inputs
 
@@ -70,15 +53,20 @@ The role checks a DNS ownership record before using an existing hostname.
 Export the access key and secret key before running, or store them in an Ansible Vault-encrypted input file. Temporary AWS credentials also require `session_token`. The account needs permission to manage EC2 networking, instances, key pairs, and Route 53 records.
 
 ```sh
-# Encrypt inputs if they contain credentials.
-ansible-vault encrypt private/environment.yml
 # Discover the zone and deployment without writing files or provisioning.
-ansible-playbook site.yml -e @private/environment.yml -e workshop_git_discover_only=true --ask-vault-pass
+ansible-navigator run site.yml -e @private/environment.yml -e workshop_git_discover_only=true
 # Provision the instance and configure student access.
-ansible-playbook site.yml -e @private/environment.yml --ask-vault-pass
+ansible-navigator run site.yml -e @private/environment.yml
 ```
 
-Omit `--ask-vault-pass` when the input file is not encrypted.
+If the input file contains credentials, encrypt it and enable Vault prompts when running the playbook:
+
+```sh
+ansible-navigator exec -- ansible-vault encrypt private/environment.yml
+ansible-navigator run site.yml -e @private/environment.yml --enable-prompts --ask-vault-pass
+```
+
+Add the same Vault options to discovery and teardown commands when using encrypted inputs.
 
 ## AWS dynamic inventory
 
@@ -90,7 +78,7 @@ The generated inventory contains AWS credentials. The role sets the file mode to
 
 ```sh
 # Inspect the discovered hosts without printing host variables or credentials.
-ansible-inventory --graph
+ansible-navigator exec -- ansible-inventory --graph
 ```
 
 Existing Ubuntu deployments need a separate migration. This playbook stops before reusing an instance whose image is not an official RHEL 9 image. Use a new `workshop_git_deployment_id` and `workshop_git_dns_label` to create a separate RHEL deployment while preserving the old server and its data.
@@ -128,11 +116,9 @@ Gitea uses SQLite and its built-in ACME client to obtain a Let's Encrypt certifi
 Teardown permanently deletes Gitea data on the instance's root volume. Export any repositories you need before running it. Use the same account, deployment ID, DNS label, and hosted zone settings as the deployment. Student rosters, saved passwords, and the SSH key are not required for teardown.
 
 ```sh
-# Preview removal with the virtual environment used for deployment.
-ansible-playbook teardown.yml -e @private/environment.yml --check
+# Preview removal.
+ansible-navigator run teardown.yml -e @private/environment.yml --check
 # Remove the deployed environment.
-ansible-playbook teardown.yml -e @private/environment.yml
-# Or run teardown through the configured execution environment.
 ansible-navigator run teardown.yml -e @private/environment.yml
 ```
 
@@ -143,19 +129,23 @@ The preexisting Route 53 zone and unrelated records remain. Teardown refuses res
 ## Validate changes
 
 ```sh
-# Install lint dependencies.
-python -m pip install -r requirements-dev.txt
 # Check playbook syntax.
-ansible-playbook site.yml --syntax-check -e @environments.example.yml
-ansible-playbook teardown.yml --syntax-check -e @environments.example.yml
-# Lint the instructor role.
-ansible-lint --offline site.yml teardown.yml roles/workshop_git tests
+ansible-navigator run site.yml --syntax-check -e @environments.example.yml
+ansible-navigator run teardown.yml --syntax-check -e @environments.example.yml
 # Check team inputs and saved password handling without AWS access.
-ansible-playbook -i localhost, tests/validate.yml
+ansible-navigator run tests/validate.yml -i localhost,
 # Check teardown ownership rejection without AWS access.
-ansible-playbook -i localhost, tests/teardown.yml
+ansible-navigator run tests/teardown.yml -i localhost,
 # Check organization membership and repository permissions on a deployed server.
-ansible-playbook -i localhost, tests/live.yml
+ansible-navigator run tests/live.yml -i localhost,
+```
+
+The pinned execution environment does not include `ansible-lint`. Install its dependencies in a private directory through Navigator, then run lint in the container:
+
+```sh
+ansible-navigator exec -- python3 -m venv private/lint-venv
+ansible-navigator exec -- private/lint-venv/bin/python -m pip install -r requirements-dev.txt
+ansible-navigator exec -- private/lint-venv/bin/ansible-lint --offline site.yml teardown.yml roles/workshop_git tests
 ```
 
 To test another deployment, pass `-e test_access_file=/absolute/path/to/git-access.json`. The live check creates a temporary user and repository, checks access and writes, then deletes both. It does not change student passwords.
