@@ -1,0 +1,9 @@
+---
+- name: Remove the participant Git server and its dedicated AWS resources
+  hosts: local
+  gather_facts: false
+  tasks:
+    - name: Tear down the owned deployment
+      ansible.builtin.include_role:
+        name: workshop_git
+        tasks_from: teardown

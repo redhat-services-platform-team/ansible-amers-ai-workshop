@@ -27,6 +27,21 @@ cp environments.example.yml private/environment.yml
 
 `site.yml` calls [roles-ansible.gitea](https://github.com/roles-ansible/ansible_role_gitea) to install Gitea and its `local_git_users` tasks to create local accounts. The workshop role uses Ansible modules and filters to discover AWS resources, save passwords, and manage organizations.
 
+## Run with Ansible Navigator
+
+`ansible-navigator.yml` uses `quay.io/igou/igou-awx-ee` pinned to the tested image digest. The image supplies Ansible, the AWS SDK, and the required collections. Install Ansible Navigator and Podman or Docker on the controller, then run these commands from `instructor_automation/`.
+
+```sh
+# Install the pinned upstream role into the project so the container can use it.
+ansible-navigator exec -- ansible-galaxy role install -r requirements.yml -p external_roles
+# Create the private input file as described above and export AWS credentials.
+ansible-navigator run site.yml -e @private/environment.yml
+```
+
+Navigator passes `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `AWS_SESSION_TOKEN` into the container. Add `session_token` to the account dictionary when using temporary credentials. Project files, including `private/` and the generated inventory, are available inside the container. Keep SSH keys and password files under the project directory when using this configuration.
+
+The configuration uses stdout mode and disables playbook artifacts because the playbook handles credentials. For encrypted inputs, add `--enable-prompts --ask-vault-pass`.
+
 ## Inputs
 
 ```yaml
@@ -108,7 +123,22 @@ SSH allows the controller's public IPv4 address as a `/32` by default. Set `work
 
 Gitea uses SQLite and its built-in ACME client to obtain a Let's Encrypt certificate. Public DNS must resolve to the instance. Ports 80 and 443 are public for ACME validation and HTTPS. Set `workshop_git_acme_email` for renewal notices. The playbook checks trusted HTTPS before configuring users and organizations.
 
-This creates billable AWS resources. There is no teardown playbook. Remove the tagged EC2 instance and its networking resources, EC2 key pair, and Git A and ownership TXT records after the workshop. Keep unrelated Route 53 records and the preexisting zone.
+## Tear down the environment
+
+Teardown permanently deletes Gitea data on the instance's root volume. Export any repositories you need before running it. Use the same account, deployment ID, DNS label, and hosted zone settings as the deployment. Student rosters, saved passwords, and the SSH key are not required for teardown.
+
+```sh
+# Preview removal with the virtual environment used for deployment.
+ansible-playbook teardown.yml -e @private/environment.yml --check
+# Remove the deployed environment.
+ansible-playbook teardown.yml -e @private/environment.yml
+# Or run teardown through the configured execution environment.
+ansible-navigator run teardown.yml -e @private/environment.yml
+```
+
+Add the Vault options above if needed. Teardown checks ownership before deleting resources. It removes the Git A record, terminates the instance and its root volume, then removes the dedicated subnet, route table, security group, internet gateway, VPC, and EC2 key pair. It releases the DNS ownership TXT record last and removes the generated local inventory. Rerunning teardown after successful removal makes no changes.
+
+The preexisting Route 53 zone and unrelated records remain. Teardown refuses resources with missing or conflicting ownership tags and refuses a VPC containing another active instance. Local passwords, the access sheet, and SSH keys remain in `private/`. Archive or remove them separately after the workshop. The retained access sheet describes the deleted deployment until the next successful build.
 
 ## Validate changes
 
@@ -117,10 +147,13 @@ This creates billable AWS resources. There is no teardown playbook. Remove the t
 python -m pip install -r requirements-dev.txt
 # Check playbook syntax.
 ansible-playbook site.yml --syntax-check -e @environments.example.yml
+ansible-playbook teardown.yml --syntax-check -e @environments.example.yml
 # Lint the instructor role.
-ansible-lint --offline site.yml roles/workshop_git tests
+ansible-lint --offline site.yml teardown.yml roles/workshop_git tests
 # Check team inputs and saved password handling without AWS access.
 ansible-playbook -i localhost, tests/validate.yml
+# Check teardown ownership rejection without AWS access.
+ansible-playbook -i localhost, tests/teardown.yml
 # Check organization membership and repository permissions on a deployed server.
 ansible-playbook -i localhost, tests/live.yml
 ```

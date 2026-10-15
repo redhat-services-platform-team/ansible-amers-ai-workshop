@@ -35,6 +35,7 @@ See [the instructor guide](../../README.md) for installation, credentials, examp
 | Entry point | What it does |
 | --- | --- |
 | `main` | Validate inputs, discover AWS resources, provision RHEL 9, and write the EC2 inventory. |
+| `teardown` | Check ownership and remove the dedicated deployment, DNS records, and generated inventory. |
 | `prepare` | Check the RHEL server and save credentials. |
 | `users` | Check HTTPS and prepare missing local accounts. |
 | `configure` | Verify users and set organization permissions. |

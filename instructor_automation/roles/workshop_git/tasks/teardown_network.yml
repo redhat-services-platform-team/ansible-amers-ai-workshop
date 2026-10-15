@@ -1,0 +1,39 @@
+---
+- name: teardown_network | Delete dedicated subnets
+  amazon.aws.ec2_vpc_subnet:
+    vpc_id: "{{ __workshop_git_teardown_vpc.vpc_id }}"
+    cidr: "{{ item.cidr_block }}"
+    state: absent
+  loop: "{{ __workshop_git_teardown_subnets.subnets }}"
+  register: __workshop_git_teardown_subnet_result
+  retries: 12
+  delay: 5
+  until: __workshop_git_teardown_subnet_result is succeeded
+
+- name: teardown_network | Delete dedicated route tables
+  amazon.aws.ec2_vpc_route_table:
+    vpc_id: "{{ __workshop_git_teardown_vpc.vpc_id }}"
+    route_table_id: "{{ item.id }}"
+    lookup: id
+    state: absent
+  loop: "{{ __workshop_git_teardown_custom_routes }}"
+
+- name: teardown_network | Delete dedicated security groups
+  amazon.aws.ec2_security_group:
+    group_id: "{{ item.group_id }}"
+    state: absent
+  loop: "{{ __workshop_git_teardown_groups.security_groups | rejectattr('group_name', 'equalto', 'default') | list }}"
+  register: __workshop_git_teardown_group_result
+  retries: 12
+  delay: 5
+  until: __workshop_git_teardown_group_result is succeeded
+
+- name: teardown_network | Detach and delete the dedicated internet gateway
+  amazon.aws.ec2_vpc_igw:
+    vpc_id: "{{ __workshop_git_teardown_vpc.vpc_id }}"
+    state: absent
+
+- name: teardown_network | Delete the dedicated VPC
+  amazon.aws.ec2_vpc_net:
+    vpc_id: "{{ __workshop_git_teardown_vpc.vpc_id }}"
+    state: absent
