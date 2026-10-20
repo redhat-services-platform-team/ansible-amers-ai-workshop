@@ -7,7 +7,6 @@ Use Codex or Cursor with Ansible to migrate a Python NetBox installer, compare m
 * Basic Linux command-line skills and familiarity with YAML and scripting.
 * A RHEL or macOS workstation with a working Ansible installation.
 * Permission to install your chosen AI tool and access to enterprise Codex or an approved Cursor account.
-* Optional Podman access to preview the documentation locally.
 
 Lab 2's generation and review steps run on your workstation.
 Lab 4 requires an AWS environment your team can use for testing and deployment.
@@ -23,5 +22,4 @@ The workshop does not require OpenShift, AAP, or Showroom services.
 == Start the workshop
 
 Begin with xref:01-cursor-workspace.adoc[Lab 01: Workspace setup].
-For a local documentation preview, follow xref:appendix.adoc#view-workshop-docs-locally[View workshop documentation locally].
-Use the xref:appendix.adoc[Appendix] or ask your instructor if you need help.
+Ask your instructor if you need help.

@@ -3,6 +3,3 @@
 ** xref:02-shell-to-ansible.adoc[Lab 02: Python-to-Ansible NetBox migration]
 ** xref:03-managing-ai-costs.adoc[Lab 03: Comparing models and effort]
 ** xref:04-aws-lab-provisioning.adoc[Lab 04: Customer NetBox delivery project]
-* xref:appendix.adoc[Appendix]
-** xref:appendix.adoc#view-workshop-docs-locally[View workshop documentation locally]
-** xref:appendix.adoc#refresh-local-docs[Refresh local documentation]
