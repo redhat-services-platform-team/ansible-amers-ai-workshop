@@ -1,0 +1,41 @@
+---
+- name: teardown_network_info | Read all subnets in the dedicated VPC
+  amazon.aws.ec2_vpc_subnet_info:
+    filters:
+      vpc-id: "{{ __workshop_git_teardown_vpc.vpc_id }}"
+  register: __workshop_git_teardown_subnets
+
+- name: teardown_network_info | Read route tables in the dedicated VPC
+  amazon.aws.ec2_vpc_route_table_info:
+    filters:
+      vpc-id: "{{ __workshop_git_teardown_vpc.vpc_id }}"
+  register: __workshop_git_teardown_routes
+
+- name: teardown_network_info | Initialize the dedicated route table list
+  ansible.builtin.set_fact:
+    __workshop_git_teardown_custom_routes: []
+
+- name: teardown_network_info | Select route tables other than the VPC main table
+  ansible.builtin.set_fact:
+    __workshop_git_teardown_custom_routes: "{{ __workshop_git_teardown_custom_routes + [item] }}"
+  loop: "{{ __workshop_git_teardown_routes.route_tables }}"
+  when: item.associations | selectattr('main', 'equalto', true) | list | length == 0
+
+- name: teardown_network_info | Read gateways attached to the dedicated VPC
+  amazon.aws.ec2_vpc_igw_info:
+    filters:
+      attachment.vpc-id: "{{ __workshop_git_teardown_vpc.vpc_id }}"
+  register: __workshop_git_teardown_gateways
+
+- name: teardown_network_info | Read security groups in the dedicated VPC
+  amazon.aws.ec2_security_group_info:
+    filters:
+      vpc-id: "{{ __workshop_git_teardown_vpc.vpc_id }}"
+  register: __workshop_git_teardown_groups
+
+- name: teardown_network_info | Read all active instances in the dedicated VPC
+  amazon.aws.ec2_instance_info:
+    filters:
+      vpc-id: "{{ __workshop_git_teardown_vpc.vpc_id }}"
+      instance-state-name: [pending, running, stopping, stopped, shutting-down]
+  register: __workshop_git_teardown_vpc_instances

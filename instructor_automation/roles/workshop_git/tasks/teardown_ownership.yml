@@ -1,0 +1,42 @@
+---
+- name: teardown_ownership | Require exclusive ownership of the DNS marker
+  ansible.builtin.assert:
+    that:
+      - __workshop_git_owner_records | length <= 1
+      - >-
+        __workshop_git_owner_records | length == 0 or
+        (__workshop_git_owner_records[0].type == 'TXT' and
+         __workshop_git_owner_records[0].set_identifier is not defined and
+         __workshop_git_owner_records[0].resource_records ==
+         [{'value': (workshop_git_deployment_id ~ '/' ~ workshop_git_aws_account.name) | to_json}])
+      - __workshop_git_dns_records | length == 0 or __workshop_git_owner_records | length == 1
+    fail_msg: Refusing teardown because the DNS ownership marker is missing or belongs to another deployment.
+
+- name: teardown_ownership | Require ordinary A records at the Git hostname
+  ansible.builtin.assert:
+    that:
+      - item.type == 'A'
+      - item.resource_records is defined
+      - item.set_identifier is not defined
+      - item.alias_target is not defined
+    fail_msg: Refusing teardown of an alias or routing-policy record.
+  loop: "{{ __workshop_git_dns_records }}"
+
+- name: teardown_ownership | Verify every resource has this deployment's ownership tags
+  ansible.builtin.assert:
+    that:
+      - >-
+        (__workshop_git_teardown_resource.tags | default({}) | combine(__workshop_git_teardown_tags)) ==
+        (__workshop_git_teardown_resource.tags | default({}))
+    fail_msg: Refusing teardown because a resource has missing or conflicting ownership tags.
+  loop: "{{ __workshop_git_teardown_resources }}"
+  loop_control:
+    loop_var: __workshop_git_teardown_resource
+
+- name: teardown_ownership | Require every active VPC instance to be selected for termination
+  ansible.builtin.assert:
+    that:
+      - >-
+        (__workshop_git_teardown_vpc_instances.instances | default([]) | map(attribute='instance_id') | list) |
+        difference(__workshop_git_teardown_instances.instances | map(attribute='instance_id') | list) | length == 0
+    fail_msg: Refusing teardown because the VPC contains another active instance.
