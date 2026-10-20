@@ -1,4 +1,4 @@
-= Lab: Comparing models and effort
+= Lab 03: Comparing models and effort
 
 [abstract]
 Repeat the NetBox migration with the same source files and prompt. Compare models and reasoning effort levels. Record the output, corrections, elapsed time, and reported usage.
@@ -12,7 +12,7 @@ Repeat the NetBox migration with the same source files and prompt. Compare model
 
 == Before you start
 
-Complete xref:02-shell-to-ansible.adoc[Lab 2: Python-to-Ansible NetBox migration].
+Complete xref:02-shell-to-ansible.adoc[Lab 02: Python-to-Ansible NetBox migration].
 Use the same tool and Ansible environment for all runs.
 The shared inputs are under `workshop-content/02-shell-to-ansible/`:
 
@@ -172,6 +172,6 @@ Explain each choice with an example from your runs.
 * You reviewed behavior coverage and recorded syntax results, missing work, and untested runtime behavior.
 * You can explain which settings you would use for the team project and why.
 
-Proceed to xref:04-aws-lab-provisioning.adoc[Lab 4: Customer NetBox delivery project].
+Proceed to xref:04-aws-lab-provisioning.adoc[Lab 04: Customer NetBox delivery project].
 
 If you see an error in this lab, fork and submit a pull request against link:{workshop_repo_url}[{workshop_repo_url},window=_blank].

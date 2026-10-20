@@ -15,13 +15,13 @@ The workshop does not require OpenShift, AAP, or Showroom services.
 
 == Labs
 
-. xref:01-cursor-workspace.adoc[Workspace setup]. Configure Codex or Cursor with your local Ansible tools, using the CLI or desktop interface.
-. xref:02-shell-to-ansible.adoc[Python-to-Ansible NetBox migration]. Write your own prompt and make one initial port with Composer in Cursor or Luna in Codex.
-. xref:03-managing-ai-costs.adoc[Comparing models and effort]. Repeat the migration with fixed inputs, change models and effort levels, and compare output, review work, time, and usage.
-. xref:04-aws-lab-provisioning.adoc[Customer NetBox delivery project]. Migrate the installer and deploy NetBox on AWS as a team. Add hosts in NetBox and query them through Ansible dynamic inventory.
+. xref:01-cursor-workspace.adoc[Lab 01: Workspace setup]. Configure Codex or Cursor with your local Ansible tools, using the CLI or desktop interface.
+. xref:02-shell-to-ansible.adoc[Lab 02: Python-to-Ansible NetBox migration]. Write your own prompt and make one initial port with Composer in Cursor or Luna in Codex.
+. xref:03-managing-ai-costs.adoc[Lab 03: Comparing models and effort]. Repeat the migration with fixed inputs, change models and effort levels, and compare output, review work, time, and usage.
+. xref:04-aws-lab-provisioning.adoc[Lab 04: Customer NetBox delivery project]. Migrate the installer and deploy NetBox on AWS as a team. Add hosts in NetBox and query them through Ansible dynamic inventory.
 
 == Start the workshop
 
-Begin with xref:01-cursor-workspace.adoc[Module 1: Workspace setup].
+Begin with xref:01-cursor-workspace.adoc[Lab 01: Workspace setup].
 For a local documentation preview, follow xref:appendix.adoc#view-workshop-docs-locally[View workshop documentation locally].
 Use the xref:appendix.adoc[Appendix] or ask your instructor if you need help.

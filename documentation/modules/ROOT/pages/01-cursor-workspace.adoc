@@ -1,4 +1,4 @@
-= Workspace setup
+= Lab 01: Workspace setup
 
 [abstract]
 Install Codex or Cursor on RHEL or macOS, sign in, and check your existing Ansible installation. Choose either CLI or desktop.
@@ -450,4 +450,4 @@ Keep this task to inspection and explanation, and do not connect to managed host
 
 == 7: Next steps
 
-Proceed to xref:02-shell-to-ansible.adoc[Module 2: Python-to-Ansible NetBox migration]. Keep your existing Ansible environment available in the terminal used for validation and review `git diff` after AI edits.
+Proceed to xref:02-shell-to-ansible.adoc[Lab 02: Python-to-Ansible NetBox migration]. Keep your existing Ansible environment available in the terminal used for validation and review `git diff` after AI edits.

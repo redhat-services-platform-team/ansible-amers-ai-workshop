@@ -1,4 +1,4 @@
-= Lab: Customer NetBox delivery project
+= Lab 04: Customer NetBox delivery project
 
 [abstract]
 With your assigned team, migrate the Python installer to Ansible for a fictional customer. Deploy NetBox on AWS, add demo hosts in its UI, and query them with Ansible dynamic inventory.

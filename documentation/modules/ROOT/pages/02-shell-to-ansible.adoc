@@ -1,9 +1,9 @@
-= Lab: Python-to-Ansible NetBox migration
+= Lab 02: Python-to-Ansible NetBox migration
 
 [abstract]
 Write your own prompt to port the Python NetBox installer with Composer in Cursor or Luna in Codex. Review the output and use follow-up requests to improve the same project.
 
-== The handover
+== Customer Challenge
 
 Fifty maintainers have touched the installer over several years.
 The runbook is missing and the wiki disagrees with the comments. The company still depends on the script.
@@ -22,7 +22,7 @@ Read the code to determine what the installer does.
 
 == Before you start
 
-Complete xref:01-cursor-workspace.adoc[Module 1: Workspace setup].
+Complete xref:01-cursor-workspace.adoc[Lab 01: Workspace setup].
 Use Codex or Cursor and your existing Ansible environment on the RHEL or macOS control workstation.
 Select Composer if you use Cursor, or Luna if you use Codex.
 Use the Composer version available to your account, or `gpt-6-luna` in Codex.
@@ -185,7 +185,7 @@ These notes describe one port and your follow-ups. Lab 3 uses fresh conversation
 * You recorded validation results or explained why the output was not ready for validation.
 * You identified a question or improvement to explore next.
 
-Proceed to xref:03-managing-ai-costs.adoc[Module 3: Comparing models and effort].
+Proceed to xref:03-managing-ai-costs.adoc[Lab 03: Comparing models and effort].
 That lab uses the supplied `prompt.md` unchanged across runs to compare models and effort levels with fixed inputs.
 Keep these notes separate from Lab 3 results because the prompts and settings may differ.
 
