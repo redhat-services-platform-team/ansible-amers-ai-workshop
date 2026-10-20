@@ -5,13 +5,7 @@ Write your own prompt to port the Python NetBox installer with Composer in Curso
 
 == Customer Challenge
 
-Fifty maintainers have touched the installer over several years.
-The runbook is missing and the wiki disagrees with the comments. The company still depends on the script.
-Your assignment is to replace it with automation the next maintainer can review and operate.
-
-The maintainer history is workshop fiction.
-We copied the installer from `netbox-python` and added comments. Its executable code is unchanged.
-Read the code to determine what the installer does.
+Customer has an installer that has been maintained by many developers over the last 10 years. You noticed that the business process runbook is missing and their documentation is completely outdated. However, the company still heavily depends on the script. Your challenge is to replace it with ansible automation that is easily maintained.
 
 == Learning objectives
 
