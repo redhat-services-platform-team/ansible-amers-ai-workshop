@@ -35,7 +35,7 @@ In Codex, use the model picker or `/model` in the CLI to choose a model and a su
 Start with Luna for the baseline. GPT-6.1 Sol is an option for the model comparison if your account has access.
 See the link:https://learn.chatgpt.com/docs/models[official OpenAI model documentation] for current controls and availability.
 
-In Cursor, select Composer for the baseline, then choose another approved model for comparison.
+In Cursor, select *Composer* for the baseline, then choose another approved model for comparison.
 For the effort comparison, choose a model with reasoning effort settings in your client.
 If a model has no effort selector, record `not exposed`. Choose another approved model for runs B and C.
 See link:https://cursor.com/docs/models[Cursor's model documentation] and the options shown in your client.
