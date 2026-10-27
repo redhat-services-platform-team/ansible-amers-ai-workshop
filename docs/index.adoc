@@ -1,4 +1,4 @@
-= {lab_name}
+= Accelerating Ansible Delivery with AI
 
 Use Codex or Cursor with Ansible to migrate a Python NetBox installer, compare models and reasoning effort, and deliver a team NetBox project on AWS.
 

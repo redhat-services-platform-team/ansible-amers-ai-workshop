@@ -1,5 +1,0 @@
-* Labs
-** xref:01-cursor-workspace.adoc[Lab 01: Workspace setup]
-** xref:02-shell-to-ansible.adoc[Lab 02: Python-to-Ansible NetBox migration]
-** xref:03-managing-ai-costs.adoc[Lab 03: Comparing models and effort]
-** xref:04-aws-lab-provisioning.adoc[Lab 04: Customer NetBox delivery project]

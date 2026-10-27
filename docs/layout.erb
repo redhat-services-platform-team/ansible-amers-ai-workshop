@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= page[:title] %> :: <%= site_title %></title>
+  <link rel="stylesheet" href="assets/theme.css">
+  <link rel="stylesheet" href="assets/site.css">
+  <script src="assets/highlight.js" defer></script>
+  <script src="assets/site.js" defer></script>
+</head>
+<body class="article">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<a class="event-banner" href="index.html" aria-label="Workshop home">
+  <img src="assets/workshop-banner.png" width="2172" height="724" alt="Red Hat Services — Accelerating Ansible Delivery with AI, with a connected world map representing global presence">
+</a>
+<header class="header">
+  <nav class="navbar" aria-label="Workshop">
+    <div class="navbar-brand">
+      <a class="navbar-item site-title" href="index.html"><%= site_title %></a>
+    </div>
+    <details class="resources">
+      <summary>Links</summary>
+      <div class="resource-links">
+      <a href="https://cursor.com/docs">Cursor Docs</a>
+      <a href="https://docs.ansible.com/">Ansible Documentation</a>
+      </div>
+    </details>
+  </nav>
+</header>
+<div class="body">
+  <div class="nav-container" id="lab-navigation">
+    <aside class="nav"><div class="panels"><div class="nav-panel-menu is-active">
+      <nav class="nav-menu" aria-label="Labs">
+        <h3 class="title"><a href="index.html"><%= site_title %></a></h3>
+        <ul class="nav-list">
+        <% pages.each do |item| -%>
+          <li class="nav-item<%= ' is-current-page' if item == page %>" data-depth="0">
+            <a class="nav-link" href="<%= item[:url] %>"<%= ' aria-current="page"' if item == page %>><%= item == pages.first ? 'Overview' : item[:title] %></a>
+          </li>
+        <% end -%>
+        </ul>
+      </nav>
+    </div></div></aside>
+  </div>
+  <main class="article" id="main-content">
+    <div class="toolbar" role="navigation" aria-label="Page navigation">
+      <button class="nav-toggle" aria-label="Toggle lab navigation" aria-controls="lab-navigation" aria-expanded="false"></button>
+      <a href="index.html" class="home-link" aria-label="Workshop home"></a>
+      <nav class="breadcrumbs" aria-label="Breadcrumb"><ul><li><%= link(page) %></li></ul></nav>
+    </div>
+    <div class="content">
+      <article class="doc">
+        <h1 class="page"><%= page[:title] %></h1>
+        <%= page[:body] %>
+        <nav class="pagination" aria-label="Previous and next labs">
+          <% if previous_page -%><span class="prev"><%= link(previous_page) %></span><% end -%>
+          <% if next_page -%><span class="next"><%= link(next_page) %></span><% end -%>
+        </nav>
+      </article>
+      <aside class="toc sidebar" aria-label="Contents"><div class="toc-menu">
+        <h3>Contents</h3><ul>
+        <% page[:document].sections.each do |section| -%>
+          <li><a href="#<%= escape(section.id) %>"><%= section.title %></a></li>
+        <% end -%>
+        </ul>
+      </div></aside>
+    </div>
+  </main>
+</div>
+<footer class="footer"><p><a href="<%= REPOSITORY %>">Workshop source</a></p></footer>
+</body>
+</html>

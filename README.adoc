@@ -1,89 +1,70 @@
 = Accelerating Ansible Delivery with AI
 
-Site content for Accelerating Ansible Delivery with AI.
+Hands-on labs for using Codex or Cursor with Ansible: migrate a Python NetBox installer, compare models and effort, and deliver NetBox on AWS as a team.
 
-Repository: https://github.com/redhat-services-platform-team/ansible-amers-ai-workshop
+https://redhat-services-platform-team.github.io/ansible-amers-ai-workshop/[Read the workshop on GitHub Pages].
 
-== Getting Started
+== Repository layout
 
-View the workshop labs on https://redhat-services-platform-team.github.io/ansible-amers-ai-workshop/[GitHub Pages].
+* `docs/`: the overview and four lab pages in AsciiDoc, one HTML layout, and the build/check scripts.
+* `docs/assets/`: the existing Red Hat theme, logo, syntax highlighting, and small site customizations.
+* `workshop-content/`: learner code, sample configuration, project briefs, and checklists.
+* `instructor_automation/`: Ansible provisioning, teardown, and tests for the workshop Git server. See link:instructor_automation/README.md[the instructor guide].
+* `.github/workflows/gh-pages.yml`: build checks and GitHub Pages deployment.
 
-=== Workspace Setup
+== Edit and preview the docs
 
-For native RHEL and macOS setup of your choice of Codex or Cursor (CLI or desktop), using an existing Ansible installation, with enterprise authentication, CLI flags, and policy examples, see link:workshop-content/01-codex-workspace/README.md[Workspace Setup].
-
-=== Understanding the Basic Template Directory Structure
-
-[source,sh]
-----
-./workshop-content # Location where all code for the workshop is stored
-├── <lab-module>.                    # Lab Module Directory
-│   └── <content>                    # Associated content for the lab
-./documentation/modules/ROOT/
-├── assets
-│   └── images                       # Images used in your content
-│       └── <lab-module>             # Lab Module Directory
-│           └── example-image.png    # Images
-├── nav.adoc                         # Navigation for your lab
-├── pages                            # Your content goes here
-│   ├── index.adoc                   # First page of your lab, e.g. overview etc
-│   └── <lab-module>                 # Lab Module Directory
-│       └── 01-lab-1.adoc            # Lab 1 content
-└── partials                         # You can add partials here, reusable content inserted inline into your modules
-    └── example_partial.adoc
-----
-
-=== Local Build Utilities
+Install Ruby (3.3 is used in CI) and Python 3.9 or later, then install the single build dependency once:
 
 [source,sh]
 ----
-utilities/lab-build   # Build the Antora site to ./www
-utilities/lab-serve   # Serve the built site on http://localhost:8080
-utilities/lab-stop    # Stop the local HTTP server
-utilities/lab-clean   # Remove built site output
+gem install asciidoctor -v 2.0.23 --no-document
 ----
 
-=== Preview from GitHub
+From the repository root:
 
-The *Workshop preview and Pages* workflow publishes `main` at the site root:
+[source,sh]
+----
+ruby docs/build.rb
+python3 docs/check.py
+python3 -m http.server 8080 --bind 127.0.0.1 --directory www
+----
 
-https://redhat-services-platform-team.github.io/ansible-amers-ai-workshop/
+Open http://localhost:8080. Stop the server with Ctrl+C.
+After editing, rerun the build and refresh the browser. Uncommitted edits are included.
+The build recreates `www/`, which is ignored by Git. No containers, Node.js, or Antora are needed.
+Once Asciidoctor is installed, building and viewing the site works offline.
 
-Each pull request from a branch in this repository gets a separate preview, updated when commits are pushed:
+Edit `docs/index.adoc` for the overview or a numbered `.adoc` file for a lab.
+Navigation and previous/next links come from the numbered filenames and page titles.
+Use `xref:02-shell-to-ansible.adoc[Lab 2]` for links between pages.
+Put any new images in `docs/assets/` and use `image::filename.png[Description]`.
+Adjust `docs/layout.erb` for shared HTML and `docs/assets/site.css` for appearance.
+The check script validates generated local links, section anchors, assets, and the publication file list.
 
-https://redhat-services-platform-team.github.io/ansible-amers-ai-workshop/previews/pr-3/
+The original Showroom v0.0.1 stylesheet is retained in `docs/assets/theme.css`, with its fonts and icons embedded so it is self-contained.
+`docs/assets/highlight.js` comes from the same theme bundle; `workshop-banner.png` is the generated Red Hat Services workshop banner, based on the supplied design reference.
+Theme source: https://github.com/rhpds/rhdp_showroom_theme/releases/tag/v0.0.1[RHDP Showroom v0.0.1].
+Upstream license notices are in `docs/assets/LICENSE.txt`.
 
-Replace `3` with the pull request number.
-The deployment link in the workflow run and the pull request's deployment activity points to that preview.
-Antora builds the preview with its own base URL so navigation, assets, and canonical links stay within it.
-Closing or merging a pull request removes its preview; other previews remain available.
-Automatic preview publishing and cleanup take effect once this workflow is merged into `main`.
+== GitHub Pages
 
-To publish an unmerged branch manually, open *Actions → Workshop preview and Pages → Run workflow*:
+Keep *Settings → Pages → Build and deployment → Source* set to *GitHub Actions*.
+Pushing to `main` builds, checks, and deploys the site using GitHub's Pages artifact workflow.
+The `github-pages` environment must allow deployments from `main`.
+No generated-content branch is required.
 
-. Select the branch.
-. Check *publish*.
-. Enter its open pull request number in *pr_number*.
+Pull requests and manual workflow runs build the same site and upload a `github-pages` artifact.
+Only `main` deploys; manual runs on other branches do not replace the live workshop.
+For local review, check out the branch and run the preview commands above.
+The previous hosted `/previews/pr-N/` system has been removed to keep deployment simple.
+Its existing hosted previews disappear on the first deployment of this workflow.
+An existing `gh-pages` branch is no longer updated or required and can be archived separately.
 
-Manual publishing from `main` refreshes the root without replacing previews.
-Leave *publish* unchecked to build downloadable artifacts only.
-Fork pull requests build artifacts but do not publish or receive repository write credentials.
+Old `/modules/<page>.html` and `/modules/master/<page>.html` bookmarks redirect to the new flat URLs, preserving section anchors.
+Only generated documentation and `docs/assets/` are published. Instructor credentials and learner runtime output stay outside the site.
 
-The workflow saves the combined generated site on the `gh-pages` branch, preserving other previews between runs.
-It rebuilds the root from `main` during every publishing run.
-Keep *Settings → Pages → Build and deployment → Source* set to *GitHub Actions*, not branch publishing.
-The `github-pages` environment must allow deployments from the preview branches.
-A repository administrator can select *Settings → Environments → github-pages → Deployment branches and tags → No restriction*.
-See https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages[GitHub's custom workflow documentation].
+== Start a lab
 
-Download `workshop-main` or `workshop-preview` from the workflow run's Artifacts section to inspect a generated build.
-Hosted builds contain their published base URL; use the hosted preview to verify navigation.
-For a local preview with local links, use the build utilities above.
-
-== Instructor AWS Git environment
-
-Use link:instructor_automation/README.md[instructor_automation] to provision one RHEL 9 Gitea server in an AWS account.
-Supply a team dictionary to create private organizations, permission groups, and local student users.
-The playbook discovers the public Route 53 zone, deploys a `t3.medium`, and uses AWS EC2 dynamic inventory to find the host.
-It saves the Git URL, organization URLs, and initial passwords in a private access sheet.
-Start with discovery mode to check the account keys and DNS name before provisioning.
+Begin with link:docs/01-cursor-workspace.adoc[Workspace setup].
+The exercises and supporting files stay in `workshop-content/`; the instructor Git environment stays in `instructor_automation/`.

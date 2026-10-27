@@ -14,7 +14,7 @@ You can finish this lab with a partial migration if you record what remains.
 * `migration-checklist.adoc` maps installer behavior to review criteria.
 * `output/` contains learner projects and is ignored by Git.
 
-Follow `documentation/modules/ROOT/pages/02-shell-to-ansible.adoc` for the learner instructions.
+Follow `docs/02-shell-to-ansible.adoc` for the learner instructions.
 We kept the `02-shell-to-ansible` directory and page names so existing links work.
 
 == Output layout

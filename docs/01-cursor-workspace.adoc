@@ -67,7 +67,7 @@ Check that all three commands succeed. Note the executable path and Python runti
 
 Clone once; if you already have the checkout, change to its repository root instead:
 
-[source,bash]
+[source,bash,subs="+attributes"]
 ----
 # Download the workshop repository into a new local directory.
 git clone {workshop_repo_url}.git

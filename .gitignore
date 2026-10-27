@@ -33,19 +33,12 @@ secrets.json
 *.dylib
 *.core
 
-# Ignore package-lock.json for npm
-package-lock.json
-
-# Ignore yarn.lock for Yarn
-yarn.lock
-
 .lock
 
 .ansible
 .env
 # Learner-generated playbooks (Module 2 / 3)
 workshop-content/02-shell-to-ansible/output/**
-!workshop-content/02-shell-to-ansible/output/.gitkeep
 
 # Lab 4 team secrets and private runtime output
 workshop-content/04-aws-lab-provisioning/**/credentials.yml
