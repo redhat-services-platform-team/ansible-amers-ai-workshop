@@ -2,46 +2,67 @@ name: Workshop docs
 
 on:
   push:
-    branches: [main]
+    branches-ignore: [gh-pages]
   pull_request:
     branches: [main]
+  delete:
   workflow_dispatch:
 
 permissions:
   contents: read
 
+# Keep the read/update/deploy cycle atomic across branches. Queue all updates.
+concurrency:
+  group: github-pages
+  queue: max
+
 jobs:
-  build:
+  publish:
+    if: >-
+      github.ref != 'refs/heads/gh-pages' &&
+      (github.event_name != 'delete' ||
+       (github.event.ref_type == 'branch' && github.event.ref != 'gh-pages'))
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
     steps:
       - uses: actions/checkout@v6
-        with:
-          persist-credentials: false
       - uses: ruby/setup-ruby@v1
+        if: github.event_name != 'delete'
         with:
           ruby-version: '3.3'
       - name: Install Asciidoctor
+        if: github.event_name != 'delete'
         run: gem install asciidoctor -v 2.0.23 --no-document
       - name: Build documentation
+        if: github.event_name != 'delete'
         run: ruby docs/build.rb
       - name: Check generated pages and links
+        if: github.event_name != 'delete'
         run: python3 docs/check.py
+      - name: Test branch publication
+        run: python3 docs/test_publish.py
+      - name: Update combined site
+        if: github.event_name != 'pull_request'
+        env:
+          PAGES_BRANCH: ${{ github.event_name == 'delete' && github.event.ref || github.ref_name }}
+          PAGES_DELETE: ${{ github.event_name == 'delete' }}
+        run: python3 docs/publish.py
       - name: Upload site
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v4
         with:
-          path: www
+          path: .pages-site
 
   deploy:
-    # PRs and manual runs on other branches build artifacts without publishing.
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    needs: build
+    if: github.event_name != 'pull_request'
+    needs: publish
     runs-on: ubuntu-latest
     permissions:
       pages: write
       id-token: write
-    concurrency:
-      group: github-pages
-      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

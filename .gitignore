@@ -62,3 +62,8 @@ instructor_automation/external_roles/
 
 # Generated AWS inventory source contains account credentials.
 instructor_automation/inventory/workshop.aws_ec2.yml
+
+# Combined GitHub Pages publication workspace
+.pages-state/
+.pages-site/
+docs/__pycache__/

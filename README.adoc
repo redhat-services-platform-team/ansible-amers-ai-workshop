@@ -50,16 +50,26 @@ Upstream license notices are in `docs/assets/LICENSE.txt`.
 == GitHub Pages
 
 Keep *Settings → Pages → Build and deployment → Source* set to *GitHub Actions*.
-Pushing to `main` builds, checks, and deploys the site using GitHub's Pages artifact workflow.
-The `github-pages` environment must allow deployments from `main`.
-No generated-content branch is required.
+In *Settings → Environments → github-pages → Deployment branches and tags*, allow all repository branches (select *No restriction*).
+The workflow needs permission to push generated files to `gh-pages`; repository rules must allow the GitHub Actions bot to update that branch.
 
-Pull requests and manual workflow runs build the same site and upload a `github-pages` artifact.
-Only `main` deploys; manual runs on other branches do not replace the live workshop.
-For local review, check out the branch and run the preview commands above.
-The previous hosted `/previews/pr-N/` system has been removed to keep deployment simple.
-Its existing hosted previews disappear on the first deployment of this workflow.
-An existing `gh-pages` branch is no longer updated or required and can be archived separately.
+Pushing to `main` publishes the workshop at the site root.
+Pushing to any other source branch publishes an independent copy under `/branches/<branch>/`.
+For example, `rh1` publishes at https://redhat-services-platform-team.github.io/ansible-amers-ai-workshop/branches/rh1/.
+Simple branch names containing letters, numbers, underscores, and hyphens retain their names.
+Other names (including names containing `/`) use a readable prefix plus a hash; the workflow summary reports the URL.
+
+The workflow stores the combined generated site in `gh-pages` and deploys it using GitHub Actions.
+Do not edit that branch manually or select it as the Pages publishing source.
+Updates are queued so publishing one branch preserves the other previews.
+Deleting a source branch removes its preview on the next successful cleanup deployment.
+Deletion handling requires this workflow and `docs/publish.py` on the default branch.
+The main site is retained if `main` is deleted.
+
+Pull requests build and check the docs without publishing.
+Manual workflow runs publish the selected branch, except the reserved `gh-pages` branch.
+Existing branches need this workflow and publishing script before pushes on them can publish previews; merge or cherry-pick the changes into those branches, then push or run the workflow manually.
+For local review, run the preview commands above.
 
 Old `/modules/<page>.html` and `/modules/master/<page>.html` bookmarks redirect to the new flat URLs, preserving section anchors.
 Only generated documentation and `docs/assets/` are published. Instructor credentials and learner runtime output stay outside the site.
