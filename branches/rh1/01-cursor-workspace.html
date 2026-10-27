@@ -1,0 +1,848 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 01: Workspace setup :: Accelerating Ansible Delivery with AI</title>
+  <link rel="stylesheet" href="assets/theme.css">
+  <link rel="stylesheet" href="assets/site.css">
+  <script src="assets/highlight.js" defer></script>
+  <script src="assets/site.js" defer></script>
+</head>
+<body class="article">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<a class="event-banner" href="index.html" aria-label="Workshop home">
+  <img src="assets/workshop-banner.png" width="2172" height="724" alt="Red Hat Services — Accelerating Ansible Delivery with AI, with a connected world map representing global presence">
+</a>
+<header class="header">
+  <nav class="navbar" aria-label="Workshop">
+    <div class="navbar-brand">
+      <a class="navbar-item site-title" href="index.html">Accelerating Ansible Delivery with AI</a>
+    </div>
+    <details class="resources">
+      <summary>Links</summary>
+      <div class="resource-links">
+      <a href="https://cursor.com/docs">Cursor Docs</a>
+      <a href="https://docs.ansible.com/">Ansible Documentation</a>
+      </div>
+    </details>
+  </nav>
+</header>
+<div class="body">
+  <div class="nav-container" id="lab-navigation">
+    <aside class="nav"><div class="panels"><div class="nav-panel-menu is-active">
+      <nav class="nav-menu" aria-label="Labs">
+        <h3 class="title"><a href="index.html">Accelerating Ansible Delivery with AI</a></h3>
+        <ul class="nav-list">
+                  <li class="nav-item" data-depth="0">
+            <a class="nav-link" href="index.html">Overview</a>
+          </li>
+                  <li class="nav-item is-current-page" data-depth="0">
+            <a class="nav-link" href="01-cursor-workspace.html" aria-current="page">Lab 01: Workspace setup</a>
+          </li>
+                  <li class="nav-item" data-depth="0">
+            <a class="nav-link" href="02-shell-to-ansible.html">Lab 02: Python-to-Ansible NetBox migration</a>
+          </li>
+                  <li class="nav-item" data-depth="0">
+            <a class="nav-link" href="03-managing-ai-costs.html">Lab 03: Comparing models and effort</a>
+          </li>
+                  <li class="nav-item" data-depth="0">
+            <a class="nav-link" href="04-aws-lab-provisioning.html">Lab 04: Customer NetBox delivery project</a>
+          </li>
+                </ul>
+      </nav>
+    </div></div></aside>
+  </div>
+  <main class="article" id="main-content">
+    <div class="toolbar" role="navigation" aria-label="Page navigation">
+      <button class="nav-toggle" aria-label="Toggle lab navigation" aria-controls="lab-navigation" aria-expanded="false"></button>
+      <a href="index.html" class="home-link" aria-label="Workshop home"></a>
+      <nav class="breadcrumbs" aria-label="Breadcrumb"><ul><li><a href="01-cursor-workspace.html">Lab 01: Workspace setup</a></li></ul></nav>
+    </div>
+    <div class="content">
+      <article class="doc">
+        <h1 class="page">Lab 01: Workspace setup</h1>
+        <div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+Install Codex or Cursor on RHEL or macOS, sign in, and check your existing Ansible installation. Choose either CLI or desktop.
+</blockquote>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_learning_objectives"><a class="anchor" href="#_learning_objectives"></a>Learning objectives</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Verify your existing Ansible installation is accessible to the selected AI tool</p>
+</li>
+<li>
+<p>Install one AI tool: Codex or Cursor, using either its CLI or desktop interface</p>
+</li>
+<li>
+<p>Authenticate the selected tool with your approved enterprise account</p>
+</li>
+<li>
+<p>Open the workshop repository and verify the local Ansible runtime</p>
+</li>
+<li>
+<p>Inspect the selected tool&#8217;s permissions and review AI-generated changes</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_prerequisites"><a class="anchor" href="#_prerequisites"></a>Prerequisites</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>A RHEL or macOS workstation</p>
+</li>
+<li>
+<p>A working Ansible installation, with <code>ansible-playbook</code> on your command path</p>
+</li>
+<li>
+<p>Git and the download utilities required by your chosen installer</p>
+</li>
+<li>
+<p>A graphical desktop session only if you choose a desktop interface; either CLI works from a terminal</p>
+</li>
+<li>
+<p>Permission to install OS packages and outbound HTTPS access to the download services</p>
+</li>
+<li>
+<p>On RHEL: registration and enabled package repositories</p>
+</li>
+<li>
+<p>If choosing the macOS Homebrew installer: a working <a href="https://brew.sh/" target="_blank" rel="noopener">Homebrew installation</a></p>
+</li>
+<li>
+<p>If choosing Codex: an enterprise Codex entitlement and membership in the assigned workspace</p>
+</li>
+<li>
+<p>If choosing Cursor: an account approved for the workshop</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Use your existing Ansible installation. If it requires a Python environment, activate that environment in each terminal used for the labs. Install Ansible before starting if it is not available. The lint check is optional.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_editing_configuration_files_is_optional"><a class="anchor" href="#_editing_configuration_files_is_optional"></a>Editing configuration files is optional</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Install your chosen tool, sign in, and open the workshop repository to start working.
+The lab works without editing configuration files.
+Use the permissions examples and CLI options below when you want to change a setting.
+You can skip the configuration examples and continue to host runtime verification.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_choose_a_setup_path"><a class="anchor" href="#_choose_a_setup_path"></a>Choose a setup path</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Choose one tool and one interface.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 60%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tool</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Interface</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Follow these sections</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Codex</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CLI</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Verify Ansible and clone the workshop in steps 1 and 2. Install and sign in to Codex CLI in step 3. Finish steps 5 through 7.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Codex</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Desktop</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Verify Ansible and clone the workshop in steps 1 and 2. Install and sign in to Codex desktop in step 3. Finish steps 5 through 7.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cursor</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CLI</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Verify Ansible and clone the workshop in steps 1 and 2. Install and sign in to Cursor CLI in step 4. Finish steps 5 through 7.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cursor</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Desktop</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Verify Ansible and clone the workshop in steps 1 and 2. Install and sign in to Cursor desktop in step 4. Finish steps 5 through 7.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Skip the other tool&#8217;s installation and sign-in sections. Desktop users can skip the CLI installers. A working host Ansible installation is required for every path.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_1_verify_ansible"><a class="anchor" href="#_1_verify_ansible"></a>1: Verify Ansible</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the terminal you normally use for Ansible, activate your existing environment if needed, then run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Locate the Ansible executable in this terminal's environment.
+command -v ansible-playbook
+# Show the Ansible version, configuration path, and Python runtime.
+ansible-playbook --version
+# Confirm Git is available and show its version.
+git --version</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Check that all three commands succeed. Note the executable path and Python runtime shown by <code>ansible-playbook --version</code>. Your AI tool needs access to that installation. If Ansible is missing or fails to start, fix the installation before continuing.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_2_clone_the_workshop"><a class="anchor" href="#_2_clone_the_workshop"></a>2: Clone the workshop</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Clone once; if you already have the checkout, change to its repository root instead:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Download the workshop repository into a new local directory.
+git clone https://github.com/redhat-services-platform-team/ansible-amers-ai-workshop.git
+# Enter the cloned workshop repository.
+cd ansible-amers-ai-workshop</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Keep your existing Ansible environment available in the terminal used to launch the CLI or run validation.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_3_set_up_codex"><a class="anchor" href="#_3_set_up_codex"></a>3: Set up Codex</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Follow this section if you chose Codex. Install either CLI or desktop. For CLI on macOS, choose one installer.</p>
+</div>
+<div class="sect2">
+<h3 id="_codex_cli_on_rhel_and_macos"><a class="anchor" href="#_codex_cli_on_rhel_and_macos"></a>Codex CLI on RHEL and macOS</h3>
+<div class="paragraph">
+<p>On RHEL, install the download utilities and sandbox dependency with <code>sudo dnf install -y curl tar gzip less bubblewrap</code>. On macOS, use the existing download utilities. Run the standalone installer as your regular user:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Download the Codex installer to a temporary file for inspection.
+curl -fsSL https://chatgpt.com/codex/install.sh -o /tmp/codex-install.sh
+# Read the installer before running it; press q to exit less.
+less /tmp/codex-install.sh
+# Run the inspected Codex installer as your regular user.
+sh /tmp/codex-install.sh
+# Add the installer directory to the command path for this terminal.
+export PATH="$HOME/.local/bin:$PATH"
+# Show the installed Codex CLI version.
+codex --version
+# List the commands and flags supported by this installed version.
+codex --help</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The installer configures your shell path. Open a new terminal afterward, or use the <code>PATH</code> command above in the current one. Run the installer again to update. See <a href="https://learn.chatgpt.com/docs/codex/cli" target="_blank" rel="noopener">official CLI installation</a>.</p>
+</div>
+<div class="sect3">
+<h4 id="_macos_homebrew_alternative"><a class="anchor" href="#_macos_homebrew_alternative"></a>macOS Homebrew alternative</h4>
+<div class="paragraph">
+<p>If you prefer Homebrew, choose it instead of the standalone CLI installer:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Install Codex CLI through Homebrew.
+brew install --cask codex
+# Show the installed Codex CLI version.
+codex --version</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Update this installation with <code>brew upgrade --cask codex</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_codex_desktop_on_macos"><a class="anchor" href="#_codex_desktop_on_macos"></a>Codex desktop on macOS</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Download the ChatGPT desktop app from <a href="https://chatgpt.com/download/" target="_blank" rel="noopener">the official download page</a>.</p>
+</li>
+<li>
+<p>Install and launch it, complete enterprise OAuth/SSO sign-in, and select the assigned enterprise workspace.</p>
+</li>
+<li>
+<p>Choose <strong>Codex</strong> and open the workshop repository folder.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>See <a href="https://learn.chatgpt.com/docs/app" target="_blank" rel="noopener">the desktop app guide</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_desktop_rpm_preview_on_rhel"><a class="anchor" href="#_desktop_rpm_preview_on_rhel"></a>Desktop RPM preview on RHEL</h3>
+<div class="paragraph">
+<p>The Linux desktop app is a preview. <strong>RHEL is not a supported desktop distribution.</strong> These steps adapt the official Fedora RPM installation for RHEL; installation and runtime compatibility on RHEL have not been verified.</p>
+</div>
+<div class="paragraph">
+<p>Check <code>uname -m</code>, then download the matching package into <code>~/Downloads</code>:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Architecture</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Package</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>x86_64</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://persistent.oaistatic.com/codex-app-prod/linux/rpm/latest/chatgpt.x86_64.rpm">Download x64 RPM</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>aarch64</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://persistent.oaistatic.com/codex-app-prod/linux/rpm/latest/chatgpt.aarch64.rpm">Download ARM64 RPM</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>For x64:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Enter the directory where you saved the downloaded RPM.
+cd "$HOME/Downloads"
+# Install the downloaded ChatGPT desktop RPM and its dependencies.
+sudo dnf install ./chatgpt.x86_64.rpm</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For ARM64, use <code>sudo dnf install ./chatgpt.aarch64.rpm</code>. Let DNF resolve dependencies from enabled repositories; if that fails, use Codex CLI for the lab.</p>
+</div>
+<div class="paragraph">
+<p>Open ChatGPT from the applications menu, or run <code>chatgpt</code> in a graphical desktop session. Sign in through enterprise OAuth/SSO and select the assigned workspace. Choose Codex and open the workshop folder. If the installation configured the OpenAI package repository, update with <code>sudo dnf upgrade --refresh chatgpt</code>.</p>
+</div>
+<div class="paragraph">
+<p>See <a href="https://learn.chatgpt.com/docs/linux/linux-app" target="_blank" rel="noopener">official Linux desktop support and RPM instructions</a>. RHEL remains an unsupported preview target even if installation succeeds.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_enterprise_sign_in_for_cli_users"><a class="anchor" href="#_enterprise_sign_in_for_cli_users"></a>Enterprise sign-in for CLI users</h3>
+<div class="paragraph">
+<p>From a terminal:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Start Codex account sign-in in your browser.
+codex login
+# Check whether Codex is signed in.
+codex login status</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Choose <strong>Sign in with ChatGPT</strong>, use your work identity, complete enterprise OAuth/SSO, and select the assigned enterprise workspace. Confirm workspace selection during sign-in; <code>codex login status</code> reports the authentication method.</p>
+</div>
+<div class="paragraph">
+<p>For a RHEL SSH session, use <code>codex login --device-auth</code>, open the printed link on your laptop, and complete the same enterprise sign-in. Device login must be enabled by the workspace administrator. If it is disabled, use the SSH callback forwarding flow in <a href="https://learn.chatgpt.com/docs/auth" target="_blank" rel="noopener">the authentication guide</a>. Keep cached authentication credentials out of Git.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_permissions"><a class="anchor" href="#_permissions"></a>Permissions</h3>
+<div class="paragraph">
+<p>You can keep the installed settings. Use these examples only if you want to change permissions.</p>
+</div>
+<div class="paragraph">
+<p>Permissions control file writes, command network access, and approval requests. Check them with <code>/permissions</code> in the CLI or the control beneath the desktop composer. Codex can run commands allowed by the sandbox without asking each time. Your organization may restrict the available settings.</p>
+</div>
+<div class="sect3">
+<h4 id="_optional_configuration_reference"><a class="anchor" href="#_optional_configuration_reference"></a>Optional configuration reference</h4>
+<div class="paragraph">
+<p>This example allows workspace edits and sends requests for more access to you for review. Edit <code>~/.codex/config.toml</code> on RHEL or macOS. If you set <code>CODEX_HOME</code>, edit <code>config.toml</code> there instead.</p>
+</div>
+<div class="paragraph">
+<p>Read and back up an existing file before editing it. Merge the example keys with your settings. Keep unrelated entries and avoid duplicate keys or table headers. For a new file, use the complete example below. Organization requirements take precedence over user defaults.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Create the Codex settings directory if you choose to edit the examples.
+mkdir -p "$HOME/.codex"
+# Check for an existing config before making a backup.
+if [ -f "$HOME/.codex/config.toml" ]; then
+  # Save a timestamped copy of the existing Codex configuration.
+  cp "$HOME/.codex/config.toml" "$HOME/.codex/config.toml.backup-$(date +%Y%m%d-%H%M%S)"
+fi
+# Open the configuration in your chosen editor, or vi if EDITOR is unset.
+${EDITOR:-vi} "$HOME/.codex/config.toml"</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">approval_policy = "on-request"
+approvals_reviewer = "user"
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+network_access = false</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Setting</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">What it means for a first-time user</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>approval_policy = "on-request"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Codex can perform routine actions inside its permissions. When it requests an action requiring more access, it can ask you to approve it; this does not prompt for every command.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>approvals_reviewer = "user"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Approval requests go to you rather than an automatic reviewer, so you can read the proposed command and its purpose.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sandbox_mode = "workspace-write"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Generated commands can edit the workspace and run local validation. Writes outside the permitted roots are restricted; this is not a promise that reads are limited to the workspace.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>network_access = false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Commands inside the workspace sandbox cannot freely contact remote services. This is separate from web search and does not block Codex&#8217;s own sign-in or model connection.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Place top-level keys before TOML table headers. If <code>[sandbox_workspace_write]</code> already exists, update <code>network_access</code> inside that table. If you edit the file, restart Codex and check the active permissions. The same sample is available at <code>workshop-content/01-codex-workspace/samples/config.toml</code>.</p>
+</div>
+<div class="paragraph">
+<p>Optional CLI examples, using your existing Ansible installation. Choose one command for the session you want:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Start a read-only session with approval requests for actions needing more access.
+codex -s read-only -a on-request
+# Allow workspace edits and ask for approval when more access is needed.
+codex -s workspace-write -a on-request
+# Start a session with the Lab 2 directory as its working directory.
+codex -C workshop-content/02-shell-to-ansible
+# Continue the most recent session for the current directory.
+codex resume --last</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If Ansible needs environment activation, tell Codex your actual activation command or give it the absolute executable path verified in section 1. The lab folder&#8217;s guide also covers named profiles, command rules, and administrator requirements.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_references"><a class="anchor" href="#_references"></a>References</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://learn.chatgpt.com/docs/codex/cli">Codex CLI installation</a></p>
+</li>
+<li>
+<p><a href="https://learn.chatgpt.com/docs/app">Desktop app and Codex</a></p>
+</li>
+<li>
+<p><a href="https://learn.chatgpt.com/docs/linux/linux-app">Linux desktop preview and RPM support</a></p>
+</li>
+<li>
+<p><a href="https://learn.chatgpt.com/docs/auth">Enterprise account sign-in and SSH authentication</a></p>
+</li>
+<li>
+<p><a href="https://learn.chatgpt.com/docs/config-file/config-basic">Configuration locations and precedence</a></p>
+</li>
+<li>
+<p><a href="https://learn.chatgpt.com/docs/sandboxing">Permissions, approvals, and sandboxing</a></p>
+</li>
+<li>
+<p><a href="https://learn.chatgpt.com/docs/developer-commands?surface=cli">CLI commands and flags</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_4_set_up_cursor"><a class="anchor" href="#_4_set_up_cursor"></a>4: Set up Cursor</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Follow this section only if you chose Cursor. Install either CLI or desktop.
+Sign in with the account approved for the workshop.
+If your organization provides a license, complete its account setup before continuing.</p>
+</div>
+<div class="sect2">
+<h3 id="_cli_installation_on_rhel_and_macos"><a class="anchor" href="#_cli_installation_on_rhel_and_macos"></a>CLI installation on RHEL and macOS</h3>
+<div class="paragraph">
+<p>Run the installer as your regular user:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Download the Cursor CLI installer to a temporary file for inspection.
+curl -fsSL https://cursor.com/install -o /tmp/cursor-install.sh
+# Read the installer before running it; press q to exit less.
+less /tmp/cursor-install.sh
+# Run the inspected Cursor CLI installer as your regular user.
+bash /tmp/cursor-install.sh
+# Add the installer directory to the command path for this terminal.
+export PATH="$HOME/.local/bin:$PATH"
+# Show the installed Cursor CLI version.
+agent --version
+# Start Cursor CLI account sign-in.
+agent login
+# Check the Cursor CLI authentication status.
+agent status</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Complete sign-in with the account approved for Cursor access. From the workshop repository root, use your existing Ansible environment and start an interactive session with <code>agent</code>. The CLI can update with <code>agent update</code>. See <a href="https://cursor.com/docs/cli/installation" target="_blank" rel="noopener">CLI installation</a> and <a href="https://cursor.com/docs/cli/reference/authentication" target="_blank" rel="noopener">CLI sign-in</a>.</p>
+</div>
+<div class="paragraph">
+<p>If you chose CLI, skip the desktop installation steps below and continue to host runtime verification. The Permissions and References subsections are optional reading.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_desktop_installation_on_rhel"><a class="anchor" href="#_desktop_installation_on_rhel"></a>Desktop installation on RHEL</h3>
+<div class="paragraph">
+<p>Download the <strong>Linux RPM</strong> for your architecture from <a href="https://cursor.com/download" target="_blank" rel="noopener">Cursor downloads</a>. Save it in <code>~/Downloads</code>, then install the exact filename you downloaded:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Enter the directory where you saved the downloaded RPM.
+cd "$HOME/Downloads"
+# Install the Cursor RPM after replacing the placeholder with its filename.
+sudo dnf install './&lt;downloaded-cursor-package&gt;.rpm'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Replace <code>&lt;downloaded-cursor-package&gt;</code> with the actual filename. Launch <strong>Cursor</strong> from the applications menu and sign in with the account that received access. For repository-based installation and updates, see <a href="https://cursor.com/docs/get-started/quickstart" target="_blank" rel="noopener">Cursor&#8217;s RHEL/Fedora setup</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_desktop_installation_on_macos"><a class="anchor" href="#_desktop_installation_on_macos"></a>Desktop installation on macOS</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Download the macOS installer for Apple Silicon or Intel from <a href="https://cursor.com/download" target="_blank" rel="noopener">Cursor downloads</a>.</p>
+</li>
+<li>
+<p>Open the <code>.dmg</code>, move Cursor into <strong>Applications</strong>, and launch it.</p>
+</li>
+<li>
+<p>Sign in with the account that received Cursor access.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_open_the_workspace_in_cursor_desktop"><a class="anchor" href="#_open_the_workspace_in_cursor_desktop"></a>Open the workspace in Cursor desktop</h3>
+<div class="paragraph">
+<p>In Cursor, choose <strong>File → Open Folder…</strong> and select the repository root, <code>ansible-amers-ai-workshop</code>. Open <strong>Terminal → New Terminal</strong>, activate your existing Ansible environment if needed, and verify it is available:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Locate the Ansible executable in this terminal's environment.
+command -v ansible-playbook
+# Show the Ansible version, configuration path, and Python runtime.
+ansible-playbook --version</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Use the same installation you verified in section 1. An optional <strong>Ansible</strong> extension published by Red Hat adds YAML editing and language support; terminal validation uses your installed Ansible tools.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_permissions_2"><a class="anchor" href="#_permissions_2"></a>Permissions</h3>
+<div class="paragraph">
+<p>You can keep the installed settings. Use these examples only if you want to change permissions.</p>
+</div>
+<div class="paragraph">
+<p>Cursor desktop and CLI use different settings. In desktop Cursor, open <strong>Settings → Agents → Approvals &amp; Execution</strong>. For CLI, edit <code>~/.cursor/cli-config.json</code> or the project file <code>.cursor/cli.json</code>. CLI settings do not change desktop Run Mode.</p>
+</div>
+<div class="sect3">
+<h4 id="_optional_configuration_reference_for_desktop"><a class="anchor" href="#_optional_configuration_reference_for_desktop"></a>Optional configuration reference for desktop</h4>
+<div class="paragraph">
+<p>Use Auto-review with sandboxing enabled. Allowlisted calls run immediately. Supported shell commands run in the sandbox; an automatic reviewer evaluates other calls. Some actions run without asking you. In Cursor 3.23 or later, choose <strong>Read Access → Workspace</strong> to require approval for reads outside the workspace unless they are allowlisted. Keep your organization&#8217;s restrictions.</p>
+</div>
+<div class="paragraph">
+<p>To request review before publishing, installing software, or changing remote systems, merge this example into <code>~/.cursor/permissions.json</code> for all projects or <code>&lt;repo&gt;/.cursor/permissions.json</code> for this workshop:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "autoRun": {
+    "allow_instructions": [],
+    "block_instructions": [
+      "Commands that publish code, including git push, should require my approval first.",
+      "Commands that install software or change host configuration should require my approval first.",
+      "Commands that connect to managed hosts or change AWS resources should require my approval first."
+    ]
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>allow_instructions</code> adds no exceptions. <code>block_instructions</code> asks the reviewer to block the listed actions so the agent can ask for approval or try another approach. These instructions guide a model; they do not guarantee that a command will be blocked. Team policy can override local files. If your organization disables Auto-review, use Allowlist without adding automatic approvals.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_optional_configuration_reference_for_cli"><a class="anchor" href="#_optional_configuration_reference_for_cli"></a>Optional configuration reference for CLI</h4>
+<div class="paragraph">
+<p>Inspect and back up <code>~/.cursor/cli-config.json</code>, then merge these settings. The CLI may already have created this file when you signed in. If you use <code>CURSOR_CONFIG_DIR</code> or <code>XDG_CONFIG_HOME</code>, use the configured location instead. For a new file, this is a complete starting point:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "version": 1,
+  "editor": { "vimMode": false },
+  "approvalMode": "allowlist",
+  "permissions": {
+    "allow": [],
+    "deny": ["Shell(sudo)", "Shell(rm)"]
+  }
+}</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Setting</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">What it means for a first-time user</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>version: 1</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Selects the documented CLI configuration format.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>editor.vimMode: false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Uses normal text-input keys; preserve your preference if you already use Vim bindings.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>approvalMode: "allowlist"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Uses explicit permission rules rather than unrestricted execution or automatic review.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>permissions.allow: []</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Adds no blanket automatic approvals. Review approval requests before accepting them; existing sandbox behavior can still permit supported actions.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>permissions.deny</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Blocks commands whose base command is <code>sudo</code> or <code>rm</code>. These token rules do not block every possible way to change or remove files, and deny entries take precedence over allow entries.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Use an interactive <code>agent</code> session and read each command request. If a deny rule blocks an intended task, review it before running the command yourself or changing the rule.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_preserve_existing_settings_before_editing"><a class="anchor" href="#_preserve_existing_settings_before_editing"></a>Preserve existing settings before editing</h4>
+<div class="paragraph">
+<p>Back up the files you plan to edit:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Create the Cursor settings directory if you choose to edit the examples.
+mkdir -p "$HOME/.cursor"
+# Check whether a Cursor CLI config exists before backing it up.
+if [ -f "$HOME/.cursor/cli-config.json" ]; then
+  # Save a timestamped backup of the Cursor CLI configuration.
+  cp "$HOME/.cursor/cli-config.json" "$HOME/.cursor/cli-config.json.backup-$(date +%Y%m%d-%H%M%S)"
+fi
+# Check whether desktop permission settings exist before backing them up.
+if [ -f "$HOME/.cursor/permissions.json" ]; then
+  # Save a timestamped backup of the Cursor desktop permission settings.
+  cp "$HOME/.cursor/permissions.json" "$HOME/.cursor/permissions.json.backup-$(date +%Y%m%d-%H%M%S)"
+fi</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For project settings, back up the file in the repository&#8217;s <code>.cursor/</code> directory. Merge keys and permission arrays with the existing JSON object. Keep unrelated settings and restrictions. Do not erase existing rules to match an empty example array.</p>
+</div>
+<div class="paragraph">
+<p>JSON does not allow comments or trailing commas. Restart the interface after editing and check its active permissions. Compare the samples in <code>workshop-content/01-codex-workspace/samples/cursor/</code> with your files before merging.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_references_2"><a class="anchor" href="#_references_2"></a>References</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://cursor.com/docs/get-started/quickstart">Desktop installation and first workspace</a></p>
+</li>
+<li>
+<p><a href="https://cursor.com/download">Desktop downloads</a></p>
+</li>
+<li>
+<p><a href="https://cursor.com/docs/cli/installation">CLI installation and updates</a></p>
+</li>
+<li>
+<p><a href="https://cursor.com/docs/cli/reference/authentication">CLI account sign-in</a></p>
+</li>
+<li>
+<p><a href="https://cursor.com/docs/agent/security/run-modes">Desktop Run Modes, Auto-review, read access, and configuration files</a></p>
+</li>
+<li>
+<p><a href="https://cursor.com/docs/cli/reference/configuration">CLI configuration locations and schema</a></p>
+</li>
+<li>
+<p><a href="https://cursor.com/docs/cli/reference/permissions">CLI permission tokens and rule matching</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_verify_the_local_runtime"><a class="anchor" href="#_5_verify_the_local_runtime"></a>5: Verify the local runtime</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In your OS terminal or the terminal of your selected desktop app, return to the repository root. Use your existing Ansible environment and run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Enter Lab 1 so Ansible uses its local configuration and inventory.
+cd workshop-content/01-codex-workspace
+# Check the sample playbook syntax without running its tasks.
+ansible-playbook --syntax-check playbooks/hello.yml
+# Run the sample checks on localhost using your existing Ansible installation.
+ansible-playbook playbooks/hello.yml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If <code>ansible-lint</code> is already installed, you can also run <code>ansible-lint playbooks/hello.yml</code>.</p>
+</div>
+<div class="paragraph">
+<p>The sample targets only <code>localhost</code>, prints the host OS, Ansible version, and Python executable, and verifies Linux or macOS. It does not contact managed nodes or change host configuration.</p>
+</div>
+<div class="paragraph">
+<p>Use this first prompt in either Codex or Cursor with the repository open:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-text hljs" data-lang="text">Read README.adoc and workshop-content/02-shell-to-ansible/README.adoc.
+Explain the workshop structure and prerequisites for converting the legacy
+Python NetBox installer to Ansible. My RHEL or macOS workstation is the control
+host. Explain the installer's managed-host requirements.
+Use my existing working Ansible installation for validation. If its environment
+is unavailable, report the missing command and ask for the environment details.
+Keep this task to inspection and explanation, and do not connect to managed hosts.</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_6_setup_checklist_and_troubleshooting"><a class="anchor" href="#_6_setup_checklist_and_troubleshooting"></a>6: Setup checklist and troubleshooting</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Check</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Success criteria</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Selected AI tool</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Your chosen Codex or Cursor interface signs in with the approved account and opens the checkout</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Installation choice</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">One tool and one interface are sufficient; checks for the other paths are optional</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Existing Ansible installation</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ansible-playbook --version</code> succeeds in the terminal used by your selected tool</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Local verification</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Syntax check and the sample playbook pass on <code>localhost</code>; lint is optional</p></td>
+</tr>
+</tbody>
+</table>
+<div class="ulist">
+<ul>
+<li>
+<p>If Ansible is missing or fails, restore your existing installation or ask the instructor for help.</p>
+</li>
+<li>
+<p>If your AI tool cannot find Ansible, use the activation command or absolute executable path from section 1.</p>
+</li>
+<li>
+<p>If Codex shell networking is blocked, inspect the active policy. Use <code>-c 'sandbox_workspace_write.network_access=true'</code> for one session when the task needs it and your organization&#8217;s policy permits it.</p>
+</li>
+<li>
+<p>If the Linux sandbox fails, check <code>bwrap --version</code> and host namespace restrictions with the instructor. Keep SELinux enabled.</p>
+</li>
+<li>
+<p>If the RHEL desktop RPM fails to install or launch, use Codex CLI and save the error for troubleshooting.</p>
+</li>
+<li>
+<p>If Cursor sign-in fails, check that you used the account approved for the workshop.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_7_next_steps"><a class="anchor" href="#_7_next_steps"></a>7: Next steps</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Proceed to <a href="02-shell-to-ansible.html">Lab 02: Python-to-Ansible NetBox migration</a>. Keep your existing Ansible environment available in the terminal used for validation and review <code>git diff</code> after AI edits.</p>
+</div>
+</div>
+</div>
+        <nav class="pagination" aria-label="Previous and next labs">
+          <span class="prev"><a href="index.html">Accelerating Ansible Delivery with AI</a></span>          <span class="next"><a href="02-shell-to-ansible.html">Lab 02: Python-to-Ansible NetBox migration</a></span>        </nav>
+      </article>
+      <aside class="toc sidebar" aria-label="Contents"><div class="toc-menu">
+        <h3>Contents</h3><ul>
+                  <li><a href="#_learning_objectives">Learning objectives</a></li>
+                  <li><a href="#_prerequisites">Prerequisites</a></li>
+                  <li><a href="#_editing_configuration_files_is_optional">Editing configuration files is optional</a></li>
+                  <li><a href="#_choose_a_setup_path">Choose a setup path</a></li>
+                  <li><a href="#_1_verify_ansible">1: Verify Ansible</a></li>
+                  <li><a href="#_2_clone_the_workshop">2: Clone the workshop</a></li>
+                  <li><a href="#_3_set_up_codex">3: Set up Codex</a></li>
+                  <li><a href="#_4_set_up_cursor">4: Set up Cursor</a></li>
+                  <li><a href="#_5_verify_the_local_runtime">5: Verify the local runtime</a></li>
+                  <li><a href="#_6_setup_checklist_and_troubleshooting">6: Setup checklist and troubleshooting</a></li>
+                  <li><a href="#_7_next_steps">7: Next steps</a></li>
+                </ul>
+      </div></aside>
+    </div>
+  </main>
+</div>
+<footer class="footer"><p><a href="https://github.com/redhat-services-platform-team/ansible-amers-ai-workshop">Workshop source</a></p></footer>
+</body>
+</html>

@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 03: Comparing models and effort :: Accelerating Ansible Delivery with AI</title>
+  <link rel="stylesheet" href="assets/theme.css">
+  <link rel="stylesheet" href="assets/site.css">
+  <script src="assets/highlight.js" defer></script>
+  <script src="assets/site.js" defer></script>
+</head>
+<body class="article">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<a class="event-banner" href="index.html" aria-label="Workshop home">
+  <img src="assets/workshop-banner.png" width="2172" height="724" alt="Red Hat Services — Accelerating Ansible Delivery with AI, with a connected world map representing global presence">
+</a>
+<header class="header">
+  <nav class="navbar" aria-label="Workshop">
+    <div class="navbar-brand">
+      <a class="navbar-item site-title" href="index.html">Accelerating Ansible Delivery with AI</a>
+    </div>
+    <details class="resources">
+      <summary>Links</summary>
+      <div class="resource-links">
+      <a href="https://cursor.com/docs">Cursor Docs</a>
+      <a href="https://docs.ansible.com/">Ansible Documentation</a>
+      </div>
+    </details>
+  </nav>
+</header>
+<div class="body">
+  <div class="nav-container" id="lab-navigation">
+    <aside class="nav"><div class="panels"><div class="nav-panel-menu is-active">
+      <nav class="nav-menu" aria-label="Labs">
+        <h3 class="title"><a href="index.html">Accelerating Ansible Delivery with AI</a></h3>
+        <ul class="nav-list">
+                  <li class="nav-item" data-depth="0">
+            <a class="nav-link" href="index.html">Overview</a>
+          </li>
+                  <li class="nav-item" data-depth="0">
+            <a class="nav-link" href="01-cursor-workspace.html">Lab 01: Workspace setup</a>
+          </li>
+                  <li class="nav-item" data-depth="0">
+            <a class="nav-link" href="02-shell-to-ansible.html">Lab 02: Python-to-Ansible NetBox migration</a>
+          </li>
+                  <li class="nav-item is-current-page" data-depth="0">
+            <a class="nav-link" href="03-managing-ai-costs.html" aria-current="page">Lab 03: Comparing models and effort</a>
+          </li>
+                  <li class="nav-item" data-depth="0">
+            <a class="nav-link" href="04-aws-lab-provisioning.html">Lab 04: Customer NetBox delivery project</a>
+          </li>
+                </ul>
+      </nav>
+    </div></div></aside>
+  </div>
+  <main class="article" id="main-content">
+    <div class="toolbar" role="navigation" aria-label="Page navigation">
+      <button class="nav-toggle" aria-label="Toggle lab navigation" aria-controls="lab-navigation" aria-expanded="false"></button>
+      <a href="index.html" class="home-link" aria-label="Workshop home"></a>
+      <nav class="breadcrumbs" aria-label="Breadcrumb"><ul><li><a href="03-managing-ai-costs.html">Lab 03: Comparing models and effort</a></li></ul></nav>
+    </div>
+    <div class="content">
+      <article class="doc">
+        <h1 class="page">Lab 03: Comparing models and effort</h1>
+        <div id="preamble">
+<div class="sectionbody">
+<div class="quoteblock abstract">
+<blockquote>
+Repeat the NetBox migration with the same source files and prompt. Compare models and reasoning effort levels. Record the output, corrections, elapsed time, and reported usage.
+</blockquote>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_learning_objectives"><a class="anchor" href="#_learning_objectives"></a>Learning objectives</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Select models and reasoning effort settings in your tool.</p>
+</li>
+<li>
+<p>Change one setting at a time and record what changed in the output.</p>
+</li>
+<li>
+<p>Check which installer behaviors each output implements.</p>
+</li>
+<li>
+<p>Use your results to decide when to change models or increase effort.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_before_you_start"><a class="anchor" href="#_before_you_start"></a>Before you start</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Complete <a href="02-shell-to-ansible.html">Lab 02: Python-to-Ansible NetBox migration</a>.
+Use the same tool and Ansible environment for all runs.
+The shared inputs are under <code>workshop-content/02-shell-to-ansible/</code>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>legacy/install_netbox.py</code></p>
+</li>
+<li>
+<p><code>legacy/.env.example</code></p>
+</li>
+<li>
+<p><code>migration-checklist.adoc</code></p>
+</li>
+<li>
+<p><code>prompt.md</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Lab 2 started with your own prompt. This lab uses the supplied <code>prompt.md</code> unchanged so the initial request stays the same across runs.
+Only the output directory changes.
+Do not include earlier generated projects or conversations in a new run.
+Use <code>workshop-content/03-managing-ai-costs/lab-scorecard.adoc</code> or your own notebook.</p>
+</div>
+<div class="paragraph">
+<p>Generate and review locally during the comparison. Do not run the installer or deploy the generated projects during these runs.
+Syntax checks do not prove that NetBox deploys correctly or that reruns preserve credentials.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_1_find_the_controls"><a class="anchor" href="#_step_1_find_the_controls"></a>Step 1: Find the controls</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In Codex, use the model picker or <code>/model</code> in the CLI to choose a model and a supported reasoning effort.
+Start with Luna for the baseline. GPT-6.1 Sol is an option for the model comparison if your account has access.
+See the <a href="https://learn.chatgpt.com/docs/models">official OpenAI model documentation</a> for current controls and availability.</p>
+</div>
+<div class="paragraph">
+<p>In Cursor, select Composer for the baseline, then choose another approved model for comparison.
+For the effort comparison, choose a model with reasoning effort settings in your client.
+If a model has no effort selector, record <code>not exposed</code>. Choose another approved model for runs B and C.
+See <a href="https://cursor.com/docs/models">Cursor&#8217;s model documentation</a> and the options shown in your client.</p>
+</div>
+<div class="paragraph">
+<p>Record the exact model name or version, reasoning effort label, interaction mode, and any speed setting.
+A speed setting such as Fast is a separate control from reasoning effort.
+Avoid automatic model routing for this experiment if you can select a model directly.
+Record any model substitutions required by your account.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_2_plan_the_comparison"><a class="anchor" href="#_step_2_plan_the_comparison"></a>Step 2: Plan the comparison</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Choose at least two models and two supported effort levels on one model.
+Use this plan when both models offer the same effort labels:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 37.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Run</th>
+<th class="tableblock halign-left valign-top">Model</th>
+<th class="tableblock halign-left valign-top">Reasoning effort</th>
+<th class="tableblock halign-left valign-top">Question</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Composer or Luna</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Record the baseline setting</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">What does the baseline produce?</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">B</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Another approved model</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same effort label as A, if supported</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">What changes when I change the model?</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">C</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Same model as B</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A higher supported effort than B</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">What changes when I increase effort?</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>For Cursor with no Composer effort selector, record A as <code>not exposed</code>.
+Use two explicit effort levels on the model chosen for B and C.
+Runs A and B then differ in both model and reasoning behavior.
+The same effort label on different models may use different amounts of computation and cost.
+Between B and C, only effort changes.</p>
+</div>
+<div class="paragraph">
+<p>Keep the tool, interaction mode, permissions, source files, initial prompt, and review criteria the same.
+Use a fresh conversation and separate output directory for each run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-text hljs" data-lang="text">workshop-content/02-shell-to-ansible/output/&lt;your-name&gt;/run-a/
+workshop-content/02-shell-to-ansible/output/&lt;your-name&gt;/run-b/
+workshop-content/02-shell-to-ansible/output/&lt;your-name&gt;/run-c/</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If no available model offers two effort levels, complete the model comparison and record that limitation. Changing interaction mode does not compare reasoning effort.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_3_run_the_migrations"><a class="anchor" href="#_step_3_run_the_migrations"></a>Step 3: Run the migrations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Repeat these steps for A, B, and C:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Start a fresh conversation and set the planned model and effort. Confirm the settings before sending the prompt.</p>
+</li>
+<li>
+<p>Attach the installer, <code>.env.example</code>, and migration checklist.</p>
+</li>
+<li>
+<p>Paste the supplied <code>prompt.md</code> unchanged. In a separate sentence, name this run&#8217;s output directory.</p>
+</li>
+<li>
+<p>Start a timer and review the generated project against the checklist.</p>
+</li>
+<li>
+<p>Save the first response before requesting corrections. Record missing behavior, assumptions, and file structure.</p>
+</li>
+<li>
+<p>Request corrections for issues you can identify. Save each follow-up so you can explain how the conversation changed.</p>
+</li>
+<li>
+<p>Stop when the output meets the definition of done in <code>prompt.md</code> or after 15 user turns, whichever comes first. Keep incomplete output and record what remains.</p>
+</li>
+<li>
+<p>Record total generation and review time, user turns, manual edits, and your review decision.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Count the initial prompt and each follow-up as user turns.
+Follow-ups may differ because the outputs have different problems. Compare both the initial output and the final reviewed result.
+Use these results to choose settings for this migration. Other tasks may produce different results.</p>
+</div>
+<div class="paragraph">
+<p>If the project includes <code>requirements.yml</code>, review it and install the declared collections from its output directory:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Install the collections declared by this generated project.
+ansible-galaxy collection install -r requirements.yml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Use its README for non-secret validation variables. Adjust paths for its layout:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Check syntax without connecting to the placeholder inventory host.
+ansible-playbook -i inventory.ini.example --syntax-check site.yml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Record the errors and any fixes. If the project cannot reach syntax validation, record why.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_4_compare_the_results"><a class="anchor" href="#_step_4_compare_the_results"></a>Step 4: Compare the results</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Use the same migration checklist for each output.
+Check saved secrets and release state, database setup, service handlers, TLS behavior, and verification tasks.
+Check that the code implements the behavior described in its README.</p>
+</div>
+<div class="paragraph">
+<p>Answer in your notes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Which first output covered the source behavior most closely? What code supports that judgment?</p>
+</li>
+<li>
+<p>What changed between B and C when effort increased?</p>
+</li>
+<li>
+<p>Which output needed fewer corrections or less manual editing?</p>
+</li>
+<li>
+<p>Did higher effort improve the output enough to justify extra time or usage?</p>
+</li>
+<li>
+<p>What remains untested in each project?</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_check_usage_in_codex_or_cursor"><a class="anchor" href="#_check_usage_in_codex_or_cursor"></a>Check usage in Codex or Cursor</h3>
+<div class="paragraph">
+<p>Check your tool&#8217;s usage before and after each comparison run.
+Record the time and the values shown in your scorecard.</p>
+</div>
+<div class="sect3">
+<h4 id="_codex"><a class="anchor" href="#_codex"></a>Codex</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open the <a href="https://chatgpt.com/codex/settings/usage">Codex usage dashboard</a> with the account you use for the workshop.</p>
+</li>
+<li>
+<p>Record your remaining allowance, reset times, and any credit usage shown before the run.</p>
+</li>
+<li>
+<p>In an active Codex CLI session, enter <code>/status</code> to check remaining limits. This is an interactive command, not a shell command.</p>
+</li>
+<li>
+<p>After the run, check the dashboard again and record the change.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Remaining allowance is not a dollar amount.
+If you use an API key, check the <a href="https://platform.openai.com/usage">API usage dashboard</a> for the project that owns the key instead.
+See <a href="https://developers.openai.com/codex/pricing/">Codex usage and pricing</a> for details about your plan.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_cursor"><a class="anchor" href="#_cursor"></a>Cursor</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open <a href="https://cursor.com/dashboard/spending">Spending</a> in the Cursor dashboard with your workshop account.</p>
+</li>
+<li>
+<p>Record included usage, remaining allowance, any on-demand charges, and the reset date before the run.</p>
+</li>
+<li>
+<p>After the run, refresh the page and record the change. Use request details if the dashboard exposes them.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Keep included usage separate from on-demand charges in your notes.
+See <a href="https://cursor.com/help/models-and-usage/usage-limits">Cursor usage and limits</a> for details.</p>
+</div>
+<div class="paragraph">
+<p>For either tool, note whether the report covers your account or a shared team.
+Other activity and allowance resets can affect the difference between readings.
+If the report cannot isolate a run or show its cost, record <code>unavailable</code> and explain why.
+Elapsed time and turn counts cannot tell you what a run cost.</p>
+</div>
+<div class="paragraph">
+<p>Repeat a run if you want to check whether the same settings produce similar results.
+Record repeats separately so you can compare how much the results vary.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_5_decide_what_you_would_use_next"><a class="anchor" href="#_step_5_decide_what_you_would_use_next"></a>Step 5: Decide what you would use next</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Write a few rules based on your results.
+Name a task where you would keep Composer or Luna, a task where you would try another model, and a reason to increase effort.
+Explain each choice with an example from your runs.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_completion_checklist"><a class="anchor" href="#_completion_checklist"></a>Completion checklist</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>You compared at least two approved models with the same initial prompt and source files.</p>
+</li>
+<li>
+<p>You compared two supported effort levels on one model, or documented why access prevented that comparison.</p>
+</li>
+<li>
+<p>You saved separate outputs and recorded the actual settings and follow-ups.</p>
+</li>
+<li>
+<p>You reviewed behavior coverage and recorded syntax results, missing work, and untested runtime behavior.</p>
+</li>
+<li>
+<p>You can explain which settings you would use for the team project and why.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Proceed to <a href="04-aws-lab-provisioning.html">Lab 04: Customer NetBox delivery project</a>.</p>
+</div>
+<div class="paragraph">
+<p>If you see an error in this lab, fork and submit a pull request against <a href="https://github.com/redhat-services-platform-team/ansible-amers-ai-workshop" target="_blank" rel="noopener">https://github.com/redhat-services-platform-team/ansible-amers-ai-workshop</a>.</p>
+</div>
+</div>
+</div>
+        <nav class="pagination" aria-label="Previous and next labs">
+          <span class="prev"><a href="02-shell-to-ansible.html">Lab 02: Python-to-Ansible NetBox migration</a></span>          <span class="next"><a href="04-aws-lab-provisioning.html">Lab 04: Customer NetBox delivery project</a></span>        </nav>
+      </article>
+      <aside class="toc sidebar" aria-label="Contents"><div class="toc-menu">
+        <h3>Contents</h3><ul>
+                  <li><a href="#_learning_objectives">Learning objectives</a></li>
+                  <li><a href="#_before_you_start">Before you start</a></li>
+                  <li><a href="#_step_1_find_the_controls">Step 1: Find the controls</a></li>
+                  <li><a href="#_step_2_plan_the_comparison">Step 2: Plan the comparison</a></li>
+                  <li><a href="#_step_3_run_the_migrations">Step 3: Run the migrations</a></li>
+                  <li><a href="#_step_4_compare_the_results">Step 4: Compare the results</a></li>
+                  <li><a href="#_step_5_decide_what_you_would_use_next">Step 5: Decide what you would use next</a></li>
+                  <li><a href="#_completion_checklist">Completion checklist</a></li>
+                </ul>
+      </div></aside>
+    </div>
+  </main>
+</div>
+<footer class="footer"><p><a href="https://github.com/redhat-services-platform-team/ansible-amers-ai-workshop">Workshop source</a></p></footer>
+</body>
+</html>

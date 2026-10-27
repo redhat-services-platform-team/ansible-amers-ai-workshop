@@ -1,0 +1,32 @@
+/* Small adaptations to the original Showroom theme for the standalone layout. */
+body { padding-top: 0; }
+.event-banner { display: block; background: #0b0b0b; }
+.event-banner img { display: block; width: 100%; max-width: 2240px; aspect-ratio: 7.5 / 1; height: auto; object-fit: cover; object-position: center 49%; margin: 0 auto; }
+.header { position: sticky; top: 0; z-index: 4; }
+.navbar { position: relative; }
+.navbar-brand { max-width: none; width: auto; min-width: 0; flex-shrink: 1; }
+.navbar .site-title { color: #fff; word-break: normal; overflow-wrap: normal; }
+.resources { margin: auto 1.5rem auto auto; position: relative; color: #fff; }
+.resources summary { cursor: pointer; white-space: nowrap; }
+.resources a { display: block; padding: .6rem 1rem; color: #fff; background: #191919; }
+.resources .resource-links { position: absolute; right: 0; min-width: 13rem; }
+.nav-list .nav-item { margin-bottom: .8rem; }
+.nav-panel-menu { height: 100%; }
+.toc-menu ul { list-style: none; padding-left: .75rem; border-left: 1px solid #ddd; }
+.toc-menu a { display: block; padding-bottom: .4rem; }
+.skip-link { position: fixed; top: -5rem; left: 1rem; z-index: 100; background: white; padding: .5rem; }
+.skip-link:focus { top: .5rem; }
+.copy-code { float: right; border: 1px solid #aaa; border-radius: 3px; background: #fff; cursor: pointer; padding: .25rem .5rem; }
+.doc pre { clear: both; }
+.doc .admonitionblock td.icon { font-weight: bold; color: #c00; }
+@media (max-width: 1023px) {
+  .nav-container { top: var(--menu-top, 6rem); }
+  .nav { top: 0; height: calc(100dvh - var(--menu-top, 6rem)); }
+  .nav-container.is-active { display: block; }
+  .navbar .site-title { white-space: normal; font-size: .85rem; }
+  .resources { display: none; }
+}
+@media print {
+  .event-banner, .header, .nav-container, .toolbar, .toc, .pagination, .copy-code, .footer { display: none; }
+  .body, main.article, .content, .doc { display: block; margin: 0; width: 100%; max-width: none; }
+}
